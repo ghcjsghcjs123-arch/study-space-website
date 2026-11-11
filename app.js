@@ -1,5 +1,5 @@
 // =============================================================
-// Page logic: question buttons → design card (3D view / floor plan) → full screen 3D.
+// Page logic: chatbot (chat.js) → design card (3D view / floor plan) → full screen 3D.
 // Each step has its own address (URL hash), so the browser / phone back button works:
 //   #/            question screen
 //   #/idea        design card of the Idea Lounge
@@ -43,20 +43,9 @@
     document.body.dataset.zone = zone;
   }
 
-  // ---------- 1. question buttons ----------
-  function renderChoices() {
-    $("choices").innerHTML = designs
-      .map((d) => `
-        <button class="choice" data-id="${d.id}" aria-pressed="${selected && selected.id === d.id}">
-          <strong>${tr(d.type)}</strong>
-          <span>${d.name}</span>
-        </button>`)
-      .join("");
-  }
-  $("choices").addEventListener("click", (e) => {
-    const btn = e.target.closest(".choice");
-    if (btn) openFromList(btn.dataset.id);
-  });
+  // ---------- 1. chatbot (chat.js) ----------
+  // Its "Open …" buttons go through the router like every other way to a card.
+  window.Chat.mount($("chat"), { onOpen: (id) => openFromList(id) });
 
   // ---------- 2. design card ----------
   let viewer = null; // the 3D view inside the card (space3d.js)
@@ -217,7 +206,12 @@
       if (scroll) {
         const behavior = instant ? "auto" : "smooth";
         if (r.id) $("result").scrollIntoView({ behavior, block: "start" });
-        else if (prev.id) $("pick").scrollIntoView({ behavior, block: "start" });
+        else if (prev.id) {
+          // back to the question screen: show the chat result if there is one
+          const a = window.Chat.anchor();
+          if (a) a.scrollIntoView({ behavior, block: "center" });
+          else $("pick").scrollIntoView({ behavior, block: "start" });
+        }
       }
     }
 
@@ -229,8 +223,6 @@
 
   function openCard(id) {
     selected = designs.find((x) => x.id === id);
-    document.querySelectorAll(".choice").forEach((b) =>
-      b.setAttribute("aria-pressed", String(b.dataset.id === id)));
     $("result").hidden = false;
     renderCard(selected);
   }
@@ -239,7 +231,6 @@
     if (viewer) { viewer.destroy(); viewer = null; }
     selected = null;
     view = "3d";
-    document.querySelectorAll(".choice").forEach((b) => b.setAttribute("aria-pressed", "false"));
     $("result").hidden = true;
     $("card").innerHTML = "";
   }
@@ -320,13 +311,11 @@
 
   // language switch (KO | EN): redraw every text, keep the open card as it is
   document.addEventListener("lang:change", () => {
-    renderChoices();
     renderFact();
     renderCompare();
     if (selected) renderCard(selected);
   });
 
-  renderChoices();
   renderFact();
   renderCompare();
   renderResearch();

@@ -36,12 +36,22 @@ window.I18N = (() => {
     navCompare: { en: "Compare", ko: "비교" },
     navResearch: { en: "Research", ko: "연구" },
     eyebrow: { en: "Group 6 · Ajou University", ko: "아주대학교 6조" },
-    question: { en: "What am I studying today?", ko: "오늘은 어떤 공부를 하나요?" },
-    lede: {
-      en: "Pick one. We'll show you the space we designed for it, so you can see its light and hear its sound.",
-      ko: "하나를 골라 보세요. 그 공부를 위해 우리가 디자인한 공간을 보여 드려요. 조명을 보고 소리도 들어 볼 수 있어요."
+    chatTitle: { en: "Which of our spaces fits you today?", ko: "오늘 나에게 맞는 공간은?" },
+
+    // chatbot (chat.js)
+    chatLog: { en: "Chat with the space finder", ko: "공간 찾기 대화" },
+    chatHello: {
+      en: "Hi! I'll find the study space that fits you today. Just answer two quick questions.",
+      ko: "안녕하세요! 오늘 나에게 맞는 공부 공간을 찾아 드릴게요. 질문 두 개만 답해 주세요."
     },
+    question: { en: "What am I studying today?", ko: "오늘은 어떤 공부를 하나요?" },
+    chatMood: { en: "How are you feeling right now?", ko: "지금 기분은 어때요?" },
     studyTypes: { en: "Study types", ko: "공부 유형" },
+    moods: { en: "Moods", ko: "기분" },
+    typing: { en: "Typing…", ko: "입력 중…" },
+    openSpace: { en: (name) => `Open ${name}`, ko: (name) => `${name} 보기` },
+    startOver: { en: "Start over", ko: "처음부터 다시" },
+    seeAll: { en: "See all four designs", ko: "네 가지 디자인 모두 보기" },
     factPrefix: { en: "Why space matters:", ko: "공간이 중요한 이유:" },
     compareTitle: { en: "Different study, different space", ko: "공부가 다르면, 공간도 달라요" },
     compareLede: {

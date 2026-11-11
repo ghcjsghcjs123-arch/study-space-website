@@ -30,12 +30,11 @@
   </header>
 
   <main id="top">
-    <!-- 1. Question -->
+    <!-- 1. Chatbot: two questions → which of our designs fits (chat.js) -->
     <section class="hero" id="pick">
       <p class="eyebrow" data-i18n="eyebrow">Group 6 · Ajou University</p>
-      <h1 data-i18n="question">What am I studying today?</h1>
-      <p class="lede" data-i18n="lede">Pick one. We'll show you the space we designed for it, so you can see its light and hear its sound.</p>
-      <div class="choices" id="choices" role="group" aria-label="Study types" data-i18n-aria="studyTypes"></div>
+      <h1 data-i18n="chatTitle">Which of our spaces fits you today?</h1>
+      <div class="chat" id="chat"></div>
       <p class="fact" id="fact"></p>
     </section>
 
@@ -75,6 +74,7 @@
   <script src="plans.js"></script>
   <script src="sound.js"></script>
   <script src="space3d.js"></script>
+  <script src="chat.js"></script>
   <script src="app.js"></script>
 </body>
 </html>

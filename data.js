@@ -364,4 +364,68 @@
     },
     cite: STUDY.barrett
   };
+
+  // =============================================================
+  // Chatbot (chat.js) — "Which of the four spaces our team designed fits me now?"
+  // It shows our designs; it does NOT point to real Ajou rooms.
+  // English: use "fits", not "recommend".
+  // =============================================================
+
+  // question 2: each mood belongs to one of our four designs
+  window.MOODS = [
+    { id: "focused", label: { en: "Focused", ko: "집중" }, space: "memorization" },
+    { id: "stuck", label: { en: "Stuck", ko: "막막함" }, space: "idea" },
+    { id: "energetic", label: { en: "Energetic", ko: "활기참" }, space: "teamwork" },
+    { id: "tired", label: { en: "Tired", ko: "피곤함" }, space: "comfort" }
+  ];
+
+  // result sentences. Rules (chat.js → Chat.decide):
+  //   A. mood space = study space   → that space only: main + match
+  //   B. mood = tired (study ≠ comfort) → main Green Nook, extra = study space: tiredFirst
+  //   C. otherwise                  → main = study space, extra = mood space: main + moodTip
+  // Full sentences on purpose, so Korean particles are always right.
+  // {space} = the extra space's name (English in both languages).
+  window.CHAT = {
+    main: {
+      memorization: {
+        en: "For memorizing, our Focus Room design fits best: bright light, a quiet room, and single desks.",
+        ko: "암기에는 우리가 디자인한 Focus Room이 가장 잘 맞아요. 밝은 빛, 조용한 방, 1인 책상이 있어요."
+      },
+      idea: {
+        en: "For new ideas, our Idea Lounge design fits best: dim warm light, café buzz, and a high ceiling.",
+        ko: "새로운 아이디어에는 우리가 디자인한 Idea Lounge가 가장 잘 맞아요. 어둑하고 따뜻한 빛, 카페 같은 소리, 높은 천장이 있어요."
+      },
+      teamwork: {
+        en: "For team projects, our Team Studio design fits best: round tables and room to talk.",
+        ko: "팀플에는 우리가 디자인한 Team Studio가 가장 잘 맞아요. 둥근 테이블이 있고, 편하게 대화할 수 있어요."
+      },
+      comfort: {
+        en: "To study comfortably, our Green Nook design fits best: daylight, green views, and soft seats.",
+        ko: "편안하게 공부하고 싶다면 우리가 디자인한 Green Nook이 가장 잘 맞아요. 자연광, 초록 풍경, 푹신한 자리가 있어요."
+      }
+    },
+    match: {
+      en: "Your mood fits this space too. Perfect timing!",
+      ko: "지금 기분과도 딱 맞아요. 타이밍이 완벽해요!"
+    },
+    tiredFirst: {
+      en: "You're tired, so rest comes first. Take a short break in the Green Nook. Even 40 seconds of looking at greenery helped students stay focused (Lee et al., 2015). Then study in the {space}.",
+      ko: "피곤하다면 쉬는 게 먼저예요. Green Nook에서 잠깐 쉬어 가세요. 초록 풍경을 40초만 봐도 집중에 도움이 됐다는 연구가 있어요 (Lee et al., 2015). 그다음 {space}에서 공부해요."
+    },
+    // tired has no tip: rule B handles it (comfort + tired is rule A)
+    moodTip: {
+      focused: {
+        en: "You're in a focused mood. When you need to lock in, the Focus Room is there too.",
+        ko: "지금 집중이 잘 되는 상태네요. 몰입이 필요할 때는 Focus Room도 있어요."
+      },
+      stuck: {
+        en: "Feeling stuck? Take a lap in the Idea Lounge first. Walking can spark new ideas (Oppezzo & Schwartz, 2014).",
+        ko: "막막하다면 먼저 Idea Lounge에서 한 바퀴 걸어 보세요. 걸으면 새 아이디어가 잘 떠올라요 (Oppezzo & Schwartz, 2014)."
+      },
+      energetic: {
+        en: "Full of energy? If you want to talk things through with friends, try the Team Studio.",
+        ko: "에너지가 넘친다면, 친구들과 이야기 나누며 공부할 수 있는 Team Studio도 좋아요."
+      }
+    }
+  };
 })();

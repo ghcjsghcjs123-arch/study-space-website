@@ -2,7 +2,7 @@
 
 ## What this project is
 A website that shows four study spaces our team DESIGNED for four study types.
-The user answers "What am I studying today?" and sees the design card for that type.
+A chatbot asks "What am I studying today?" and "How are you feeling right now?", then shows which of our four designs fits, and opens its design card.
 
 ## Word rules (professor's feedback: keep wording consistent)
 - Spaces are **designed** by our team. The website **shows** the designs.
@@ -10,6 +10,20 @@ The user answers "What am I studying today?" and sees the design card for that t
 - Study types (always these four names): Memorization, Idea generation, Teamwork, Comfort
 - Design names: Focus Room, Idea Lounge, Team Studio, Green Nook
 - Every design card has exactly 3 elements: Lighting, Noise, Seating — each with a reason and a research source.
+- The chatbot result = "which of the four spaces OUR TEAM DESIGNED fits me now". Never write it as if it picks real Ajou rooms.
+- English: use "fits" (e.g. "our Focus Room design fits best"), not "recommend".
+
+## Chatbot (chat.js, first screen `#/`)
+- Flow: bot greeting → Q1 study type (`t("question")`, choices = `DESIGNS[].type`) → user answer → Q2 mood (choices = `MOODS`) → user answer → result bubble with "Open <space>" buttons → "Start over" + "See all four designs" (`#compare`, scroll only).
+- Data in data.js: `MOODS` = `[{ id, label: { en, ko }, space }]` (focused → memorization, stuck → idea, energetic → teamwork, tired → comfort). `CHAT` = `main[studyId]`, `match`, `tiredFirst` (with `{space}` = extra space name), `moodTip[moodId]` — all `{ en, ko }`. Write full sentences (no building sentences from pieces) so Korean particles stay right.
+- Rules (`Chat.decide(type, mood)`, a pure function):
+  - A. mood space = study space → that space only; lines = main + match
+  - B. mood = tired and study ≠ comfort → main = comfort (Green Nook), extra = study space; line = tiredFirst
+  - C. otherwise → main = study space, extra = mood space; lines = main + moodTip
+- The conversation is stored as data (`{ type, mood }`), not HTML, and redrawn from it. KO | EN mid-chat redraws the same conversation. Visiting a card and coming back keeps it; only "Start over" (or a reload) clears it.
+- "Open …" buttons call app.js `openFromList(id)` (the router). Never draw a card from chat.js.
+- Bot messages appear after a 0.6 s "Typing…" (no delay with prefers-reduced-motion). The log is `role="log" aria-live="polite"`; all choices are `<button>`s. Colors use the style.css variables (--surface, --ink, --accent…).
+- Chat words (greeting, Q2, buttons, "Typing…") are in i18n.js `UI`.
 
 ## Screens and the back button
 - 3 screens, each with its own URL hash: `#/` question → `#/<id>` design card → `#/<id>/3d` full screen 3D (ids: memorization, idea, teamwork, comfort).
@@ -17,6 +31,7 @@ The user answers "What am I studying today?" and sees the design card for that t
 - Card → another card uses `replaceState`, so back always returns to the question screen.
 - A direct link (e.g. `#/teamwork/3d`) builds the steps behind it on load, so back still goes 3D → card → question. Unknown ids open the question screen.
 - On-screen back buttons: "← Choose another study" on the card, "← Back" (plus × and Esc) in full screen. Both call `back()`.
+- Back on the question screen scrolls to the chat result (`Chat.anchor()`), or to the top if there is none.
 - Every screen change stops the sound; the lighting preview follows the screen (none on the question screen).
 - Top-bar links (#pick, #compare, #research) only scroll; they don't change the URL. `history.scrollRestoration` is manual; the router scrolls.
 
@@ -30,7 +45,8 @@ The user answers "What am I studying today?" and sees the design card for that t
 
 ## Files
 - `i18n.js`   — language switch, UI words (en/ko), saved language. Loads first.
-- `data.js`   — all text content (design cards, reasons, sources) in en + ko. Edit content here.
+- `data.js`   — all text content (design cards, reasons, sources, chatbot MOODS + CHAT) in en + ko. Edit content here.
+- `chat.js`   — chatbot on the first screen (`window.Chat`: mount, decide, anchor). Loads before app.js.
 - `plans.js`  — top-view floor plans drawn as SVG; each plan is a function that gets `L({ en, ko })` for its labels (shown by the "Floor plan" button, and for spaces without 3D yet).
 - `space3d.js`— 3D room viewer (`window.Space3D`). CSS 3D transforms only, no libraries. Must load before app.js.
 - `sound.js`  — "Hear this space" sounds, generated with Web Audio API (no audio files).
@@ -39,7 +55,7 @@ The user answers "What am I studying today?" and sees the design card for that t
 - `index.html`— page structure.
 
 ## 3D view (space3d.js)
-- Flow: question → design card (3D view first, "Floor plan" tab for 2D) → "Full screen" overlay ("← Back", × or Esc goes back to the card and stops the sound). `mount(slot, design, { onFullscreen })` and `openFullscreen(design, { onBack })` let app.js control the URL; `closeFullscreen()` closes it.
+- Flow: chatbot → design card (3D view first, "Floor plan" tab for 2D) → "Full screen" overlay ("← Back", × or Esc goes back to the card and stops the sound). `mount(slot, design, { onFullscreen })` and `openFullscreen(design, { onBack })` let app.js control the URL; `closeFullscreen()` closes it.
 - All four spaces have a 3D room: memorization, idea, teamwork, comfort. Every card opens in 3D by default.
 - Each room = (1) a `view3d` block in data.js and (2) a builder `BUILDERS.<id>(k)` in space3d.js that calls `k.room({ w, d })` then `k.add(...)`. All rooms are 10 m x 8 m.
 - `view3d` (per space, all wording lives here):
