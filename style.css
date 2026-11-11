@@ -64,19 +64,35 @@
   --glow-size: 75%;
 }
 
+/* ---------- fonts (Korean uses Noto Sans KR; offline = system font) ---------- */
+:root {
+  --font-sans: "DM Sans", system-ui, sans-serif;
+  --font-serif: "Fraunces", Georgia, serif;
+}
+html[lang="ko"] {
+  --font-sans: "Noto Sans KR", "Apple SD Gothic Neo", "Malgun Gothic", system-ui, sans-serif;
+  --font-serif: "Noto Sans KR", "Apple SD Gothic Neo", "Malgun Gothic", system-ui, sans-serif;
+}
+html[lang="ko"] h1, html[lang="ko"] h2, html[lang="ko"] h3,
+html[lang="ko"] .element-value, html[lang="ko"] .brand { font-weight: 700; letter-spacing: -0.01em; }
+html[lang="ko"] body { word-break: keep-all; overflow-wrap: anywhere; }
+/* small caps labels: wide letter-spacing looks broken in Hangul */
+html[lang="ko"] .eyebrow, html[lang="ko"] .card-type, html[lang="ko"] .element-key,
+html[lang="ko"] .mini dt, html[lang="ko"] .s3d-btn small { letter-spacing: 0.02em; }
+
 /* ---------- base ---------- */
 * { box-sizing: border-box; }
 html { scroll-behavior: smooth; }
 body {
   margin: 0;
-  font-family: "DM Sans", system-ui, sans-serif;
+  font-family: var(--font-sans);
   font-size: 17px;
   line-height: 1.55;
   background: var(--room-bg);
   color: var(--ink);
   transition: background-color 1.2s ease, color 1.2s ease;
 }
-h1, h2, h3 { font-family: "Fraunces", Georgia, serif; line-height: 1.15; margin: 0; }
+h1, h2, h3 { font-family: var(--font-serif); line-height: 1.15; margin: 0; }
 a { color: var(--accent); }
 
 /* the "lamp" on the ceiling: a soft light from the top of the screen */
@@ -101,8 +117,20 @@ main, .topbar, .footer { position: relative; z-index: 1; }
   padding: 14px clamp(16px, 4vw, 40px);
   flex-wrap: wrap;
 }
-.brand { font-family: "Fraunces", serif; font-weight: 700; color: var(--ink); text-decoration: none; }
+.brand { font-family: var(--font-serif); font-weight: 700; color: var(--ink); text-decoration: none; }
+.topbar-right { display: flex; align-items: center; gap: 18px; flex-wrap: wrap; }
 .topbar nav { display: flex; gap: 18px; flex-wrap: wrap; }
+
+/* language switch: KO | EN */
+.lang { display: inline-flex; align-items: center; gap: 2px; color: var(--muted); font-size: 14px; }
+.lang-btn {
+  font: inherit; font-family: "DM Sans", system-ui, sans-serif; font-weight: 700; letter-spacing: 0.04em;
+  padding: 6px 8px; min-width: 36px; min-height: 36px;
+  border: 0; border-radius: 8px; background: transparent; color: var(--muted); cursor: pointer;
+}
+.lang-btn:hover { color: var(--ink); }
+.lang-btn[aria-pressed="true"] { color: var(--accent); text-decoration: underline; text-underline-offset: 4px; }
+.lang-btn:focus-visible { outline: 2px solid var(--accent); outline-offset: 1px; }
 .topbar nav a { color: var(--muted); text-decoration: none; font-size: 15px; }
 .topbar nav a:hover { color: var(--ink); }
 
@@ -171,13 +199,13 @@ h2 { font-size: clamp(26px, 4vw, 34px); }
 .card-body { display: grid; grid-template-columns: 1.1fr 1fr; gap: 28px; margin-top: 28px; }
 .plan { color: var(--ink); }
 .plan svg { width: 100%; height: auto; display: block; }
-.plan-label { font-size: 10px; fill: var(--muted); font-family: "DM Sans", sans-serif; }
+.plan-label { font-size: 10px; fill: var(--muted); font-family: var(--font-sans); }
 .plan-caption { font-size: 13px; color: var(--muted); margin-top: 6px; }
 
 .elements { list-style: none; margin: 0; padding: 0; display: grid; gap: 16px; }
 .element { border-top: 1px solid var(--line); padding-top: 14px; }
 .element-key { font-size: 13px; text-transform: uppercase; letter-spacing: 0.1em; color: var(--accent); font-weight: 700; }
-.element-value { font-family: "Fraunces", serif; font-size: 20px; margin: 2px 0 4px; }
+.element-value { font-family: var(--font-serif); font-size: 20px; margin: 2px 0 4px; }
 .element-reason { margin: 0; color: var(--muted); font-size: 15px; }
 .element-cite { font-size: 13px; margin-top: 4px; }
 .todo { color: #c0392b; font-weight: 700; }
@@ -276,7 +304,7 @@ h2 { font-size: clamp(26px, 4vw, 34px); }
 .s3d-labels { position: absolute; inset: 0; pointer-events: none; overflow: hidden; }
 .s3d-label {
   position: absolute; left: 0; top: 0;
-  font: 600 12px/1.2 "DM Sans", system-ui, sans-serif;
+  font: 600 12px/1.2 var(--font-sans);
   color: #fff; background: rgba(24, 18, 14, 0.8);
   padding: 4px 9px; border-radius: 999px; white-space: nowrap;
   transition: opacity 0.25s ease;

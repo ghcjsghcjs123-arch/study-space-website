@@ -11,9 +11,18 @@ The user answers "What am I studying today?" and sees the design card for that t
 - Design names: Focus Room, Idea Lounge, Team Studio, Green Nook
 - Every design card has exactly 3 elements: Lighting, Noise, Seating — each with a reason and a research source.
 
+## Languages (KO | EN)
+- Default language is English. The KO | EN switch is in the top bar; the choice is saved in localStorage (wrapped in try/catch, falls back to English).
+- Every visible text exists in both languages. Content = `{ en: "...", ko: "..." }` in data.js (and in plans.js / space3d.js labels). Page words (buttons, headings, hints) = `UI` in i18n.js.
+- Use `tr({ en, ko })` for content and `t("uiWord")` for page words. Never write a visible English-only string.
+- Korean terms: Memorization = 암기, Idea generation = 아이디어 구상, Teamwork = 팀플, Comfort = 편안함. Space names stay in English in both languages. Study names (author, year) and links are never translated.
+- Korean style: natural 해요체 that university students read easily. Korean uses Noto Sans KR (Google Fonts; offline → system font).
+- `<html lang>` follows the language. Changing language fires `lang:change`; app.js redraws the texts and keeps the open card.
+
 ## Files
-- `data.js`   — all text content (design cards, reasons, sources). Edit content here.
-- `plans.js`  — top-view floor plans drawn as SVG (shown by the "Floor plan" button, and for spaces without 3D yet).
+- `i18n.js`   — language switch, UI words (en/ko), saved language. Loads first.
+- `data.js`   — all text content (design cards, reasons, sources) in en + ko. Edit content here.
+- `plans.js`  — top-view floor plans drawn as SVG; each plan is a function that gets `L({ en, ko })` for its labels (shown by the "Floor plan" button, and for spaces without 3D yet).
 - `space3d.js`— 3D room viewer (`window.Space3D`). CSS 3D transforms only, no libraries. Must load before app.js.
 - `sound.js`  — "Hear this space" sounds, generated with Web Audio API (no audio files).
 - `style.css` — design + lighting preview colors per space (`[data-zone="..."]`).
@@ -26,11 +35,11 @@ The user answers "What am I studying today?" and sees the design card for that t
 - Each room = (1) a `view3d` block in data.js and (2) a builder `BUILDERS.<id>(k)` in space3d.js that calls `k.room({ w, d })` then `k.add(...)`. All rooms are 10 m x 8 m.
 - `view3d` (per space, all wording lives here):
   - `ceiling: { ours, compare }` in meters
-  - `light: { ours: { preset, name }, compare: { preset, name } }` — `name` is the button text
-  - `notes.light.ours / .compare` and `notes.ceiling.ours / .compare` = `{ text, source? }`. `source` shows as "(Author, year)" before the final period. Leave `source` out when the sentence has no study. Only use studies already cited in data.js — never invent one.
-  - `callout` (optional, Team Studio) = a `{ text, source }` note shown inside the room (hidden when the 3D view is small, e.g. the phone card).
+  - `light: { ours: { preset, name }, compare: { preset, name } }` — `name` = `{ en, ko }` button text
+  - `notes.light.ours / .compare` and `notes.ceiling.ours / .compare` = `{ text: { en, ko }, source? }`. `source` shows as "(Author, year)" before the final period. Leave `source` out when the sentence has no study. Only use studies already cited in data.js — never invent one.
+  - `callout` (optional, Team Studio) = a `{ text: { en, ko }, source }` note shown inside the room (hidden when the 3D view is small, e.g. the phone card).
 - Units: meters, 1 m = 46 px (`M`). Axes: x = right, y = back wall → front, z = up. x/y = center of the footprint, z = bottom. Back wall at y = 0, left wall at x = 0; front and right stay open (dollhouse).
-- Helpers: `box` (`faces` = different look per side), `plane` (face: up/front/right/back/left/down), `crossed`, `group` (rz rotation), `label` (text can be a function, e.g. depends on `k.modes`). Builders also get `k.cfg` (the view3d block) and `k.modes` (current ours/compare).
+- Helpers: `box` (`faces` = different look per side), `plane` (face: up/front/right/back/left/down), `crossed`, `group` (rz rotation), `label` (text = `{ en, ko }`, or a function returning one, e.g. depends on `k.modes`). Builders also get `k.cfg` (the view3d block) and `k.modes` (current ours/compare).
 - Furniture: `loungeChair`, `chair`, `roundTable`, `desk`, `deskLamp`, `panelLight`, `pendant`, `floorLamp`, `bookshelf`, `clock`, `sofa`, `beanbag`, `mobileWhiteboard`, `plant`, `pool`. Use `faceTo: [x, y]` to turn chairs toward a table.
 - Keep the number of 3D parts low (about 400 max per room) so phones stay smooth: thin things (dividers, chair backs, desk legs) are single `plane`s, not `box`es.
 - Ceiling height = CSS variable `--ceil` (animated via `@property`). Anything that must follow the ceiling (walls, hanging lamps, height marker) uses `z: "var(--ceil)"`; things on walls (whiteboard, windows) use fixed heights.

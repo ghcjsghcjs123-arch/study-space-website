@@ -441,9 +441,9 @@ window.Space3D = (() => {
       [[0.6, 0.6], [9.4, 0.6], [0.6, 7.4], [9.4, 7.4]].forEach(([x, y]) => k.add(k.plant({ x, y })));
 
       // labels (always face the viewer)
-      k.add(k.label("Idea wall", { x: 5, y: 0.05, z: 2.3, facing: [0, 1] }));
-      k.add(k.label("Walking loop", { x: C[0], y: C[1] + 2.8, z: 0.05, place: "center" }));
-      k.add(k.label("Lounge chairs", { x: 5, y: 2.65, z: 1.0 }));
+      k.add(k.label({ en: "Idea wall", ko: "아이디어 벽" }, { x: 5, y: 0.05, z: 2.3, facing: [0, 1] }));
+      k.add(k.label({ en: "Walking loop", ko: "걷는 동선" }, { x: C[0], y: C[1] + 2.8, z: 0.05, place: "center" }));
+      k.add(k.label({ en: "Lounge chairs", ko: "라운지 의자" }, { x: 5, y: 2.65, z: 1.0 }));
     },
 
     memorization(k) {
@@ -482,9 +482,9 @@ window.Space3D = (() => {
       k.add(k.bookshelf({ x: 9.2, y: 0.22 }));
       k.add(k.plant({ x: 0.6, y: 7.4, s: 0.9 }));
 
-      k.add(k.label("Single desks", { x: 3.9, y: 4.9, z: 1.35 }));
-      k.add(k.label("Dividers", { x: 7.7, y: 2.1, z: 1.24 }));
-      k.add(k.label(() => (k.modes.ceiling === "ours" ? "Lower ceiling" : "Higher ceiling"), {
+      k.add(k.label({ en: "Single desks", ko: "1인 책상" }, { x: 3.9, y: 4.9, z: 1.35 }));
+      k.add(k.label({ en: "Dividers", ko: "칸막이" }, { x: 7.7, y: 2.1, z: 1.24 }));
+      k.add(k.label(() => (k.modes.ceiling === "ours" ? { en: "Lower ceiling", ko: "낮은 천장" } : { en: "Higher ceiling", ko: "높은 천장" }), {
         x: 6.5, y: 0.05, z: "calc(var(--ceil) - 12px)", facing: [0, 1]
       }));
     },
@@ -526,9 +526,9 @@ window.Space3D = (() => {
       k.add(k.mobileWhiteboard({ x: 8.9, y: 5.4, rz: -70 }));
       [[0.6, 7.4], [9.4, 0.6]].forEach(([x, y]) => k.add(k.plant({ x, y })));
 
-      k.add(k.label("Round tables", { x: 2.7, y: 2.6, z: 1.15 }));
-      k.add(k.label("Shared screen", { x: 0.05, y: 4.4, z: 2.3, facing: [1, 0] }));
-      k.add(k.label("Movable whiteboard", { x: 8.9, y: 5.4, z: 1.9 }));
+      k.add(k.label({ en: "Round tables", ko: "둥근 테이블" }, { x: 2.7, y: 2.6, z: 1.15 }));
+      k.add(k.label({ en: "Shared screen", ko: "공유 화면" }, { x: 0.05, y: 4.4, z: 2.3, facing: [1, 0] }));
+      k.add(k.label({ en: "Movable whiteboard", ko: "이동식 화이트보드" }, { x: 8.9, y: 5.4, z: 1.9 }));
       if (k.cfg.callout) k.add(k.label(k.cfg.callout, { x: 2.6, y: 6.2, z: 0.05, place: "note" }));
     },
 
@@ -567,9 +567,9 @@ window.Space3D = (() => {
       [[9.3, 0.7, 1.5], [9.3, 7.3, 1.5], [3.2, 0.6, 1.2], [8.6, 4, 1.1]].forEach(([x, y, s]) => k.add(k.plant({ x, y, s })));
       [[0.7, 0.6], [0.7, 7.4], [8.8, 2.1], [2.0, 7.4], [6.6, 7.4]].forEach(([x, y]) => k.add(k.plant({ x, y, s: 0.65 })));
 
-      k.add(k.label("Green view", { x: 0.05, y: 4, z: 2.0, facing: [1, 0] }));
-      k.add(k.label("Sofa", { x: 5.2, y: 0.65, z: 1.05 }));
-      k.add(k.label("Beanbags", { x: 5.4, y: 5.1, z: 0.75 }));
+      k.add(k.label({ en: "Green view", ko: "초록 풍경" }, { x: 0.05, y: 4, z: 2.0, facing: [1, 0] }));
+      k.add(k.label({ en: "Sofa", ko: "소파" }, { x: 5.2, y: 0.65, z: 1.05 }));
+      k.add(k.label({ en: "Beanbags", ko: "빈백" }, { x: 5.4, y: 5.1, z: 0.75 }));
     }
   };
 
@@ -582,9 +582,16 @@ window.Space3D = (() => {
   const supports = (d) => !!(d && BUILDERS[d.id] && d.view3d);
   const reduceMotion = () => window.matchMedia("(prefers-reduced-motion: reduce)").matches;
   const clamp = (v, a, b) => Math.min(b, Math.max(a, v));
-  // { text: "Some sentence.", source: "Author, 2015" } → "Some sentence (Author, 2015)."
-  const withSource = (n) =>
-    typeof n === "string" ? n : n.source ? `${n.text.replace(/\.$/, "")} (${n.source}).` : n.text;
+  // language helpers from i18n.js: t("uiWord"), tr({ en, ko })
+  const t = (...a) => window.I18N.t(...a);
+  const tr = (v) => window.I18N.tr(v);
+  // { text: { en, ko }, source: "Author, 2015" } → "Some sentence (Author, 2015)."
+  // (the study name is never translated)
+  const withSource = (n) => {
+    if (!n || typeof n !== "object" || !("text" in n)) return tr(n);
+    const text = tr(n.text);
+    return n.source ? `${text.replace(/\.$/, "")} (${n.source}).` : text;
+  };
 
   const TILT = [18, 78];   // up/down limit (degrees; 0 = straight down)
   const ZOOM = [0.6, 2.6];
@@ -597,19 +604,19 @@ window.Space3D = (() => {
     const root = div(`s3d${fullscreen ? " s3d--full" : ""}`);
     root.innerHTML = `
       <div class="s3d-viewport" tabindex="0" role="img"
-           aria-label="3D model of the ${design.name}. Drag to turn, scroll or pinch to zoom, or use the arrow keys.">
+           aria-label="${t("s3dAria", design.name)}">
         <div class="s3d-stage"><div class="s3d-camera"><div class="s3d-n s3d-room"></div></div></div>
         <div class="s3d-labels" aria-hidden="true"></div>
-        <p class="s3d-hint" aria-hidden="true">Drag to turn · scroll or pinch to zoom</p>
+        <p class="s3d-hint" aria-hidden="true">${t("s3dHint")}</p>
       </div>
       <div class="s3d-bar">
-        <button class="s3d-btn" data-act="light" aria-pressed="false"><small>Light</small><b></b></button>
-        <button class="s3d-btn" data-act="ceiling" aria-pressed="false"><small>Ceiling</small><b></b></button>
+        <button class="s3d-btn" data-act="light" aria-pressed="false"><small>${t("light")}</small><b></b></button>
+        <button class="s3d-btn" data-act="ceiling" aria-pressed="false"><small>${t("ceiling")}</small><b></b></button>
         ${fullscreen
           ? `<button class="s3d-btn s3d-btn--plain" data-act="sound" aria-pressed="false"><span class="bars" aria-hidden="true"><i></i><i></i><i></i></span><b></b></button>`
-          : `<button class="s3d-btn s3d-btn--plain" data-act="full"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M4 9V4h5M20 9V4h-5M4 15v5h5M20 15v5h-5"/></svg><b>Full screen</b></button>`}
+          : `<button class="s3d-btn s3d-btn--plain" data-act="full"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M4 9V4h5M20 9V4h-5M4 15v5h5M20 15v5h-5"/></svg><b>${t("fullScreen")}</b></button>`}
       </div>
-      <p class="s3d-note" aria-live="polite">Tap <b>Light</b> or <b>Ceiling</b> to compare our design with a different one.</p>`;
+      <p class="s3d-note" aria-live="polite">${t("s3dIntro")}</p>`;
     slot.appendChild(root);
 
     const $ = (s) => root.querySelector(s);
@@ -645,7 +652,7 @@ window.Space3D = (() => {
         add(crossed({ x: 0.1, y: 0.1, w: 0.035, h: "var(--ceil)", look: mark }));
         add(crossed({ x: 0.1, y: 0.1, z: 0.01, w: 0.45, h: 0.035, look: mark }));
         add(group({ x: 0.1, y: 0.1, z: "var(--ceil)", children: [crossed({ z: -0.035, w: 0.45, h: 0.035, look: mark })] }));
-        add(kit.label(() => `Ceiling ${currentCeiling().toFixed(1)} m`, { x: 0.1, y: 0.1, z: "var(--ceil)", place: "ceiling" }));
+        add(kit.label(() => t("ceilingLabel", currentCeiling().toFixed(1)), { x: 0.1, y: 0.1, z: "var(--ceil)", place: "ceiling" }));
       }
     };
     BUILDERS[design.id](kit);
@@ -698,7 +705,7 @@ window.Space3D = (() => {
       const vr = vp.getBoundingClientRect();
       const yawR = (cam.yaw * Math.PI) / 180;
       labels.forEach((L) => {
-        const txt = typeof L.text === "function" ? L.text() : withSource(L.text);
+        const txt = withSource(typeof L.text === "function" ? L.text() : L.text);
         if (txt !== L.last) {
           L.el.textContent = txt;
           L.last = txt;
@@ -764,9 +771,9 @@ window.Space3D = (() => {
 
       const lb = $('[data-act="light"]'), cb = $('[data-act="ceiling"]');
       lb.setAttribute("aria-pressed", String(m.light === "compare"));
-      lb.querySelector("b").textContent = `${m.light === "ours" ? "Our design" : "Compare"}: ${cfg.light[m.light].name}`;
+      lb.querySelector("b").textContent = `${t(m.light)}: ${tr(cfg.light[m.light].name)}`;
       cb.setAttribute("aria-pressed", String(m.ceiling === "compare"));
-      cb.querySelector("b").textContent = `${m.ceiling === "ours" ? "Our design" : "Compare"}: ${cfg.ceiling[m.ceiling].toFixed(1)} m`;
+      cb.querySelector("b").textContent = `${t(m.ceiling)}: ${cfg.ceiling[m.ceiling].toFixed(1)} m`;
       kick(1400);
     }
 
@@ -786,7 +793,7 @@ window.Space3D = (() => {
       if (!b) return;
       const on = window.SpaceSound.isPlaying(design.sound);
       b.setAttribute("aria-pressed", String(on));
-      b.querySelector("b").textContent = on ? "Stop sound" : "Hear this space";
+      b.querySelector("b").textContent = on ? t("stopSound") : t("hearSpace");
     }
 
     root.querySelector(".s3d-bar").addEventListener("click", (e) => {
@@ -895,11 +902,11 @@ window.Space3D = (() => {
     overlay = div("s3d-overlay");
     overlay.setAttribute("role", "dialog");
     overlay.setAttribute("aria-modal", "true");
-    overlay.setAttribute("aria-label", `${design.name} in 3D`);
+    overlay.setAttribute("aria-label", t("s3dDialog", design.name));
     overlay.innerHTML = `
       <div class="s3d-overlay-head">
-        <div><p class="card-type">Design for ${design.type}</p><h2>${design.name}</h2></div>
-        <button class="s3d-close" aria-label="Close 3D view">&times;</button>
+        <div><p class="card-type">${t("designFor", tr(design.type))}</p><h2>${design.name}</h2></div>
+        <button class="s3d-close" aria-label="${t("close3d")}">&times;</button>
       </div>
       <div class="s3d-overlay-body"></div>`;
     document.body.appendChild(overlay);

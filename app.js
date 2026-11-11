@@ -1,26 +1,33 @@
 // =============================================================
 // Page logic: question buttons → design card (3D view / floor plan) → lighting + sound.
+// Text: t("uiWord") for page words (i18n.js), tr({ en, ko }) for content (data.js).
 // =============================================================
 
 (() => {
   const designs = window.DESIGNS;
   const $ = (id) => document.getElementById(id);
+  const t = (...a) => window.I18N.t(...a);
+  const tr = (v) => window.I18N.tr(v);
 
   let selected = null;
   let lightsOn = true;
+  let view = "3d"; // what the card shows: "3d" or "plan"
 
   const icons = {
     sound: `<span class="bars" aria-hidden="true"><i></i><i></i><i></i></span>`,
     light: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M9 18h6M10 21h4M12 3a6 6 0 0 0-3.5 10.9c.6.4 1 1.1 1 1.9V16h5v-.2c0-.8.4-1.5 1-1.9A6 6 0 0 0 12 3z"/></svg>`
   };
 
+  // study names and links are never translated
   const citeLinks = (cites) =>
     cites.length
       ? cites.map((c) => `<a href="${c.url}" target="_blank" rel="noopener">${c.label}</a>`).join(" · ")
-      : `<span class="todo">Source: our survey (coming soon)</span>`;
+      : `<span class="todo">${t("surveySoon")}</span>`;
 
-  const planSvg = (id) =>
-    `<svg viewBox="0 0 320 230" role="img" aria-label="Floor plan of the ${id} space">${window.PLANS[id]}</svg>`;
+  const planSvg = (d) => {
+    const plan = window.PLANS[d.id];
+    return `<svg viewBox="0 0 320 230" role="img" aria-label="${t("planAria", d.name)}">${typeof plan === "function" ? plan(tr) : plan}</svg>`;
+  };
 
   // ---------- lighting preview ----------
   function applyLighting() {
@@ -36,16 +43,16 @@
   function renderChoices() {
     $("choices").innerHTML = designs
       .map((d) => `
-        <button class="choice" data-id="${d.id}" aria-pressed="false">
-          <strong>${d.type}</strong>
+        <button class="choice" data-id="${d.id}" aria-pressed="${selected && selected.id === d.id}">
+          <strong>${tr(d.type)}</strong>
           <span>${d.name}</span>
         </button>`)
       .join("");
-    $("choices").addEventListener("click", (e) => {
-      const btn = e.target.closest(".choice");
-      if (btn) select(btn.dataset.id, true);
-    });
   }
+  $("choices").addEventListener("click", (e) => {
+    const btn = e.target.closest(".choice");
+    if (btn) select(btn.dataset.id, true);
+  });
 
   // ---------- 2. design card ----------
   let viewer = null; // the 3D view inside the card (space3d.js)
@@ -55,9 +62,9 @@
     $("card").innerHTML = `
       <div class="card-head">
         <div>
-          <p class="card-type">Design for ${d.type}</p>
+          <p class="card-type">${t("designFor", tr(d.type))}</p>
           <h2>${d.name}</h2>
-          <p class="card-tagline">${d.tagline}</p>
+          <p class="card-tagline">${tr(d.tagline)}</p>
         </div>
         <div class="controls">
           <button class="btn" id="soundBtn"></button>
@@ -67,9 +74,9 @@
       <div class="card-body">
         <figure class="plan-figure">
           ${has3d ? `
-          <div class="view-tabs" role="group" aria-label="How to show the space">
-            <button class="view-tab" data-view="3d">3D view</button>
-            <button class="view-tab" data-view="plan">Floor plan</button>
+          <div class="view-tabs" role="group" aria-label="${t("viewTabs")}">
+            <button class="view-tab" data-view="3d">${t("view3d")}</button>
+            <button class="view-tab" data-view="plan">${t("viewPlan")}</button>
           </div>` : ""}
           <div class="view-slot" id="viewSlot"></div>
           <figcaption class="plan-caption" id="planCaption"></figcaption>
@@ -77,9 +84,9 @@
         <ul class="elements">
           ${d.elements.map((el) => `
             <li class="element">
-              <div class="element-key">${el.key}</div>
-              <div class="element-value">${el.value}</div>
-              <p class="element-reason">${el.reason}</p>
+              <div class="element-key">${tr(el.key)}</div>
+              <div class="element-value">${tr(el.value)}</div>
+              <p class="element-reason">${tr(el.reason)}</p>
               <div class="element-cite">${citeLinks(el.cites)}</div>
             </li>`).join("")}
         </ul>
@@ -101,22 +108,23 @@
       });
     }
     updateControls(d);
-    showView(d, has3d ? "3d" : "plan");
+    showView(d, has3d ? view : "plan");
   }
 
   // 3D view or 2D floor plan in the card
-  function showView(d, view) {
+  function showView(d, next) {
     if (viewer) { viewer.destroy(); viewer = null; }
+    view = next;
     const slot = $("viewSlot");
     slot.innerHTML = "";
     document.querySelectorAll(".view-tab").forEach((b) =>
-      b.setAttribute("aria-pressed", String(b.dataset.view === view)));
-    if (view === "3d") {
+      b.setAttribute("aria-pressed", String(b.dataset.view === next)));
+    if (next === "3d") {
       viewer = window.Space3D.mount(slot, d);
-      $("planCaption").textContent = `3D model · sound: ${d.soundLabel}`;
+      $("planCaption").textContent = t("caption3d", tr(d.soundLabel));
     } else {
-      slot.innerHTML = `<div class="plan">${planSvg(d.id)}</div>`;
-      $("planCaption").textContent = `Top-view layout · sound: ${d.soundLabel}`;
+      slot.innerHTML = `<div class="plan">${planSvg(d)}</div>`;
+      $("planCaption").textContent = t("captionPlan", tr(d.soundLabel));
     }
   }
 
@@ -126,9 +134,9 @@
     if (!sb || !lb) return;
     const playing = window.SpaceSound.isPlaying(d.sound);
     sb.setAttribute("aria-pressed", String(playing));
-    sb.innerHTML = `${icons.sound} ${playing ? "Stop sound" : "Hear this space"}`;
+    sb.innerHTML = `${icons.sound} ${playing ? t("stopSound") : t("hearSpace")}`;
     lb.setAttribute("aria-pressed", String(lightsOn));
-    lb.innerHTML = `${icons.light} Lighting preview ${lightsOn ? "on" : "off"}`;
+    lb.innerHTML = `${icons.light} ${t("lightingPreview", lightsOn)}`;
   }
 
   document.addEventListener("spacesound:change", () => {
@@ -156,21 +164,21 @@
     $("compareGrid").innerHTML = designs
       .map((d) => `
         <button class="mini" data-zone="${d.id}" data-id="${d.id}">
-          <span class="card-type">${d.type}</span>
+          <span class="card-type">${tr(d.type)}</span>
           <h3>${d.name}</h3>
-          <div class="plan">${planSvg(d.id)}</div>
+          <div class="plan">${planSvg(d)}</div>
           <dl>
-            ${d.elements.map((el) => `<dt>${el.key}</dt><dd>${el.value}</dd>`).join("")}
+            ${d.elements.map((el) => `<dt>${tr(el.key)}</dt><dd>${tr(el.value)}</dd>`).join("")}
           </dl>
         </button>`)
       .join("");
-    $("compareGrid").addEventListener("click", (e) => {
-      const btn = e.target.closest(".mini");
-      if (btn) select(btn.dataset.id, true);
-    });
   }
+  $("compareGrid").addEventListener("click", (e) => {
+    const btn = e.target.closest(".mini");
+    if (btn) select(btn.dataset.id, true);
+  });
 
-  // ---------- 5. research list ----------
+  // ---------- 5. research list (study names are not translated) ----------
   function renderResearch() {
     const seen = new Map();
     designs.forEach((d) => d.elements.forEach((el) => el.cites.forEach((c) => seen.set(c.label, c.url))));
@@ -184,12 +192,20 @@
 
   function renderFact() {
     const f = window.KEY_FACT;
-    $("fact").innerHTML = `Why space matters: ${f.text} (<a href="${f.cite.url}" target="_blank" rel="noopener">${f.cite.label}</a>)`;
+    $("fact").innerHTML = `${t("factPrefix")} ${tr(f.text)} (<a href="${f.cite.url}" target="_blank" rel="noopener">${f.cite.label}</a>)`;
   }
 
   // Esc stops any sound
   document.addEventListener("keydown", (e) => {
     if (e.key === "Escape") window.SpaceSound.stop(); // buttons update via "spacesound:change"
+  });
+
+  // language switch (KO | EN): redraw every text, keep the open card as it is
+  document.addEventListener("lang:change", () => {
+    renderChoices();
+    renderFact();
+    renderCompare();
+    if (selected) renderCard(selected);
   });
 
   renderChoices();
