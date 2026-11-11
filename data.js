@@ -31,7 +31,24 @@ window.DESIGNS = [
         reason: "A lower ceiling tends to make people focus on details one by one.",
         cites: [{ label: "Meyers-Levy & Zhu (2007)", url: "https://doi.org/10.1086/519146" }]
       }
-    ]
+    ],
+    view3d: {
+      ceiling: { ours: 2.4, compare: 3.2 },
+      light: {
+        ours: { preset: "brightOffice", name: "bright, even white" },
+        compare: { preset: "dimWarm", name: "dim, orange" }
+      },
+      notes: {
+        light: {
+          ours: { text: "Bright, even light suits careful, detailed work like memorizing." },
+          compare: { text: "Dim, warm light is better for free thinking. That's our Idea Lounge.", source: "Steidle & Werth, 2013" }
+        },
+        ceiling: {
+          ours: { text: "A 2.4 m ceiling helps people focus on details one by one.", source: "Meyers-Levy & Zhu, 2007" },
+          compare: { text: "A high ceiling makes thoughts wander more broadly. Better for ideas, not memorizing." }
+        }
+      }
+    }
   },
   {
     id: "idea",
@@ -70,16 +87,15 @@ window.DESIGNS = [
         ours: { preset: "dimWarm", name: "dim, warm" },        // presets: LIGHTS in space3d.js
         compare: { preset: "brightOffice", name: "bright office" }
       },
+      // source is shown as "(Author, year)" — use only studies already listed in this file
       notes: {
         light: {
-          ours: "Dim, warm light makes people feel free, which helps creative thinking.",
-          compare: "Bright office light suits careful, detailed work. That's our Focus Room, not the Idea Lounge.",
-          source: "Steidle & Werth, 2013"
+          ours: { text: "Dim, warm light makes people feel free, which helps creative thinking.", source: "Steidle & Werth, 2013" },
+          compare: { text: "Bright office light suits careful, detailed work. That's our Focus Room, not the Idea Lounge.", source: "Steidle & Werth, 2013" }
         },
         ceiling: {
-          ours: "A 3.2 m ceiling encourages broad, free thinking.",
-          compare: "A 2.4 m ceiling makes people focus on details. Great for memorizing, less for new ideas.",
-          source: "Meyers-Levy & Zhu, 2007"
+          ours: { text: "A 3.2 m ceiling encourages broad, free thinking.", source: "Meyers-Levy & Zhu, 2007" },
+          compare: { text: "A 2.4 m ceiling makes people focus on details. Great for memorizing, less for new ideas.", source: "Meyers-Levy & Zhu, 2007" }
         }
       }
     }
@@ -110,7 +126,26 @@ window.DESIGNS = [
         reason: "University students in collaborative classrooms did better than their grades predicted.",
         cites: [{ label: "Brooks (2011)", url: "https://scholar.google.com/scholar?q=Brooks+2011+Space+matters+impact+of+formal+learning+environments+on+student+learning" }]
       }
-    ]
+    ],
+    view3d: {
+      ceiling: { ours: 3.0, compare: 2.4 },
+      light: {
+        ours: { preset: "brightWarm", name: "bright, warm" },
+        compare: { preset: "dim", name: "dim" }
+      },
+      notes: {
+        light: {
+          ours: { text: "Bright, warm light helps everyone see faces and shared screens. Light is one of the classroom factors linked to learning.", source: "Barrett et al., 2015" },
+          compare: { text: "Dim light makes it harder to read faces and screens during group work." }
+        },
+        ceiling: {
+          ours: { text: "An open 3.0 m ceiling keeps a lively room from feeling crowded." },
+          compare: { text: "A low ceiling can make a busy, noisy room feel cramped." }
+        }
+      },
+      // shown as a note next to the tables in the 3D room
+      callout: { text: "Round tables help students work together.", source: "Brooks, 2011" }
+    }
   },
   {
     id: "comfort",
@@ -141,7 +176,24 @@ window.DESIGNS = [
         reason: "TODO: add our survey result about what makes students feel comfortable.",
         cites: []
       }
-    ]
+    ],
+    view3d: {
+      ceiling: { ours: 3.0, compare: 2.4 },
+      light: {
+        ours: { preset: "daylightGreen", name: "natural daylight" },
+        compare: { preset: "coldWhite", name: "cold white" }
+      },
+      notes: {
+        light: {
+          ours: { text: "Looking at greenery for just 40 seconds helped university students stay focused.", source: "Lee et al., 2015" },
+          compare: { text: "Cold, artificial light doesn't give your tired attention a real break." }
+        },
+        ceiling: {
+          ours: { text: "A higher ceiling and big window make the room feel open and restful.", source: "Kaplan, 1995" },
+          compare: { text: "A low ceiling makes a small rest area feel closed in." }
+        }
+      }
+    }
   }
 ];
 
