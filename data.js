@@ -19,15 +19,15 @@
   };
 
   const STUDY = {
-    steidle: { label: "Steidle & Werth (2013)", url: "https://scholar.google.com/scholar?q=Steidle+Werth+2013+Freedom+from+constraints+darkness+and+dim+illumination+promote+creativity" },
+    steidle: { label: "Steidle & Werth (2013)", url: "https://doi.org/10.1016/j.jenvp.2013.05.003" },
     mehta: { label: "Mehta, Zhu & Cheema (2012)", url: "https://doi.org/10.1086/665048" },
     meyers: { label: "Meyers-Levy & Zhu (2007)", url: "https://doi.org/10.1086/519146" },
     oppezzo: { label: "Oppezzo & Schwartz (2014)", url: "https://doi.org/10.1037/a0036577" },
     barrett: { label: "Barrett et al. (2015)", url: "https://doi.org/10.1016/j.buildenv.2015.02.013" },
-    brooks: { label: "Brooks (2011)", url: "https://scholar.google.com/scholar?q=Brooks+2011+Space+matters+impact+of+formal+learning+environments+on+student+learning" },
+    brooks: { label: "Brooks (2011)", url: "https://doi.org/10.1111/j.1467-8535.2010.01098.x" },
     lee: { label: "Lee et al. (2015)", url: "https://findanexpert.unimelb.edu.au/scholarlywork/977781-40-second-green-roof-views-sustain-attention--the-role-of-micro-breaks-in-attention-restoration" },
     kaplan: { label: "Kaplan (1995)", url: "https://doi.org/10.1016/0272-4944(95)90001-2" },
-    berman: { label: "Berman et al. (2008)", url: "https://doi.org/10.1111/j.1467-9280.2008.02225.x" },
+    berman: { label: "Berman, Jonides & Kaplan (2008)", url: "https://doi.org/10.1111/j.1467-9280.2008.02225.x" },
     // on the research screen only (not used as a source on a design card yet)
     mehtaColor: { label: "Mehta & Zhu (2009)", url: "https://doi.org/10.1126/science.1169144" },
     atchley: { label: "Atchley, Strayer & Atchley (2012)", url: "https://doi.org/10.1371/journal.pone.0051474" }

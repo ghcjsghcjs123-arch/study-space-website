@@ -92,4 +92,3 @@ A chatbot asks "What am I studying today?" and "How are you feeling right now?",
 ## Still to do
 - Comfort > Seating reason: add our survey result (week 12).
 - Survey section: add a chart of preferred spaces by study type.
-- Replace Google Scholar search links (Steidle & Werth, Brooks) with the original article links.

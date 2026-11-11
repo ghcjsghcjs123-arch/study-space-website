@@ -116,7 +116,6 @@
 ## 아직 채워야 할 것
 - Comfort의 Seating 이유: 설문 결과로 채우기 (화면에 빨간 TODO로 표시됨)
 - 설문 결과 그래프
-- Steidle & Werth, Brooks 논문 링크를 원문 주소로 바꾸기
 
 ## Claude Code에 이어서 요청할 문장 예시
 - "data.js의 Comfort Seating 이유를 이 설문 결과로 바꿔 줘: (결과 붙여넣기)"
