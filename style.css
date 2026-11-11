@@ -112,14 +112,25 @@ body.switching .light-layer { animation: flicker 0.6s steps(1) 1; }
 main, .topbar, .footer { position: relative; z-index: 1; }
 
 /* ---------- top bar ---------- */
+/* desktop: brand · tabs · KO|EN in one row.  phone: brand + KO|EN, tabs below. */
 .topbar {
-  display: flex; justify-content: space-between; align-items: center; gap: 16px;
-  padding: 14px clamp(16px, 4vw, 40px);
-  flex-wrap: wrap;
+  display: grid; grid-template-columns: auto 1fr auto; grid-template-areas: "brand tabs lang";
+  align-items: center; gap: 8px 20px;
+  padding: 12px clamp(16px, 4vw, 40px);
 }
-.brand { font-family: var(--font-serif); font-weight: 700; color: var(--ink); text-decoration: none; }
-.topbar-right { display: flex; align-items: center; gap: 18px; flex-wrap: wrap; }
-.topbar nav { display: flex; gap: 18px; flex-wrap: wrap; }
+.brand { grid-area: brand; font-family: var(--font-serif); font-weight: 700; color: var(--ink); text-decoration: none; }
+.lang { grid-area: lang; }
+
+/* screen tabs */
+.tabs { grid-area: tabs; display: flex; justify-content: flex-end; gap: 4px; flex-wrap: wrap; min-width: 0; }
+.tabs a {
+  display: inline-flex; align-items: center; min-height: 40px; padding: 6px 14px;
+  border-radius: 999px; color: var(--muted); text-decoration: none; font-size: 15px; font-weight: 500;
+  white-space: nowrap; transition: background-color 0.2s ease, color 0.2s ease;
+}
+.tabs a:hover { color: var(--ink); background: color-mix(in srgb, var(--accent) 10%, transparent); }
+.tabs a[aria-current="page"] { color: var(--surface); background: var(--accent); }
+.tabs a:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
 
 /* language switch: KO | EN */
 .lang { display: inline-flex; align-items: center; gap: 2px; color: var(--muted); font-size: 14px; }
@@ -131,8 +142,6 @@ main, .topbar, .footer { position: relative; z-index: 1; }
 .lang-btn:hover { color: var(--ink); }
 .lang-btn[aria-pressed="true"] { color: var(--accent); text-decoration: underline; text-underline-offset: 4px; }
 .lang-btn:focus-visible { outline: 2px solid var(--accent); outline-offset: 1px; }
-.topbar nav a { color: var(--muted); text-decoration: none; font-size: 15px; }
-.topbar nav a:hover { color: var(--ink); }
 
 main { max-width: 1080px; margin: 0 auto; padding: 0 clamp(16px, 4vw, 40px); }
 section { padding: 56px 0; }
@@ -218,7 +227,7 @@ h2 { font-size: clamp(26px, 4vw, 34px); }
 .fact { margin: 28px auto 0; max-width: 620px; font-size: 14px; color: var(--muted); }
 
 /* ---------- design card ---------- */
-.result { padding-top: 8px; }
+.result { padding-top: 16px; }
 .back-link, .s3d-back {
   font: inherit; font-size: 15px; font-weight: 500;
   display: inline-flex; align-items: center; min-height: 40px;
@@ -297,8 +306,34 @@ h2 { font-size: clamp(26px, 4vw, 34px); }
 .survey-placeholder {
   border: 2px dashed var(--line); border-radius: 16px; padding: 40px; text-align: center; color: var(--muted);
 }
-.research ul { padding-left: 20px; }
-.research li { margin-bottom: 6px; }
+/* ---------- research screen: one card per study ---------- */
+.studies { display: grid; gap: 14px; }
+.study-group {
+  margin: 18px 0 0; font-size: 13px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.12em;
+  color: var(--accent); font-family: var(--font-sans);
+}
+.study-group:first-child { margin-top: 0; }
+.study {
+  background: var(--surface); border: 1px solid var(--line); border-radius: 16px;
+  padding: clamp(16px, 3vw, 24px); min-width: 0;
+}
+.study-name { margin: 0; font-family: var(--font-serif); font-size: 21px; line-height: 1.25; }
+.study-journal { margin: 2px 0 0; font-size: 14px; font-style: italic; color: var(--muted); }
+.study-about { margin: 12px 0 0; padding-left: 22px; font-size: 15px; color: var(--ink); }
+.study-about li { margin-bottom: 4px; padding-left: 2px; }
+.study-about li::marker { color: var(--muted); font-size: 13px; }
+.study-foot { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 10px 16px; margin-top: 14px; }
+.study-used { display: flex; flex-wrap: wrap; align-items: center; gap: 6px; font-size: 13px; color: var(--muted); }
+.study-used > span { margin-right: 2px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.08em; }
+html[lang="ko"] .study-used > span, html[lang="ko"] .study-group { letter-spacing: 0.02em; }
+.study-space {
+  display: inline-flex; align-items: center; min-height: 32px; padding: 4px 12px; border-radius: 999px;
+  font-size: 14px; font-weight: 600; text-decoration: none;
+  background: var(--room-bg); color: var(--ink); border: 1.5px solid var(--accent);
+}
+.study-space:hover { filter: brightness(1.05); }
+.study-link { font-size: 14px; font-weight: 600; }
+.research .note { margin-top: 22px; }
 .note { font-size: 14px; color: var(--muted); }
 
 .footer { text-align: center; font-size: 13px; color: var(--muted); padding: 32px 16px 48px; }
@@ -430,6 +465,16 @@ body.s3d-lock { overflow: hidden; }
 .s3d--full .s3d-note { min-height: 0; }
 
 /* ---------- small screens ---------- */
+@media (max-width: 720px) {
+  .topbar { grid-template-columns: 1fr auto; grid-template-areas: "brand lang" "tabs tabs"; }
+  /* one row of tabs; on very narrow phones it scrolls sideways instead of wrapping */
+  .tabs {
+    justify-content: flex-start; gap: 2px; flex-wrap: nowrap;
+    overflow-x: auto; scrollbar-width: none; margin: 0 -6px; padding: 0 6px;
+  }
+  .tabs::-webkit-scrollbar { display: none; }
+  .tabs a { padding: 6px 9px; font-size: 13.5px; min-height: 36px; flex: none; }
+}
 @media (max-width: 860px) {
   .compare-grid { grid-template-columns: repeat(2, 1fr); }
   .card-body { grid-template-columns: 1fr; }

@@ -14,53 +14,53 @@
   <div class="light-layer" aria-hidden="true"></div>
 
   <header class="topbar">
-    <a class="brand" href="#top" data-i18n="title">Study-Type Space Design</a>
-    <div class="topbar-right">
-      <nav>
-        <a href="#pick" data-i18n="navPick">Find your space</a>
-        <a href="#compare" data-i18n="navCompare">Compare</a>
-        <a href="#research" data-i18n="navResearch">Research</a>
-      </nav>
-      <div class="lang" role="group" aria-label="Language" data-i18n-aria="langGroup">
-        <button class="lang-btn" data-lang="ko" lang="ko" aria-label="한국어">KO</button>
-        <span aria-hidden="true">|</span>
-        <button class="lang-btn" data-lang="en" lang="en" aria-label="English">EN</button>
-      </div>
+    <a class="brand" href="#/" data-i18n="title">Study-Type Space Design</a>
+    <!-- one screen at a time; app.js marks the current one with aria-current="page" -->
+    <nav class="tabs" aria-label="Screens" data-i18n-aria="navLabel">
+      <a href="#/" data-nav="chat" data-i18n="navPick">Find your space</a>
+      <a href="#/compare" data-nav="compare" data-i18n="navCompare">Compare</a>
+      <a href="#/survey" data-nav="survey" data-i18n="navSurvey">Survey</a>
+      <a href="#/research" data-nav="research" data-i18n="navResearch">Research</a>
+    </nav>
+    <div class="lang" role="group" aria-label="Language" data-i18n-aria="langGroup">
+      <button class="lang-btn" data-lang="ko" lang="ko" aria-label="한국어">KO</button>
+      <span aria-hidden="true">|</span>
+      <button class="lang-btn" data-lang="en" lang="en" aria-label="English">EN</button>
     </div>
   </header>
 
   <main id="top">
-    <!-- 1. Chatbot: two questions → which of our designs fits (chat.js) -->
-    <section class="hero" id="pick">
+    <!-- Screen #/ : chatbot (chat.js) -->
+    <section class="screen hero" id="pick" data-screen="chat">
       <p class="eyebrow" data-i18n="eyebrow">Group 6 · Ajou University</p>
-      <h1 data-i18n="chatTitle">Which of our spaces fits you today?</h1>
+      <h1 data-i18n="chatTitle" tabindex="-1">Which of our spaces fits you today?</h1>
       <div class="chat" id="chat"></div>
-      <p class="fact" id="fact"></p>
     </section>
 
-    <!-- 2. Design card -->
-    <section class="result" id="result" hidden>
+    <!-- Screen #/<id> : design card (+ #/<id>/3d full screen) -->
+    <section class="screen result" id="result" data-screen="card" hidden>
       <article class="card" id="card" aria-live="polite"></article>
     </section>
 
-    <!-- 3. Compare all four -->
-    <section class="compare" id="compare">
-      <h2 data-i18n="compareTitle">Different study, different space</h2>
+    <!-- Screen #/compare : all four designs -->
+    <section class="screen compare" id="compare" data-screen="compare" hidden>
+      <h2 data-i18n="compareTitle" tabindex="-1">Different study, different space</h2>
       <p class="section-lede" data-i18n="compareLede">All four designs side by side. Tap one to open it.</p>
       <div class="compare-grid" id="compareGrid"></div>
     </section>
 
-    <!-- 4. Survey (to be filled after week 12) -->
-    <section class="survey" id="survey">
-      <h2 data-i18n="surveyTitle">What Ajou students told us</h2>
+    <!-- Screen #/survey : to be filled after week 12 -->
+    <section class="screen survey" id="survey" data-screen="survey" hidden>
+      <h2 data-i18n="surveyTitle" tabindex="-1">What Ajou students told us</h2>
       <p class="section-lede" data-i18n="surveyLede">Survey results will appear here after week 12.</p>
       <div class="survey-placeholder" data-i18n="surveyTodo">TODO: add survey chart (preferred space by study type)</div>
     </section>
 
-    <!-- 5. Research list -->
-    <section class="research" id="research">
-      <h2 data-i18n="researchTitle">Research behind the designs</h2>
-      <ul id="researchList"></ul>
+    <!-- Screen #/research : one card per study -->
+    <section class="screen research" id="research" data-screen="research" hidden>
+      <h2 data-i18n="researchTitle" tabindex="-1">Research behind the designs</h2>
+      <p class="section-lede" id="fact"></p>
+      <div class="studies" id="studies"></div>
       <p class="note" data-i18n="researchNote">Some effects (for example, color and light) were small or mixed in later studies, so we describe them as tendencies, not rules.</p>
     </section>
   </main>

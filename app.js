@@ -1,9 +1,9 @@
 // =============================================================
-// Page logic: chatbot (chat.js) → design card (3D view / floor plan) → full screen 3D.
-// Each step has its own address (URL hash), so the browser / phone back button works:
-//   #/            question screen
-//   #/idea        design card of the Idea Lounge
-//   #/idea/3d     the same card + full screen 3D
+// Page logic. One screen at a time, each with its own address (URL hash):
+//   #/            chatbot (chat.js)        #/compare   all four designs
+//   #/survey      survey                   #/research  one card per study
+//   #/<id>        design card              #/<id>/3d   + full screen 3D
+// The browser / phone back button goes to the previous screen.
 // Text: t("uiWord") for page words (i18n.js), tr({ en, ko }) for content (data.js).
 // =============================================================
 
@@ -53,7 +53,7 @@
   function renderCard(d) {
     const has3d = window.Space3D && window.Space3D.supports(d);
     $("card").innerHTML = `
-      <button class="back-link" id="cardBack">${t("backToChoices")}</button>
+      <button class="back-link" id="cardBack">${t("back")}</button>
       <div class="card-head">
         <div>
           <p class="card-type">${t("designFor", tr(d.type))}</p>
@@ -115,7 +115,7 @@
     document.querySelectorAll(".view-tab").forEach((b) =>
       b.setAttribute("aria-pressed", String(b.dataset.view === next)));
     if (next === "3d") {
-      viewer = window.Space3D.mount(slot, d, { onFullscreen: () => go({ id: d.id, full: true }) });
+      viewer = window.Space3D.mount(slot, d, { onFullscreen: () => go({ page: "card", id: d.id, full: true }) });
       $("planCaption").textContent = t("caption3d", tr(d.soundLabel));
     } else {
       slot.innerHTML = `<div class="plan">${planSvg(d)}</div>`;
@@ -138,20 +138,30 @@
     if (selected) updateControls(selected);
   });
 
-  // ---------- screens: question / card / full screen 3D ----------
-  let current = { id: null, full: false };
+  // ---------- screens and addresses (the router) ----------
+  // A route is { page, id, full }: page = chat | compare | survey | research | card.
+  const PAGES = ["compare", "survey", "research"]; // reserved words, never a space id
+  const LEGACY = { "#top": "chat", "#pick": "chat", "#compare": "compare", "#survey": "survey", "#research": "research" };
+  const CHAT_ROUTE = { page: "chat", id: null, full: false };
+  let current = { page: null, id: null, full: false };
 
   const ROUTE = /^#\/([a-z]*)(?:\/(3d))?\/?$/;
-  // "#/idea/3d" → { id: "idea", full: true }. Not a screen address (e.g. "#compare") → null.
+  // "#/idea/3d" → card + full. "#/compare" → compare. Unknown → chat. Not an address → null.
   function parse(hash) {
-    if (!hash || hash === "#") return { id: null, full: false };
+    if (!hash || hash === "#") return CHAT_ROUTE;
+    if (LEGACY[hash]) return { page: LEGACY[hash], id: null, full: false }; // old in-page links
     const m = ROUTE.exec(hash);
     if (!m) return null;
+    if (PAGES.includes(m[1])) return { page: m[1], id: null, full: false };
     const d = designs.find((x) => x.id === m[1]);
-    if (!d) return { id: null, full: false }; // unknown space → question screen
-    return { id: d.id, full: !!m[2] && window.Space3D.supports(d) };
+    if (!d) return CHAT_ROUTE;
+    return { page: "card", id: d.id, full: !!m[2] && window.Space3D.supports(d) };
   }
-  const address = (r) => (r.id ? `#/${r.id}${r.full ? "/3d" : ""}` : "#/");
+  function address(r) {
+    if (r.page === "card") return `#/${r.id}${r.full ? "/3d" : ""}`;
+    return r.page === "chat" ? "#/" : `#/${r.page}`;
+  }
+  const screenOf = (r) => (r.page === "card" ? `card:${r.id}` : r.page); // full screen is on top of its card
 
   function setAddress(r, replace) {
     try {
@@ -164,66 +174,71 @@
 
   // go to a screen (adds a step to the browser history unless replace)
   function go(r, { replace = false } = {}) {
+    if (address(r) === address(current)) return;
     setAddress(r, replace);
-    show(r, { scroll: true });
+    show(r, { focus: true });
   }
 
-  // one step back: question ← card ← full screen 3D
+  // one step back: to whatever screen came before (chat, compare, research…)
   function back() {
     if (history.state && history.state.inApp) history.back();
-    else go(current.full ? { id: current.id, full: false } : { id: null, full: false }, { replace: true });
+    else go(current.full ? { ...current, full: false } : CHAT_ROUTE, { replace: true });
   }
 
-  // from the question buttons or the compare cards
+  // from the chatbot, the compare cards or the research cards
   function openFromList(id) {
-    if (current.id === id) {
-      $("result").scrollIntoView({ behavior: "smooth", block: "start" });
-      return;
-    }
-    // card → another card replaces the step, so "back" always returns to the question
-    go({ id, full: false }, { replace: !!current.id });
+    go({ page: "card", id, full: false });
   }
 
   // draw the screen for route r
-  function show(r, { scroll = false, instant = false } = {}) {
-    if (address(r) === address(current) && (!r.id || selected)) return;
+  function show(r, { focus = false } = {}) {
+    if (address(r) === address(current)) return;
     const prev = current;
     current = r;
     window.SpaceSound.stop(); // a new screen starts quiet
 
-    if (!r.full && window.Space3D.isFullscreen()) {
-      window.Space3D.closeFullscreen();
-      // back from full screen: make sure the card is on screen
-      const top = $("result").getBoundingClientRect().top;
-      if (r.id === (selected && selected.id) && (top < -40 || top > window.innerHeight * 0.5)) {
-        $("result").scrollIntoView({ behavior: "auto", block: "start" });
-      }
-    }
+    if (!r.full && window.Space3D.isFullscreen()) window.Space3D.closeFullscreen();
 
-    if (r.id !== (selected && selected.id)) {
-      if (r.id) openCard(r.id);
-      else closeCard();
-      if (scroll) {
-        const behavior = instant ? "auto" : "smooth";
-        if (r.id) $("result").scrollIntoView({ behavior, block: "start" });
-        else if (prev.id) {
-          // back to the question screen: show the chat result if there is one
-          const a = window.Chat.anchor();
-          if (a) a.scrollIntoView({ behavior, block: "center" });
-          else $("pick").scrollIntoView({ behavior, block: "start" });
+    if (screenOf(r) !== screenOf(prev)) {
+      if (r.page === "card") openCard(r.id);
+      else if (selected) closeCard();
+      document.querySelectorAll("[data-screen]").forEach((sec) => {
+        sec.hidden = sec.dataset.screen !== r.page;
+      });
+      window.scrollTo(0, 0);
+      // tell screen readers / keyboard users where they are now
+      if (focus) {
+        const h = document.querySelector(`[data-screen="${r.page}"] h1, [data-screen="${r.page}"] h2`);
+        if (h) {
+          if (!h.hasAttribute("tabindex")) h.setAttribute("tabindex", "-1");
+          h.focus({ preventScroll: true });
         }
       }
     }
+    markNav();
 
     if (r.full && !window.Space3D.isFullscreen()) {
       window.Space3D.openFullscreen(selected, { onBack: back });
     }
-    applyLighting(); // lighting follows the screen (none on the question screen)
+    applyLighting(); // lighting preview only on the card / 3D screens
+  }
+
+  // top bar: the current screen gets aria-current="page" (card and 3D count as "Find your space")
+  function markNav() {
+    const here = current.page === "card" ? "chat" : current.page;
+    document.querySelectorAll("[data-nav]").forEach((a) => {
+      if (a.dataset.nav === here) {
+        a.setAttribute("aria-current", "page");
+        // narrow phones: the tab row scrolls sideways — keep the current tab visible
+        const bar = a.parentElement;
+        if (bar.scrollWidth > bar.clientWidth) bar.scrollLeft = a.offsetLeft - (bar.clientWidth - a.offsetWidth) / 2;
+      } else a.removeAttribute("aria-current");
+    });
   }
 
   function openCard(id) {
+    if (viewer) { viewer.destroy(); viewer = null; }
     selected = designs.find((x) => x.id === id);
-    $("result").hidden = false;
     renderCard(selected);
   }
 
@@ -231,41 +246,39 @@
     if (viewer) { viewer.destroy(); viewer = null; }
     selected = null;
     view = "3d";
-    $("result").hidden = true;
     $("card").innerHTML = "";
   }
 
-  window.addEventListener("popstate", () => show(parse(location.hash) || { id: null, full: false }, { scroll: true }));
+  window.addEventListener("popstate", () => show(parse(location.hash) || CHAT_ROUTE));
   // someone typed a new address by hand
   window.addEventListener("hashchange", () => {
     const r = parse(location.hash);
-    if (r) show(r, { scroll: true });
+    if (r) show(r);
   });
 
-  // top-bar links (#pick, #compare, #research) only scroll; they don't change the screen address
+  // every in-page link (top bar, "See all four designs", brand) goes through the router
   document.addEventListener("click", (e) => {
     const a = e.target.closest('a[href^="#"]');
-    if (!a || a.getAttribute("href").startsWith("#/")) return;
-    const target = document.querySelector(a.getAttribute("href"));
-    if (!target) return;
+    if (!a || e.ctrlKey || e.metaKey || e.shiftKey || e.button > 0) return; // let "open in new tab" work
+    const r = parse(a.getAttribute("href"));
+    if (!r) return;
     e.preventDefault();
-    target.scrollIntoView({ behavior: "smooth", block: "start" });
+    if (address(r) === address(current)) window.scrollTo({ top: 0, behavior: "smooth" });
+    else go(r);
   });
 
   // first visit: open the screen in the address (e.g. a shared link to #/teamwork/3d)
-  // and build the steps behind it, so "back" still goes card → question.
+  // and build the steps behind it, so "back" goes 3D → card → chat.
   function start() {
-    // we scroll to the right place ourselves; the browser's own "restore scroll"
-    // would jump back to wherever the page was when that step was created
+    // we scroll ourselves; the browser's own "restore scroll" would jump around
     try { if ("scrollRestoration" in history) history.scrollRestoration = "manual"; } catch (e) {}
-    const r = parse(location.hash);
-    if (!r) { show({ id: null, full: false }); return; } // old anchor like #compare: just show the page
+    const r = parse(location.hash) || CHAT_ROUTE;
     try {
       history.replaceState({ inApp: true }, "", "#/");
-      if (r.id) history.pushState({ inApp: true }, "", address({ id: r.id, full: false }));
+      if (r.page !== "chat") history.pushState({ inApp: true }, "", address({ ...r, full: false }));
       if (r.full) history.pushState({ inApp: true }, "", address(r));
     } catch (e) { /* history not available: back buttons still work via replace */ }
-    show(r, { scroll: true, instant: true });
+    show(r);
   }
 
   // ---------- 3. compare ----------
@@ -287,16 +300,28 @@
     if (btn) openFromList(btn.dataset.id);
   });
 
-  // ---------- 5. research list (study names are not translated) ----------
-  function renderResearch() {
-    const seen = new Map();
-    designs.forEach((d) => d.elements.forEach((el) => el.cites.forEach((c) => seen.set(c.label, c.url))));
-    const k = window.KEY_FACT.cite;
-    seen.set(k.label, k.url);
-    $("researchList").innerHTML = [...seen.entries()]
-      .sort((a, b) => a[0].localeCompare(b[0]))
-      .map(([label, url]) => `<li><a href="${url}" target="_blank" rel="noopener">${label}</a></li>`)
-      .join("");
+  // ---------- research screen: one card per study ----------
+  // Study names, journals and links are never translated.
+  function renderStudies() {
+    let group = null;
+    $("studies").innerHTML = window.STUDIES.map((st) => {
+      // spaces whose design card cites this study (found automatically)
+      const usedIn = designs.filter((d) => d.elements.some((el) => el.cites.includes(st)));
+      const heading = st.group !== group ? `<h3 class="study-group">${tr(st.group)}</h3>` : "";
+      group = st.group;
+      const about = st.about ? tr(st.about) : null;
+      return `${heading}
+        <article class="study">
+          <h4 class="study-name">${st.label}</h4>
+          ${st.journal ? `<p class="study-journal">${st.journal}</p>` : ""}
+          ${about ? `<ol class="study-about">${about.map((x) => `<li>${x}</li>`).join("")}</ol>` : ""}
+          <div class="study-foot">
+            ${usedIn.length ? `<div class="study-used"><span>${t("usedIn")}</span>
+              ${usedIn.map((d) => `<a class="study-space" href="#/${d.id}" data-zone="${d.id}">${d.name}</a>`).join("")}</div>` : ""}
+            <a class="study-link" href="${st.url}" target="_blank" rel="noopener">${t("readOriginal")} ↗</a>
+          </div>
+        </article>`;
+    }).join("");
   }
 
   function renderFact() {
@@ -313,11 +338,12 @@
   document.addEventListener("lang:change", () => {
     renderFact();
     renderCompare();
+    renderStudies();
     if (selected) renderCard(selected);
   });
 
   renderFact();
   renderCompare();
-  renderResearch();
+  renderStudies();
   start();
 })();

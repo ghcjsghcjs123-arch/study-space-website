@@ -30,6 +30,116 @@
     berman: { label: "Berman et al. (2008)", url: "https://doi.org/10.1111/j.1467-9280.2008.02225.x" }
   };
 
+  // ---------- research screen: one card per study ----------
+  // journal + label are never translated. about = 5 sentences in en and ko.
+  // Use only sentences the team wrote — don't add new claims.
+  // TODO: about for Brooks, Lee, Kaplan, Berman (sentences still to come).
+  STUDY.barrett.journal = "Building and Environment";
+  STUDY.barrett.about = {
+    en: [
+      "The researchers studied 153 classrooms in 27 primary schools in the UK, with about 3,700 pupils, over one school year.",
+      "They measured classroom features such as light, temperature, air quality, layout, and color.",
+      "Then they compared these features with how much each pupil's reading, writing, and math improved during the year.",
+      "Classroom features explained about 16% of the differences in pupils' progress, and light was one of the important factors.",
+      "The study was done with primary school pupils, so we use it as general evidence that space matters, not as a rule for university students."
+    ],
+    ko: [
+      "연구진은 영국 초등학교 27곳의 교실 153개에서 학생 약 3,700명을 1년 동안 조사했어요.",
+      "빛, 온도, 공기 질, 배치, 색 같은 교실의 특징을 측정했어요.",
+      "그리고 이 특징들을 한 해 동안 학생들의 읽기, 쓰기, 수학 실력이 얼마나 늘었는지와 비교했어요.",
+      "교실의 특징이 학생들의 성장 차이의 약 16%를 설명했고, 빛이 중요한 요소 중 하나였어요.",
+      "초등학생을 대상으로 한 연구라서, 대학생에게 그대로 적용하기보다는 공간이 중요하다는 전반적인 근거로 활용했어요."
+    ]
+  };
+  STUDY.meyers.journal = "Journal of Consumer Research";
+  STUDY.meyers.about = {
+    en: [
+      "This study asked whether the height of a ceiling changes the way people think.",
+      "Participants did tasks in rooms with a ceiling of about 3 m or about 2.4 m.",
+      "In the high-ceiling room, people thought more about \"freedom\" and connected ideas more broadly and abstractly.",
+      "In the low-ceiling room, people thought more about \"confinement\" and focused more on details, one by one.",
+      "The effect was stronger when people noticed the ceiling, which is why we make ceiling height easy to see in our designs."
+    ],
+    ko: [
+      "이 연구는 천장 높이가 사람의 생각하는 방식을 바꾸는지 알아봤어요.",
+      "참가자들은 천장 높이가 약 3m인 방과 약 2.4m인 방에서 과제를 했어요.",
+      "천장이 높은 방에서는 '자유'를 더 떠올렸고, 생각을 넓고 추상적으로 연결했어요.",
+      "천장이 낮은 방에서는 '갇힘'을 더 떠올렸고, 세부 내용에 하나하나 집중했어요.",
+      "천장을 의식할 때 효과가 더 컸기 때문에, 우리 디자인에서는 천장 높이가 눈에 잘 띄도록 했어요."
+    ]
+  };
+  STUDY.mehta.journal = "Journal of Consumer Research";
+  STUDY.mehta.about = {
+    en: [
+      "This study tested how background noise affects creative thinking.",
+      "Participants worked on creative tasks with noise at about 50 dB (quiet), 70 dB (like a busy café), or 85 dB (very loud).",
+      "People did best on creative tasks with the moderate 70 dB noise, better than in the quiet room.",
+      "The researchers explained that moderate noise makes thinking slightly harder, which pushes people to think more broadly.",
+      "Very loud noise at 85 dB made performance worse, so loud places are not good for any kind of study."
+    ],
+    ko: [
+      "이 연구는 주변 소음이 창의적인 생각에 어떤 영향을 주는지 실험했어요.",
+      "참가자들은 약 50dB(조용함), 70dB(붐비는 카페 정도), 85dB(아주 시끄러움)의 소음 속에서 창의 과제를 했어요.",
+      "적당한 70dB 소음에서 창의 과제를 가장 잘했고, 조용한 방보다도 결과가 좋았어요.",
+      "연구진은 적당한 소음이 생각을 조금 어렵게 만들어서, 오히려 더 넓게 생각하게 한다고 설명했어요.",
+      "85dB의 아주 큰 소음에서는 결과가 나빠져서, 시끄러운 곳은 어떤 공부에도 좋지 않아요."
+    ]
+  };
+  STUDY.steidle.journal = "Journal of Environmental Psychology";
+  STUDY.steidle.about = {
+    en: [
+      "This study tested whether lighting changes how creative people are.",
+      "In several experiments, participants solved creative tasks in dim light or in bright light.",
+      "People in dim light came up with more creative solutions.",
+      "The researchers found that darkness made people feel freer and less held back, which helped creativity.",
+      "They also suggested that bright light may be better for careful checking and analysis, which is why our Focus Room uses bright light."
+    ],
+    ko: [
+      "이 연구는 조명이 사람의 창의성을 바꾸는지 실험했어요.",
+      "여러 실험에서 참가자들은 어둑한 조명이나 밝은 조명 아래에서 창의 과제를 풀었어요.",
+      "어둑한 조명 아래에 있던 사람들이 더 창의적인 해결책을 냈어요.",
+      "연구진은 어둠이 사람을 더 자유롭고 덜 위축되게 느끼게 해서 창의성에 도움이 됐다고 봤어요.",
+      "꼼꼼한 검토나 분석에는 밝은 조명이 더 나을 수 있다고도 제안했는데, 그래서 Focus Room에는 밝은 조명을 썼어요."
+    ]
+  };
+  STUDY.oppezzo.journal = "Journal of Experimental Psychology: Learning, Memory, and Cognition";
+  STUDY.oppezzo.about = {
+    en: [
+      "This study from Stanford University compared walking and sitting in four experiments, mostly with college students.",
+      "Participants thought of new uses for everyday objects while walking or while sitting.",
+      "Walking increased the number of creative ideas by about 60% on average.",
+      "The effect stayed for a while even after people sat down again.",
+      "Walking did not help with problems that have only one right answer, so we put a walking loop in the Idea Lounge, not in the Focus Room."
+    ],
+    ko: [
+      "스탠퍼드대의 이 연구는 주로 대학생을 대상으로 네 번의 실험에서 걷기와 앉아 있기를 비교했어요.",
+      "참가자들은 걸으면서, 또는 앉아서 일상 물건의 새로운 쓰임새를 떠올렸어요.",
+      "걸을 때 창의적인 아이디어의 수가 평균 약 60% 늘었어요.",
+      "이 효과는 다시 앉은 뒤에도 한동안 남아 있었어요.",
+      "정답이 하나인 문제에는 걷기가 도움이 되지 않아서, 걷는 동선은 Focus Room이 아니라 Idea Lounge에 넣었어요."
+    ]
+  };
+  STUDY.brooks.journal = "British Journal of Educational Technology";
+  STUDY.lee.journal = "Journal of Environmental Psychology";      // from the DOI / article page
+  STUDY.kaplan.journal = "Journal of Environmental Psychology";   // DOI 10.1016/0272-4944…
+  STUDY.berman.journal = "Psychological Science";                 // DOI 10.1111/j.1467-9280…
+
+  // order and groups on the research screen
+  const GROUP = {
+    overall: { en: "Overall evidence", ko: "전체 근거" },
+    focus: { en: "Focus", ko: "집중" },
+    ideas: { en: "Ideas", ko: "아이디어" },
+    together: { en: "Collaboration", ko: "협업" },
+    rest: { en: "Rest", ko: "휴식" }
+  };
+  window.STUDIES = [
+    [STUDY.barrett, GROUP.overall],
+    [STUDY.meyers, GROUP.focus], [STUDY.mehta, GROUP.focus],
+    [STUDY.steidle, GROUP.ideas], [STUDY.oppezzo, GROUP.ideas],
+    [STUDY.brooks, GROUP.together],
+    [STUDY.lee, GROUP.rest], [STUDY.kaplan, GROUP.rest], [STUDY.berman, GROUP.rest]
+  ].map(([study, group]) => Object.assign(study, { group }));
+
   window.DESIGNS = [
     {
       id: "memorization",

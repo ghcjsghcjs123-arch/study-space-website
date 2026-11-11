@@ -14,26 +14,35 @@ A chatbot asks "What am I studying today?" and "How are you feeling right now?",
 - English: use "fits" (e.g. "our Focus Room design fits best"), not "recommend".
 
 ## Chatbot (chat.js, first screen `#/`)
-- Flow: bot greeting → Q1 study type (`t("question")`, choices = `DESIGNS[].type`) → user answer → Q2 mood (choices = `MOODS`) → user answer → result bubble with "Open <space>" buttons → "Start over" + "See all four designs" (`#compare`, scroll only).
+- Flow: bot greeting → Q1 study type (`t("question")`, choices = `DESIGNS[].type`) → user answer → Q2 mood (choices = `MOODS`) → user answer → result bubble with "Open <space>" buttons → "Start over" + "See all four designs" (`#/compare`).
 - Data in data.js: `MOODS` = `[{ id, label: { en, ko }, space }]` (focused → memorization, stuck → idea, energetic → teamwork, tired → comfort). `CHAT` = `main[studyId]`, `match`, `tiredFirst` (with `{space}` = extra space name), `moodTip[moodId]` — all `{ en, ko }`. Write full sentences (no building sentences from pieces) so Korean particles stay right.
 - Rules (`Chat.decide(type, mood)`, a pure function):
   - A. mood space = study space → that space only; lines = main + match
   - B. mood = tired and study ≠ comfort → main = comfort (Green Nook), extra = study space; line = tiredFirst
   - C. otherwise → main = study space, extra = mood space; lines = main + moodTip
-- The conversation is stored as data (`{ type, mood }`), not HTML, and redrawn from it. KO | EN mid-chat redraws the same conversation. Visiting a card and coming back keeps it; only "Start over" (or a reload) clears it.
+- The conversation is stored as data (`{ type, mood }`), not HTML, and redrawn from it. KO | EN mid-chat redraws the same conversation. Visiting other screens and coming back keeps it; only "Start over" (or a reload) clears it.
 - "Open …" buttons call app.js `openFromList(id)` (the router). Never draw a card from chat.js.
 - Bot messages appear after a 0.6 s "Typing…" (no delay with prefers-reduced-motion). The log is `role="log" aria-live="polite"`; all choices are `<button>`s. Colors use the style.css variables (--surface, --ink, --accent…).
 - Chat words (greeting, Q2, buttons, "Typing…") are in i18n.js `UI`.
 
 ## Screens and the back button
-- 3 screens, each with its own URL hash: `#/` question → `#/<id>` design card → `#/<id>/3d` full screen 3D (ids: memorization, idea, teamwork, comfort).
-- app.js is the router: `go(route)` uses `history.pushState`, `back()` uses `history.back()`; `popstate` redraws the screen. Don't change screens any other way (no direct `openFullscreen` from the page).
-- Card → another card uses `replaceState`, so back always returns to the question screen.
-- A direct link (e.g. `#/teamwork/3d`) builds the steps behind it on load, so back still goes 3D → card → question. Unknown ids open the question screen.
-- On-screen back buttons: "← Choose another study" on the card, "← Back" (plus × and Esc) in full screen. Both call `back()`.
-- Back on the question screen scrolls to the chat result (`Chat.anchor()`), or to the top if there is none.
-- Every screen change stops the sound; the lighting preview follows the screen (none on the question screen).
-- Top-bar links (#pick, #compare, #research) only scroll; they don't change the URL. `history.scrollRestoration` is manual; the router scrolls.
+- One screen at a time. Each has its own URL hash:
+  - `#/` chatbot (first screen, only the chat) · `#/compare` all four designs · `#/survey` survey · `#/research` one card per study
+  - `#/<id>` design card (alone) · `#/<id>/3d` full screen 3D on top of the card (ids: memorization, idea, teamwork, comfort)
+- `compare`, `survey`, `research` are reserved words — never use them as a space id. Old in-page links (`#compare`, `#research`, `#pick`) open the matching screen.
+- app.js is the router. A route is `{ page, id, full }` (page = chat | compare | survey | research | card). `parse()` / `address()` convert hash ↔ route, `show()` draws it, `go(route)` uses `history.pushState`, `back()` uses `history.back()`, `popstate` redraws. Don't change screens any other way (no direct `openFullscreen`, no showing/hiding sections by hand).
+- Every in-page link `<a href="#/…">` (top bar, brand, "See all four designs", research "Used in" buttons) is caught by one click handler and goes through `go()`. Sections are `<section data-screen="…">`; only the current one is visible.
+- Top bar = screen tabs: Find your space (`#/`) · Compare · Survey · Research. The current one has `aria-current="page"`; the card and 3D screens count as "Find your space". On phones the tabs stay on one row (they scroll sideways on very narrow screens).
+- On every screen change: scroll to the top, stop the sound, lighting preview only on card / 3D (none elsewhere), focus the new screen's heading (for keyboard / screen readers).
+- Card "← Back" and full screen "← Back" (plus × and Esc) call `back()` → the screen you came from (chat, compare, research…).
+- A direct link (e.g. `#/teamwork/3d`, `#/research`) builds the steps behind it on load (`#/` first), so back ends on the chatbot. Unknown ids open the chatbot.
+- The chat conversation lives in chat.js memory, so it survives visits to other screens; only "Start over" (or a reload) clears it.
+- `history.scrollRestoration` is manual; the router scrolls.
+
+## Research screen (`#/research`)
+- `window.STUDIES` (data.js) = the studies in display order, grouped: overall (Barrett) → focus (Meyers-Levy, Mehta) → ideas (Steidle, Oppezzo) → collaboration (Brooks) → rest (Lee, Kaplan, Berman).
+- Each study: `label` and `journal` (never translated), `url`, `group: { en, ko }`, `about: { en: [5 sentences], ko: [5 sentences] }`. Only use sentences the team wrote. Studies without `about` show no description.
+- "Used in" is found automatically: the spaces whose design card `cites` that study. The card ends with "Read the original" (the `url`). The KEY_FACT line is the screen's intro; the "tendencies, not rules" note stays at the bottom.
 
 ## Languages (KO | EN)
 - Default language is English. The KO | EN switch is in the top bar; the choice is saved in localStorage (wrapped in try/catch, falls back to English).
@@ -45,8 +54,8 @@ A chatbot asks "What am I studying today?" and "How are you feeling right now?",
 
 ## Files
 - `i18n.js`   — language switch, UI words (en/ko), saved language. Loads first.
-- `data.js`   — all text content (design cards, reasons, sources, chatbot MOODS + CHAT) in en + ko. Edit content here.
-- `chat.js`   — chatbot on the first screen (`window.Chat`: mount, decide, anchor). Loads before app.js.
+- `data.js`   — all text content (design cards, reasons, sources, chatbot MOODS + CHAT, research STUDIES) in en + ko. Edit content here.
+- `chat.js`   — chatbot on the first screen (`window.Chat`: mount, decide, state). Loads before app.js.
 - `plans.js`  — top-view floor plans drawn as SVG; each plan is a function that gets `L({ en, ko })` for its labels (shown by the "Floor plan" button, and for spaces without 3D yet).
 - `space3d.js`— 3D room viewer (`window.Space3D`). CSS 3D transforms only, no libraries. Must load before app.js.
 - `sound.js`  — "Hear this space" sounds, generated with Web Audio API (no audio files).
@@ -56,7 +65,7 @@ A chatbot asks "What am I studying today?" and "How are you feeling right now?",
 - `images/ajou-logo.png` — Ajou University logo, used as the chatbot's avatar (128 px).
 
 ## 3D view (space3d.js)
-- Flow: chatbot → design card (3D view first, "Floor plan" tab for 2D) → "Full screen" overlay ("← Back", × or Esc goes back to the card and stops the sound). `mount(slot, design, { onFullscreen })` and `openFullscreen(design, { onBack })` let app.js control the URL; `closeFullscreen()` closes it.
+- Flow: chatbot / compare / research → design card (3D view first, "Floor plan" tab for 2D) → "Full screen" overlay ("← Back", × or Esc goes back to the card and stops the sound). `mount(slot, design, { onFullscreen })` and `openFullscreen(design, { onBack })` let app.js control the URL; `closeFullscreen()` closes it.
 - All four spaces have a 3D room: memorization, idea, teamwork, comfort. Every card opens in 3D by default.
 - Each room = (1) a `view3d` block in data.js and (2) a builder `BUILDERS.<id>(k)` in space3d.js that calls `k.room({ w, d })` then `k.add(...)`. All rooms are 10 m x 8 m.
 - `view3d` (per space, all wording lives here):
@@ -79,6 +88,7 @@ A chatbot asks "What am I studying today?" and "How are you feeling right now?",
 - Must work on phones (no horizontal scroll).
 
 ## Still to do
+- Research cards: description sentences (about) for Brooks (2011), Lee et al. (2015), Kaplan (1995), Berman et al. (2008).
 - Comfort > Seating reason: add our survey result (week 12).
 - Survey section: add a chart of preferred spaces by study type.
 - Replace Google Scholar search links (Steidle & Werth, Brooks) with the original article links.

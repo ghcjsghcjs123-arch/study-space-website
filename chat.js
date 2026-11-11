@@ -114,7 +114,7 @@ window.Chat = (() => {
     actions.hidden = !done;
     actions.innerHTML = done
       ? `<button class="chat-restart" data-restart>${t("startOver")}</button>
-         <a class="chat-all" href="#compare">${t("seeAll")}</a>`
+         <a class="chat-all" href="#/compare">${t("seeAll")}</a>`
       : "";
   }
 
@@ -192,10 +192,5 @@ window.Chat = (() => {
     shown = 0;
   }
 
-  // where to scroll when the user comes back to the question screen
-  function anchor() {
-    return root && state.mood ? log.lastElementChild : null;
-  }
-
-  return { mount, decide, anchor, get state() { return { ...state }; } };
+  return { mount, decide, get state() { return { ...state }; } };
 })();

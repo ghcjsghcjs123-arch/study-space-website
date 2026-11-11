@@ -32,8 +32,10 @@ window.I18N = (() => {
       ko: "네 가지 공부 유형을 위해 디자인한 네 가지 공간. 3D 보기와 조명, 소리 미리보기를 함께 볼 수 있어요."
     },
     langGroup: { en: "Language", ko: "언어" },
+    navLabel: { en: "Screens", ko: "화면" },
     navPick: { en: "Find your space", ko: "내 공간 찾기" },
     navCompare: { en: "Compare", ko: "비교" },
+    navSurvey: { en: "Survey", ko: "설문" },
     navResearch: { en: "Research", ko: "연구" },
     eyebrow: { en: "Group 6 · Ajou University", ko: "아주대학교 6조" },
     chatTitle: { en: "Which of our spaces fits you today?", ko: "오늘 나에게 맞는 공간은?" },
@@ -105,7 +107,10 @@ window.I18N = (() => {
 
     // going back
     back: { en: "← Back", ko: "← 뒤로" },
-    backToChoices: { en: "← Choose another study", ko: "← 다른 공부 고르기" }
+
+    // research screen
+    usedIn: { en: "Used in", ko: "적용한 공간" },
+    readOriginal: { en: "Read the original", ko: "원문 보기" }
   };
 
   // content value → current language. Accepts { en, ko } or a plain string.
