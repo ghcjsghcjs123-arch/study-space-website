@@ -317,6 +317,13 @@ h2 { font-size: clamp(26px, 4vw, 34px); }
   background: var(--surface); border: 1px solid var(--line); border-radius: 16px;
   padding: clamp(16px, 3vw, 24px); min-width: 0;
 }
+.study--key { border-color: var(--accent); box-shadow: 0 0 0 1px var(--accent) inset; }
+.study-badge {
+  display: inline-block; margin: 0 0 8px; padding: 3px 10px; border-radius: 999px;
+  font-size: 12px; font-weight: 700; letter-spacing: 0.06em; text-transform: uppercase;
+  background: var(--accent); color: var(--surface);
+}
+html[lang="ko"] .study-badge { letter-spacing: 0.02em; }
 .study-name { margin: 0; font-family: var(--font-serif); font-size: 21px; line-height: 1.25; }
 .study-journal { margin: 2px 0 0; font-size: 14px; font-style: italic; color: var(--muted); }
 .study-about { margin: 12px 0 0; padding-left: 22px; font-size: 15px; color: var(--ink); }

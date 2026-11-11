@@ -40,9 +40,11 @@ A chatbot asks "What am I studying today?" and "How are you feeling right now?",
 - `history.scrollRestoration` is manual; the router scrolls.
 
 ## Research screen (`#/research`)
-- `window.STUDIES` (data.js) = the studies in display order, grouped: overall (Barrett) → focus (Meyers-Levy, Mehta) → ideas (Steidle, Oppezzo) → collaboration (Brooks) → rest (Lee, Kaplan, Berman).
-- Each study: `label` and `journal` (never translated), `url`, `group: { en, ko }`, `about: { en: [5 sentences], ko: [5 sentences] }`. Only use sentences the team wrote. Studies without `about` show no description.
-- "Used in" is found automatically: the spaces whose design card `cites` that study. The card ends with "Read the original" (the `url`). The KEY_FACT line is the screen's intro; the "tendencies, not rules" note stays at the bottom.
+- `window.STUDIES` (data.js) = 11 studies in the order of the team's week-10 literature review:
+  overall (1 Barrett) → focus (2 Meyers-Levy, 3 Mehta & Zhu 2009) → ideas (4 Mehta, Zhu & Cheema, 5 Steidle, 6 Oppezzo) → collaboration (7 Brooks) → rest (8 Kaplan, 9 Berman, 10 Lee, 11 Atchley).
+- Each study: `label` and `journal` (never translated), `url`, `group: { en, ko }`, `about: { en: [...], ko: [...] }` (5 sentences for 1, 2, 4, 5, 6; 4-sentence summaries of the week-10 notes for the rest). Only use what the team wrote — no new claims.
+- `key: true` → "Key evidence" badge (2, 4, 6: the same space feature works differently for different kinds of study).
+- "Used in" is found automatically: the spaces whose design card `cites` that study (hidden when none, e.g. Mehta & Zhu 2009, Atchley 2012). The card ends with "Read the original" (the `url`). The KEY_FACT line is the screen's intro; the "tendencies, not rules" note stays at the bottom.
 
 ## Languages (KO | EN)
 - Default language is English. The KO | EN switch is in the top bar; the choice is saved in localStorage (wrapped in try/catch, falls back to English).
@@ -88,7 +90,6 @@ A chatbot asks "What am I studying today?" and "How are you feeling right now?",
 - Must work on phones (no horizontal scroll).
 
 ## Still to do
-- Research cards: description sentences (about) for Brooks (2011), Lee et al. (2015), Kaplan (1995), Berman et al. (2008).
 - Comfort > Seating reason: add our survey result (week 12).
 - Survey section: add a chart of preferred spaces by study type.
 - Replace Google Scholar search links (Steidle & Werth, Brooks) with the original article links.

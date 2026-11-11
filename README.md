@@ -68,10 +68,16 @@
 - 주소를 그대로 공유할 수 있어요. 예: `.../index.html#/teamwork/3d`, `.../index.html#/research`
 
 ## 연구 화면
-- 논문마다 카드가 있어요. 카드에는 저자·연도, 학술지, 설명 5문장, **적용한 공간** 버튼, **원문 보기** 링크가 들어가요.
-- 순서는 전체 근거(Barrett) → 집중(Meyers-Levy, Mehta) → 아이디어(Steidle, Oppezzo) → 협업(Brooks) → 휴식(Lee, Kaplan, Berman)이에요.
+- 논문 11편마다 카드가 있어요. 순서는 10주차 문헌조사와 같아요.
+  - 전체 근거: Barrett
+  - 집중: Meyers-Levy, Mehta & Zhu 2009
+  - 창의: Mehta·Zhu·Cheema, Steidle, Oppezzo
+  - 협업: Brooks
+  - 휴식: Kaplan, Berman, Lee, Atchley
+- 카드에는 저자·연도, 학술지, 설명(4~5문장), **적용한 공간** 버튼, **원문 보기** 링크가 들어가요.
+- 2번 Meyers-Levy & Zhu, 4번 Mehta·Zhu·Cheema, 6번 Oppezzo & Schwartz에는 **핵심 근거** 배지가 붙어요.
 - 설명 문장은 `data.js`의 `STUDY`마다 `about: { en: [...], ko: [...] }`로 들어 있어요.
-- "적용한 공간"은 디자인 카드에서 그 논문을 근거로 쓴 공간이 자동으로 표시돼요.
+- "적용한 공간"은 디자인 카드에서 그 논문을 근거로 쓴 공간이 자동으로 표시돼요. 근거로 쓴 공간이 없으면 이 칸은 숨겨져요.
 
 ## 한국어 / 영어 전환
 - 상단 바 오른쪽의 **KO | EN**으로 언어를 바꿔요. 기본은 영어예요.
@@ -108,7 +114,6 @@
 - **조명 색**: `space3d.js`의 `LIGHTS`에 프리셋이 있어요.
 
 ## 아직 채워야 할 것
-- 연구 화면: Brooks (2011), Lee et al. (2015), Kaplan (1995), Berman et al. (2008)의 설명 5문장
 - Comfort의 Seating 이유: 설문 결과로 채우기 (화면에 빨간 TODO로 표시됨)
 - 설문 결과 그래프
 - Steidle & Werth, Brooks 논문 링크를 원문 주소로 바꾸기

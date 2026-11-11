@@ -311,7 +311,8 @@
       group = st.group;
       const about = st.about ? tr(st.about) : null;
       return `${heading}
-        <article class="study">
+        <article class="study${st.key ? " study--key" : ""}">
+          ${st.key ? `<p class="study-badge">${t("keyEvidence")}</p>` : ""}
           <h4 class="study-name">${st.label}</h4>
           ${st.journal ? `<p class="study-journal">${st.journal}</p>` : ""}
           ${about ? `<ol class="study-about">${about.map((x) => `<li>${x}</li>`).join("")}</ol>` : ""}

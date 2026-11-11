@@ -27,13 +27,15 @@
     brooks: { label: "Brooks (2011)", url: "https://scholar.google.com/scholar?q=Brooks+2011+Space+matters+impact+of+formal+learning+environments+on+student+learning" },
     lee: { label: "Lee et al. (2015)", url: "https://findanexpert.unimelb.edu.au/scholarlywork/977781-40-second-green-roof-views-sustain-attention--the-role-of-micro-breaks-in-attention-restoration" },
     kaplan: { label: "Kaplan (1995)", url: "https://doi.org/10.1016/0272-4944(95)90001-2" },
-    berman: { label: "Berman et al. (2008)", url: "https://doi.org/10.1111/j.1467-9280.2008.02225.x" }
+    berman: { label: "Berman et al. (2008)", url: "https://doi.org/10.1111/j.1467-9280.2008.02225.x" },
+    // on the research screen only (not used as a source on a design card yet)
+    mehtaColor: { label: "Mehta & Zhu (2009)", url: "https://doi.org/10.1126/science.1169144" },
+    atchley: { label: "Atchley, Strayer & Atchley (2012)", url: "https://doi.org/10.1371/journal.pone.0051474" }
   };
 
   // ---------- research screen: one card per study ----------
-  // journal + label are never translated. about = 5 sentences in en and ko.
+  // journal + label are never translated. about = 4–5 sentences in en and ko.
   // Use only sentences the team wrote — don't add new claims.
-  // TODO: about for Brooks, Lee, Kaplan, Berman (sentences still to come).
   STUDY.barrett.journal = "Building and Environment";
   STUDY.barrett.about = {
     en: [
@@ -119,12 +121,105 @@
       "정답이 하나인 문제에는 걷기가 도움이 되지 않아서, 걷는 동선은 Focus Room이 아니라 Idea Lounge에 넣었어요."
     ]
   };
+  // The next studies use 4-sentence summaries of the team's week-10 literature notes.
   STUDY.brooks.journal = "British Journal of Educational Technology";
-  STUDY.lee.journal = "Journal of Environmental Psychology";      // from the DOI / article page
-  STUDY.kaplan.journal = "Journal of Environmental Psychology";   // DOI 10.1016/0272-4944…
-  STUDY.berman.journal = "Psychological Science";                 // DOI 10.1111/j.1467-9280…
+  STUDY.brooks.about = {
+    en: [
+      "This study took place at the University of Minnesota in the United States.",
+      "The same professor taught the same course in two rooms: a traditional classroom and an active learning classroom with round tables and shared screens.",
+      "Students in the active learning classroom got better grades than their entrance scores predicted.",
+      "It was done with university students, so it fits our topic well, and we use it for the round tables and movable furniture in the Team Studio."
+    ],
+    ko: [
+      "이 연구는 미국 미네소타대에서 진행됐어요.",
+      "같은 교수가 같은 수업을 일반 강의실과, 둥근 테이블과 공유 화면이 있는 협업형 강의실에서 진행했어요.",
+      "협업형 강의실의 학생들이 입학 성적으로 예상한 것보다 더 좋은 성적을 받았어요.",
+      "대학생을 대상으로 한 연구라 우리 주제와 잘 맞아서, Team Studio의 둥근 테이블과 이동식 가구의 근거로 썼어요."
+    ]
+  };
+  STUDY.kaplan.journal = "Journal of Environmental Psychology";
+  STUDY.kaplan.about = {
+    en: [
+      "This paper proposed Attention Restoration Theory.",
+      "When people focus for a long time, their attention gets tired.",
+      "The theory says nature draws our attention without any effort, and this lets tired attention recover.",
+      "We use it as the theory behind why a rest space is needed, like our Green Nook."
+    ],
+    ko: [
+      "이 논문은 '주의 회복 이론'을 제안했어요.",
+      "오래 집중하면 주의력이 지쳐요.",
+      "자연은 힘들이지 않고 마음을 끌어서, 지친 주의력을 회복시켜 준다는 이론이에요.",
+      "Green Nook 같은 휴식 공간이 왜 필요한지 설명하는 이론적 바탕으로 썼어요."
+    ]
+  };
+  STUDY.berman.journal = "Psychological Science";
+  STUDY.berman.about = {
+    en: [
+      "Participants walked in an arboretum (nature) or in a city center, and then their attention was compared.",
+      "After walking in nature, their attention scores were higher.",
+      "Even just looking at photos of nature had an effect.",
+      "We use it for the natural elements of the Green Nook, such as plants and nature pictures."
+    ],
+    ko: [
+      "참가자들에게 수목원(자연)이나 도심을 걷게 한 뒤 주의력을 비교했어요.",
+      "자연을 걸은 뒤에 주의력 점수가 더 높았어요.",
+      "자연 사진을 보기만 해도 효과가 있었어요.",
+      "Green Nook의 식물, 자연 사진 같은 자연 요소의 근거로 썼어요."
+    ]
+  };
+  STUDY.lee.journal = "Journal of Environmental Psychology";
+  STUDY.lee.about = {
+    en: [
+      "In this study, 150 university students looked at a photo of a green roof or a concrete roof for 40 seconds in the middle of a task.",
+      "Students who saw the green roof made fewer mistakes in the task afterwards.",
+      "It shows that even a short break can help.",
+      "It was done with university students, which makes it easy for us to use, and it supports the green views in the Green Nook."
+    ],
+    ko: [
+      "대학생 150명에게 과제 중간에 40초 동안 초록 옥상 또는 콘크리트 옥상 사진을 보게 했어요.",
+      "초록 옥상을 본 학생들이 이후 과제에서 실수가 더 적었어요.",
+      "짧은 휴식도 효과가 있다는 걸 보여 준 연구예요.",
+      "대학생 대상이라 활용하기 좋아서, Green Nook의 초록 풍경의 근거로 썼어요."
+    ]
+  };
+  STUDY.mehtaColor.journal = "Science";
+  STUDY.mehtaColor.about = {
+    en: [
+      "This study tested whether a red or a blue background changes how well people do tasks.",
+      "With red, people did better on detail tasks such as remembering and proofreading.",
+      "With blue, people did better on creative tasks.",
+      "We use it when choosing colors for each space, but later studies had mixed results, so we only call it a tendency."
+    ],
+    ko: [
+      "빨간색과 파란색 배경에서 과제 수행이 달라지는지 실험했어요.",
+      "빨간색에서는 기억하기, 교정 보기 같은 세부 과제를 더 잘했어요.",
+      "파란색에서는 창의 과제를 더 잘했어요.",
+      "공간별 색을 고를 때 참고하지만, 후속 연구에서 결과가 엇갈려서 '~한 경향이 있다' 정도로만 표현해요."
+    ]
+  };
+  STUDY.atchley.journal = "PLoS ONE";
+  STUDY.atchley.about = {
+    en: [
+      "This study compared the creative task scores of people who spent four days in nature without digital devices.",
+      "After their time in nature, their scores were about 50% higher.",
+      "However, we can't tell whether the effect came from nature or from not using devices.",
+      "We use it as a reason to design rest spaces where people put their devices down."
+    ],
+    ko: [
+      "4일 동안 디지털 기기 없이 자연에서 지낸 사람들의 창의 과제 점수를 비교했어요.",
+      "자연에서 지낸 뒤 점수가 약 50% 높아졌어요.",
+      "다만 자연의 효과인지, 기기를 쓰지 않은 효과인지는 구분되지 않아요.",
+      "휴식 공간에서 디지털 기기를 내려놓도록 공간을 구성하는 근거로 써요."
+    ]
+  };
 
-  // order and groups on the research screen
+  // "Key evidence" badge: studies that show the same space feature works
+  // differently for different kinds of study (the core of our idea)
+  STUDY.meyers.key = true;
+  STUDY.mehta.key = true;
+  STUDY.oppezzo.key = true;
+
+  // order and groups on the research screen (same order as the week-10 literature review)
   const GROUP = {
     overall: { en: "Overall evidence", ko: "전체 근거" },
     focus: { en: "Focus", ko: "집중" },
@@ -134,10 +229,10 @@
   };
   window.STUDIES = [
     [STUDY.barrett, GROUP.overall],
-    [STUDY.meyers, GROUP.focus], [STUDY.mehta, GROUP.focus],
-    [STUDY.steidle, GROUP.ideas], [STUDY.oppezzo, GROUP.ideas],
+    [STUDY.meyers, GROUP.focus], [STUDY.mehtaColor, GROUP.focus],
+    [STUDY.mehta, GROUP.ideas], [STUDY.steidle, GROUP.ideas], [STUDY.oppezzo, GROUP.ideas],
     [STUDY.brooks, GROUP.together],
-    [STUDY.lee, GROUP.rest], [STUDY.kaplan, GROUP.rest], [STUDY.berman, GROUP.rest]
+    [STUDY.kaplan, GROUP.rest], [STUDY.berman, GROUP.rest], [STUDY.lee, GROUP.rest], [STUDY.atchley, GROUP.rest]
   ].map(([study, group]) => Object.assign(study, { group }));
 
   window.DESIGNS = [

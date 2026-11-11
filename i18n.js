@@ -110,6 +110,7 @@ window.I18N = (() => {
 
     // research screen
     usedIn: { en: "Used in", ko: "적용한 공간" },
+    keyEvidence: { en: "Key evidence", ko: "핵심 근거" },
     readOriginal: { en: "Read the original", ko: "원문 보기" }
   };
 
