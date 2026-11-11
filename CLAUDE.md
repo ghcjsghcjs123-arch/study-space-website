@@ -53,6 +53,7 @@ A chatbot asks "What am I studying today?" and "How are you feeling right now?",
 - `style.css` — design + lighting preview colors per space (`[data-zone="..."]`).
 - `app.js`    — page logic. Card buttons are updated in place (`updateControls`), not by re-rendering the card, so the 3D view is not rebuilt.
 - `index.html`— page structure.
+- `images/ajou-logo.png` — Ajou University logo, used as the chatbot's avatar (128 px).
 
 ## 3D view (space3d.js)
 - Flow: chatbot → design card (3D view first, "Floor plan" tab for 2D) → "Full screen" overlay ("← Back", × or Esc goes back to the card and stops the sound). `mount(slot, design, { onFullscreen })` and `openFullscreen(design, { onBack })` let app.js control the URL; `closeFullscreen()` closes it.

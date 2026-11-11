@@ -152,11 +152,10 @@ h2 { font-size: clamp(26px, 4vw, 34px); }
 @keyframes chat-in { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: none; } }
 
 .chat-avatar {
-  flex: none; width: 32px; height: 32px; border-radius: 50%;
-  display: grid; place-items: center;
-  background: var(--accent); color: var(--surface);
+  flex: none; width: 32px; height: 32px; border-radius: 50%; overflow: hidden;
+  background: #fff; box-shadow: 0 0 0 1px var(--line);
 }
-.chat-avatar svg { width: 18px; height: 18px; }
+.chat-avatar img { display: block; width: 100%; height: 100%; object-fit: cover; }
 
 .chat-bubble {
   max-width: min(85%, 520px); min-width: 0;

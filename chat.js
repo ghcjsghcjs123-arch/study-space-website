@@ -45,9 +45,9 @@ window.Chat = (() => {
     return { rule: "C", main: typeId, extra: mood.space, lines: [C.main[typeId], C.moodTip[moodId]] };
   }
 
-  // the bot's small icon (a speech bubble with a spark)
-  const BOT_ICON = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-    <path d="M4 5h16v11H9l-5 4z"/><path d="M12 8.2v4.6M9.7 10.5h4.6"/></svg>`;
+  // the bot's small icon: Ajou University logo (images/ajou-logo.png).
+  // Decorative only (alt=""), the messages themselves are read out.
+  const BOT_ICON = `<img src="images/ajou-logo.png" alt="" width="32" height="32" decoding="async">`;
 
   let state = { type: null, mood: null };
   let root, log, options, actions;
