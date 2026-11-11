@@ -1,0 +1,72 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Study-Type Space Design</title>
+  <meta name="description" content="Four study spaces designed for four study types, with 3D views, lighting and sound previews.">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,700&family=DM+Sans:wght@400;500;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body data-zone="none">
+  <div class="light-layer" aria-hidden="true"></div>
+
+  <header class="topbar">
+    <a class="brand" href="#top">Study-Type Space Design</a>
+    <nav>
+      <a href="#pick">Find your space</a>
+      <a href="#compare">Compare</a>
+      <a href="#research">Research</a>
+    </nav>
+  </header>
+
+  <main id="top">
+    <!-- 1. Question -->
+    <section class="hero" id="pick">
+      <p class="eyebrow">Group 6 · Ajou University</p>
+      <h1>What am I studying today?</h1>
+      <p class="lede">Pick one. We'll show you the space we designed for it, so you can see its light and hear its sound.</p>
+      <div class="choices" id="choices" role="group" aria-label="Study types"></div>
+      <p class="fact" id="fact"></p>
+    </section>
+
+    <!-- 2. Design card -->
+    <section class="result" id="result" hidden>
+      <article class="card" id="card" aria-live="polite"></article>
+    </section>
+
+    <!-- 3. Compare all four -->
+    <section class="compare" id="compare">
+      <h2>Different study, different space</h2>
+      <p class="section-lede">All four designs side by side. Tap one to open it.</p>
+      <div class="compare-grid" id="compareGrid"></div>
+    </section>
+
+    <!-- 4. Survey (to be filled after week 12) -->
+    <section class="survey" id="survey">
+      <h2>What Ajou students told us</h2>
+      <p class="section-lede">Survey results will appear here after week 12.</p>
+      <div class="survey-placeholder">TODO: add survey chart (preferred space by study type)</div>
+    </section>
+
+    <!-- 5. Research list -->
+    <section class="research" id="research">
+      <h2>Research behind the designs</h2>
+      <ul id="researchList"></ul>
+      <p class="note">Some effects (for example, color and light) were small or mixed in later studies, so we describe them as tendencies, not rules.</p>
+    </section>
+  </main>
+
+  <footer class="footer">
+    Group 6 · Hocheon Kim, Jihong Kim, Jiwoo Kang, Jungwon Lee, Yeongseo Im, Hyunseong Lee
+  </footer>
+
+  <script src="data.js"></script>
+  <script src="plans.js"></script>
+  <script src="sound.js"></script>
+  <script src="space3d.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>
