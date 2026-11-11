@@ -11,6 +11,15 @@ The user answers "What am I studying today?" and sees the design card for that t
 - Design names: Focus Room, Idea Lounge, Team Studio, Green Nook
 - Every design card has exactly 3 elements: Lighting, Noise, Seating — each with a reason and a research source.
 
+## Screens and the back button
+- 3 screens, each with its own URL hash: `#/` question → `#/<id>` design card → `#/<id>/3d` full screen 3D (ids: memorization, idea, teamwork, comfort).
+- app.js is the router: `go(route)` uses `history.pushState`, `back()` uses `history.back()`; `popstate` redraws the screen. Don't change screens any other way (no direct `openFullscreen` from the page).
+- Card → another card uses `replaceState`, so back always returns to the question screen.
+- A direct link (e.g. `#/teamwork/3d`) builds the steps behind it on load, so back still goes 3D → card → question. Unknown ids open the question screen.
+- On-screen back buttons: "← Choose another study" on the card, "← Back" (plus × and Esc) in full screen. Both call `back()`.
+- Every screen change stops the sound; the lighting preview follows the screen (none on the question screen).
+- Top-bar links (#pick, #compare, #research) only scroll; they don't change the URL. `history.scrollRestoration` is manual; the router scrolls.
+
 ## Languages (KO | EN)
 - Default language is English. The KO | EN switch is in the top bar; the choice is saved in localStorage (wrapped in try/catch, falls back to English).
 - Every visible text exists in both languages. Content = `{ en: "...", ko: "..." }` in data.js (and in plans.js / space3d.js labels). Page words (buttons, headings, hints) = `UI` in i18n.js.
@@ -30,7 +39,7 @@ The user answers "What am I studying today?" and sees the design card for that t
 - `index.html`— page structure.
 
 ## 3D view (space3d.js)
-- Flow: question → design card (3D view first, "Floor plan" tab for 2D) → "Full screen" overlay (× / Esc closes it and stops the sound).
+- Flow: question → design card (3D view first, "Floor plan" tab for 2D) → "Full screen" overlay ("← Back", × or Esc goes back to the card and stops the sound). `mount(slot, design, { onFullscreen })` and `openFullscreen(design, { onBack })` let app.js control the URL; `closeFullscreen()` closes it.
 - All four spaces have a 3D room: memorization, idea, teamwork, comfort. Every card opens in 3D by default.
 - Each room = (1) a `view3d` block in data.js and (2) a builder `BUILDERS.<id>(k)` in space3d.js that calls `k.room({ w, d })` then `k.add(...)`. All rooms are 10 m x 8 m.
 - `view3d` (per space, all wording lives here):

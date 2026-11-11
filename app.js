@@ -1,5 +1,9 @@
 // =============================================================
-// Page logic: question buttons → design card (3D view / floor plan) → lighting + sound.
+// Page logic: question buttons → design card (3D view / floor plan) → full screen 3D.
+// Each step has its own address (URL hash), so the browser / phone back button works:
+//   #/            question screen
+//   #/idea        design card of the Idea Lounge
+//   #/idea/3d     the same card + full screen 3D
 // Text: t("uiWord") for page words (i18n.js), tr({ en, ko }) for content (data.js).
 // =============================================================
 
@@ -51,7 +55,7 @@
   }
   $("choices").addEventListener("click", (e) => {
     const btn = e.target.closest(".choice");
-    if (btn) select(btn.dataset.id, true);
+    if (btn) openFromList(btn.dataset.id);
   });
 
   // ---------- 2. design card ----------
@@ -60,6 +64,7 @@
   function renderCard(d) {
     const has3d = window.Space3D && window.Space3D.supports(d);
     $("card").innerHTML = `
+      <button class="back-link" id="cardBack">${t("backToChoices")}</button>
       <div class="card-head">
         <div>
           <p class="card-type">${t("designFor", tr(d.type))}</p>
@@ -92,6 +97,7 @@
         </ul>
       </div>`;
 
+    $("cardBack").addEventListener("click", back);
     $("soundBtn").addEventListener("click", () => {
       if (window.SpaceSound.isPlaying(d.sound)) window.SpaceSound.stop();
       else window.SpaceSound.play(d.sound);
@@ -120,7 +126,7 @@
     document.querySelectorAll(".view-tab").forEach((b) =>
       b.setAttribute("aria-pressed", String(b.dataset.view === next)));
     if (next === "3d") {
-      viewer = window.Space3D.mount(slot, d);
+      viewer = window.Space3D.mount(slot, d, { onFullscreen: () => go({ id: d.id, full: true }) });
       $("planCaption").textContent = t("caption3d", tr(d.soundLabel));
     } else {
       slot.innerHTML = `<div class="plan">${planSvg(d)}</div>`;
@@ -143,20 +149,132 @@
     if (selected) updateControls(selected);
   });
 
-  function select(id, scroll) {
-    const d = designs.find((x) => x.id === id);
-    if (!d) return;
-    // switching rooms stops the previous room's sound
-    if (selected && selected.id !== id) window.SpaceSound.stop();
-    selected = d;
+  // ---------- screens: question / card / full screen 3D ----------
+  let current = { id: null, full: false };
 
+  const ROUTE = /^#\/([a-z]*)(?:\/(3d))?\/?$/;
+  // "#/idea/3d" → { id: "idea", full: true }. Not a screen address (e.g. "#compare") → null.
+  function parse(hash) {
+    if (!hash || hash === "#") return { id: null, full: false };
+    const m = ROUTE.exec(hash);
+    if (!m) return null;
+    const d = designs.find((x) => x.id === m[1]);
+    if (!d) return { id: null, full: false }; // unknown space → question screen
+    return { id: d.id, full: !!m[2] && window.Space3D.supports(d) };
+  }
+  const address = (r) => (r.id ? `#/${r.id}${r.full ? "/3d" : ""}` : "#/");
+
+  function setAddress(r, replace) {
+    try {
+      history[replace ? "replaceState" : "pushState"]({ inApp: true }, "", address(r));
+    } catch (e) {
+      // very old browsers / blocked history: fall back to plain hash links
+      if (replace) location.replace(address(r)); else location.hash = address(r);
+    }
+  }
+
+  // go to a screen (adds a step to the browser history unless replace)
+  function go(r, { replace = false } = {}) {
+    setAddress(r, replace);
+    show(r, { scroll: true });
+  }
+
+  // one step back: question ← card ← full screen 3D
+  function back() {
+    if (history.state && history.state.inApp) history.back();
+    else go(current.full ? { id: current.id, full: false } : { id: null, full: false }, { replace: true });
+  }
+
+  // from the question buttons or the compare cards
+  function openFromList(id) {
+    if (current.id === id) {
+      $("result").scrollIntoView({ behavior: "smooth", block: "start" });
+      return;
+    }
+    // card → another card replaces the step, so "back" always returns to the question
+    go({ id, full: false }, { replace: !!current.id });
+  }
+
+  // draw the screen for route r
+  function show(r, { scroll = false, instant = false } = {}) {
+    if (address(r) === address(current) && (!r.id || selected)) return;
+    const prev = current;
+    current = r;
+    window.SpaceSound.stop(); // a new screen starts quiet
+
+    if (!r.full && window.Space3D.isFullscreen()) {
+      window.Space3D.closeFullscreen();
+      // back from full screen: make sure the card is on screen
+      const top = $("result").getBoundingClientRect().top;
+      if (r.id === (selected && selected.id) && (top < -40 || top > window.innerHeight * 0.5)) {
+        $("result").scrollIntoView({ behavior: "auto", block: "start" });
+      }
+    }
+
+    if (r.id !== (selected && selected.id)) {
+      if (r.id) openCard(r.id);
+      else closeCard();
+      if (scroll) {
+        const behavior = instant ? "auto" : "smooth";
+        if (r.id) $("result").scrollIntoView({ behavior, block: "start" });
+        else if (prev.id) $("pick").scrollIntoView({ behavior, block: "start" });
+      }
+    }
+
+    if (r.full && !window.Space3D.isFullscreen()) {
+      window.Space3D.openFullscreen(selected, { onBack: back });
+    }
+    applyLighting(); // lighting follows the screen (none on the question screen)
+  }
+
+  function openCard(id) {
+    selected = designs.find((x) => x.id === id);
     document.querySelectorAll(".choice").forEach((b) =>
       b.setAttribute("aria-pressed", String(b.dataset.id === id)));
-
     $("result").hidden = false;
-    renderCard(d);
-    applyLighting();
-    if (scroll) $("result").scrollIntoView({ behavior: "smooth", block: "start" });
+    renderCard(selected);
+  }
+
+  function closeCard() {
+    if (viewer) { viewer.destroy(); viewer = null; }
+    selected = null;
+    view = "3d";
+    document.querySelectorAll(".choice").forEach((b) => b.setAttribute("aria-pressed", "false"));
+    $("result").hidden = true;
+    $("card").innerHTML = "";
+  }
+
+  window.addEventListener("popstate", () => show(parse(location.hash) || { id: null, full: false }, { scroll: true }));
+  // someone typed a new address by hand
+  window.addEventListener("hashchange", () => {
+    const r = parse(location.hash);
+    if (r) show(r, { scroll: true });
+  });
+
+  // top-bar links (#pick, #compare, #research) only scroll; they don't change the screen address
+  document.addEventListener("click", (e) => {
+    const a = e.target.closest('a[href^="#"]');
+    if (!a || a.getAttribute("href").startsWith("#/")) return;
+    const target = document.querySelector(a.getAttribute("href"));
+    if (!target) return;
+    e.preventDefault();
+    target.scrollIntoView({ behavior: "smooth", block: "start" });
+  });
+
+  // first visit: open the screen in the address (e.g. a shared link to #/teamwork/3d)
+  // and build the steps behind it, so "back" still goes card → question.
+  function start() {
+    // we scroll to the right place ourselves; the browser's own "restore scroll"
+    // would jump back to wherever the page was when that step was created
+    try { if ("scrollRestoration" in history) history.scrollRestoration = "manual"; } catch (e) {}
+    const r = parse(location.hash);
+    if (!r) { show({ id: null, full: false }); return; } // old anchor like #compare: just show the page
+    try {
+      history.replaceState({ inApp: true }, "", "#/");
+      if (r.id) history.pushState({ inApp: true }, "", address({ id: r.id, full: false }));
+      if (r.full) history.pushState({ inApp: true }, "", address(r));
+    } catch (e) { /* history not available: back buttons still work via replace */ }
+    show(r, { scroll: true, instant: true });
   }
 
   // ---------- 3. compare ----------
@@ -175,7 +293,7 @@
   }
   $("compareGrid").addEventListener("click", (e) => {
     const btn = e.target.closest(".mini");
-    if (btn) select(btn.dataset.id, true);
+    if (btn) openFromList(btn.dataset.id);
   });
 
   // ---------- 5. research list (study names are not translated) ----------
@@ -212,4 +330,5 @@
   renderFact();
   renderCompare();
   renderResearch();
+  start();
 })();

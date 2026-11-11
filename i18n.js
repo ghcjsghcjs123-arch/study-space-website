@@ -91,7 +91,11 @@ window.I18N = (() => {
     },
     ceilingLabel: { en: (m) => `Ceiling ${m} m`, ko: (m) => `천장 ${m} m` },
     s3dDialog: { en: (name) => `${name} in 3D`, ko: (name) => `${name} 3D 보기` },
-    close3d: { en: "Close 3D view", ko: "3D 보기 닫기" }
+    close3d: { en: "Close 3D view", ko: "3D 보기 닫기" },
+
+    // going back
+    back: { en: "← Back", ko: "← 뒤로" },
+    backToChoices: { en: "← Choose another study", ko: "← 다른 공부 고르기" }
   };
 
   // content value → current language. Accepts { en, ko } or a plain string.

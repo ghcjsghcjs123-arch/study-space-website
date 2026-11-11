@@ -597,7 +597,8 @@ window.Space3D = (() => {
   const ZOOM = [0.6, 2.6];
   const PERSPECTIVE = 1500;
 
-  function mount(slot, design, { fullscreen = false } = {}) {
+  // onFullscreen: what the "Full screen" button does (app.js changes the URL)
+  function mount(slot, design, { fullscreen = false, onFullscreen } = {}) {
     const cfg = design.view3d;
     const m = getModes(design.id);
 
@@ -801,7 +802,7 @@ window.Space3D = (() => {
       if (!b) return;
       const act = b.dataset.act;
       if (act === "light" || act === "ceiling") toggle(act);
-      else if (act === "full") openFullscreen(design);
+      else if (act === "full") (onFullscreen ? onFullscreen() : openFullscreen(design));
       else if (act === "sound") {
         if (window.SpaceSound.isPlaying(design.sound)) window.SpaceSound.stop();
         else window.SpaceSound.play(design.sound);
@@ -895,8 +896,11 @@ window.Space3D = (() => {
   }
 
   // ---------- full screen ----------
+  // openFullscreen(design, { onBack }): onBack is called by "← Back", × and Esc.
+  // The page (app.js) uses it to go back in the browser history, and then
+  // calls closeFullscreen(). Without onBack the overlay simply closes itself.
   let overlay = null;
-  function openFullscreen(design) {
+  function openFullscreen(design, { onBack } = {}) {
     if (overlay) return;
     const back = document.activeElement;
     overlay = div("s3d-overlay");
@@ -905,11 +909,15 @@ window.Space3D = (() => {
     overlay.setAttribute("aria-label", t("s3dDialog", design.name));
     overlay.innerHTML = `
       <div class="s3d-overlay-head">
-        <div><p class="card-type">${t("designFor", tr(design.type))}</p><h2>${design.name}</h2></div>
+        <button class="s3d-back">${t("back")}</button>
+        <div class="s3d-overlay-title"><p class="card-type">${t("designFor", tr(design.type))}</p><h2>${design.name}</h2></div>
         <button class="s3d-close" aria-label="${t("close3d")}">&times;</button>
       </div>
       <div class="s3d-overlay-body"></div>`;
+    // keep keyboard focus inside the overlay
+    const behind = [...document.body.children].filter((el) => el !== overlay && el.tagName !== "SCRIPT");
     document.body.appendChild(overlay);
+    behind.forEach((el) => { el.inert = true; });
     document.body.classList.add("s3d-lock");
     const v = mount(overlay.querySelector(".s3d-overlay-body"), design, { fullscreen: true });
 
@@ -918,17 +926,25 @@ window.Space3D = (() => {
       v.destroy();
       overlay.remove();
       overlay = null;
+      closeOverlay = null;
+      behind.forEach((el) => { el.inert = false; });
       document.body.classList.remove("s3d-lock");
       window.SpaceSound.stop(); // closing the 3D view also stops the sound
-      if (back && back.focus) back.focus();
+      if (back && back.isConnected && back.focus) back.focus();
     };
+    closeOverlay = close;
+    const requestBack = () => (onBack ? onBack() : close());
     const onKey = (e) => {
-      if (e.key === "Escape") { e.preventDefault(); close(); }
+      if (e.key === "Escape") { e.preventDefault(); requestBack(); }
     };
     document.addEventListener("keydown", onKey, true);
-    overlay.querySelector(".s3d-close").addEventListener("click", close);
-    overlay.querySelector(".s3d-close").focus();
+    overlay.querySelector(".s3d-close").addEventListener("click", requestBack);
+    overlay.querySelector(".s3d-back").addEventListener("click", requestBack);
+    overlay.querySelector(".s3d-back").focus();
   }
+  let closeOverlay = null;
+  const closeFullscreen = () => closeOverlay && closeOverlay();
+  const isFullscreen = () => !!overlay;
 
-  return { M, supports, mount, openFullscreen, BUILDERS, LIGHTS };
+  return { M, supports, mount, openFullscreen, closeFullscreen, isFullscreen, BUILDERS, LIGHTS };
 })();
