@@ -2,7 +2,7 @@
 
 ## What this project is
 A website that shows four study spaces our team DESIGNED for four study types.
-A chatbot asks "What am I studying today?" and "How are you feeling right now?", then shows which of our four designs fits, and opens its design card.
+A chatbot asks "What am I studying today?" and "How are you feeling right now?" (and, if those point to different spaces, "Which place feels better right now?"), then shows which of our four designs fits, and opens its design card.
 
 ## Word rules (professor's feedback: keep wording consistent)
 - Spaces are **designed** by our team. The website **shows** the designs.
@@ -14,16 +14,20 @@ A chatbot asks "What am I studying today?" and "How are you feeling right now?",
 - English: use "fits" (e.g. "our Focus Room design fits best"), not "recommend".
 
 ## Chatbot (chat.js, first screen `#/`)
-- Flow: bot greeting → Q1 study type (`t("question")`, choices = `DESIGNS[].type`) → user answer → Q2 mood (choices = `MOODS`) → user answer → result bubble with "Open <space>" buttons → "Start over" + "See all four designs" (`#/compare`).
-- Data in data.js: `MOODS` = `[{ id, label: { en, ko }, space }]` (focused → memorization, stuck → idea, energetic → teamwork, tired → comfort). `CHAT` = `main[studyId]`, `match`, `tiredFirst` (with `{space}` = extra space name), `moodTip[moodId]` — all `{ en, ko }`. Write full sentences (no building sentences from pieces) so Korean particles stay right.
-- Rules (`Chat.decide(type, mood)`, a pure function):
-  - A. mood space = study space → that space only; lines = main + match
-  - B. mood = tired and study ≠ comfort → main = comfort (Green Nook), extra = study space; line = tiredFirst
-  - C. otherwise → main = study space, extra = mood space; lines = main + moodTip
-- The conversation is stored as data (`{ type, mood }`), not HTML, and redrawn from it. KO | EN mid-chat redraws the same conversation. Visiting other screens and coming back keeps it; only "Start over" (or a reload) clears it.
+- Flow: bot greeting → Q1 study type (`t("question")`, choices = `DESIGNS[].type`) → user answer → Q2 mood (choices = `MOODS`) → user answer →
+  - if the two point to the same space: result right away (rule A)
+  - otherwise: bot note (`t("chatSplit")`) + Q3 (`t("chatPlace")`) with 3 choices: ① VIBES[study space] ② VIBES[mood space] ③ `t("chatBoth")`. Space names are NOT shown in Q3. → user answer → result
+  → result bubble with "Open <space>" buttons → "Start over" + "See all four designs" (`#/compare`).
+- Data in data.js: `MOODS` = `[{ id, label: { en, ko }, space }]` (focused → memorization, stuck → idea, energetic → teamwork, tired → comfort). `VIBES[spaceId]` = one mood sentence per space (`{ en, ko }`). `CHAT` = `main[studyId]`, `match`, `picked[spaceId]`, `moodTip[moodId]` (all four moods) — all `{ en, ko }`. Write full sentences (no building sentences from pieces) so Korean particles stay right.
+- Rules (`Chat.decide(type, mood, pick)`, a pure function; `pick` = space id | "both" | null):
+  - A. mood space = study space → main = that space, no extra; lines = main[type] + match (no Q3)
+  - P. Q3 picked one space → main = picked space, no extra; line = picked[space]
+  - E. Q3 "Both feel about the same" → main = study space, extra = mood space; lines = main[type] + moodTip[mood]
+  - Spaces differ and `pick` is null → `null` (no result until Q3 is answered). No special case for any mood (the old "tired → Green Nook first" rule is gone).
+- The conversation is stored as data (`{ type, mood, pick }`), not HTML, and redrawn from it. KO | EN mid-chat (also while Q3 is open) redraws the same conversation. Visiting other screens and coming back keeps it (an open Q3 stays open); only "Start over" (or a reload) clears it.
 - "Open …" buttons call app.js `openFromList(id)` (the router). Never draw a card from chat.js.
 - Bot messages appear after a 0.6 s "Typing…" (no delay with prefers-reduced-motion). The log is `role="log" aria-live="polite"`; all choices are `<button>`s. Bot bubbles #F5F5F5, user bubbles #111 (12px corners — the one exception); choices are stacked full-width buttons (see Style).
-- Chat words (greeting, Q2, buttons, "Typing…") are in i18n.js `UI`.
+- Chat words (greeting, Q2, Q3 note + question, "Both feel about the same", buttons, "Typing…") are in i18n.js `UI`.
 
 ## Screens and the back button
 - One screen at a time. Each has its own URL hash:
@@ -55,7 +59,7 @@ A chatbot asks "What am I studying today?" and "How are you feeling right now?",
 
 ## Files
 - `i18n.js`   — language switch, UI words (en/ko), saved language. Loads first.
-- `data.js`   — all text content (design cards, reasons, sources, chatbot MOODS + CHAT, research STUDIES) in en + ko. Edit content here.
+- `data.js`   — all text content (design cards, reasons, sources, chatbot MOODS + VIBES + CHAT, research STUDIES) in en + ko. Edit content here.
 - `chat.js`   — chatbot on the first screen (`window.Chat`: mount, decide, state). Loads before app.js.
 - `plans.js`  — top-view floor plans drawn as SVG; each plan is a function that gets `L({ en, ko })` for its labels (shown by the "Floor plan" button, and for spaces without 3D yet).
 - `space3d.js`— 3D room viewer (`window.Space3D`). CSS 3D transforms only, no libraries. Must load before app.js.

@@ -47,6 +47,13 @@ window.I18N = (() => {
     },
     question: { en: "What am I studying today?", ko: "오늘은 어떤 공부를 하나요?" },
     chatMood: { en: "How are you feeling right now?", ko: "지금 기분은 어때요?" },
+    chatSplit: {
+      en: "Your study type and your mood point to different spaces.",
+      ko: "공부 유형과 기분이 서로 다른 공간을 가리키고 있어요."
+    },
+    chatPlace: { en: "Which place feels better right now?", ko: "지금 더 끌리는 곳은 어디인가요?" },
+    chatBoth: { en: "Both feel about the same", ko: "둘 다 비슷해요" },
+    places: { en: "Places", ko: "장소" },
     studyTypes: { en: "Study types", ko: "공부 유형" },
     moods: { en: "Moods", ko: "기분" },
     typing: { en: "Typing…", ko: "입력 중…" },

@@ -578,12 +578,20 @@
     { id: "tired", label: { en: "Tired", ko: "피곤함" }, space: "comfort" }
   ];
 
-  // result sentences. Rules (chat.js → Chat.decide):
-  //   A. mood space = study space   → that space only: main + match
-  //   B. mood = tired (study ≠ comfort) → main Green Nook, extra = study space: tiredFirst
-  //   C. otherwise                  → main = study space, extra = mood space: main + moodTip
+  // question 3 (only when study type and mood point to different spaces):
+  // each choice describes the space's mood — the space name is NOT shown
+  window.VIBES = {
+    memorization: { en: "A quiet, bright room with my own desk", ko: "조용하고 밝은 방, 나만의 책상" },
+    idea: { en: "Soft light, café sounds, and room to walk and think", ko: "은은한 조명에 카페 소리, 걸으며 생각할 수 있는 곳" },
+    teamwork: { en: "A round table where we can talk freely", ko: "둥근 테이블에 둘러앉아 편하게 이야기하는 곳" },
+    comfort: { en: "A soft seat with a green view outside", ko: "창밖 초록이 보이는 푹신한 자리" }
+  };
+
+  // result sentences. Rules (chat.js → Chat.decide(type, mood, pick)):
+  //   A. mood space = study space        → that space only: main + match (no question 3)
+  //   P. question 3: picked one space     → that space only: picked[space]
+  //   E. question 3: "Both feel the same" → main = study space, extra = mood space: main + moodTip
   // Full sentences on purpose, so Korean particles are always right.
-  // {space} = the extra space's name (English in both languages).
   window.CHAT = {
     main: {
       memorization: {
@@ -607,11 +615,26 @@
       en: "Your mood fits this space too. Perfect timing!",
       ko: "지금 기분과도 딱 맞아요. 타이밍이 완벽해요!"
     },
-    tiredFirst: {
-      en: "You're tired, so rest comes first. Take a short break in the Green Nook. Even 40 seconds of looking at greenery helped students stay focused (Lee et al., 2015). Then study in the {space}.",
-      ko: "피곤하다면 쉬는 게 먼저예요. Green Nook에서 잠깐 쉬어 가세요. 초록 풍경을 40초만 봐도 집중에 도움이 됐다는 연구가 있어요 (Lee et al., 2015). 그다음 {space}에서 공부해요."
+    // rule P: the space picked in question 3
+    picked: {
+      memorization: {
+        en: "Great, the Focus Room it is. A quiet, bright room and your own desk will help you lock in.",
+        ko: "좋아요, 오늘은 Focus Room이에요. 조용하고 밝은 방과 나만의 책상이 몰입을 도와줄 거예요."
+      },
+      idea: {
+        en: "Great, the Idea Lounge it is. Soft light, café sounds, and room to walk can help new ideas come out.",
+        ko: "좋아요, 오늘은 Idea Lounge예요. 은은한 조명과 카페 소리, 걸을 수 있는 동선이 새 아이디어를 끌어내 줄 거예요."
+      },
+      teamwork: {
+        en: "Great, the Team Studio it is. Sit around a round table and talk things through.",
+        ko: "좋아요, 오늘은 Team Studio예요. 둥근 테이블에 둘러앉아 편하게 이야기하며 공부해 보세요."
+      },
+      comfort: {
+        en: "Great, the Green Nook it is. Even 40 seconds of looking at greenery helped students stay focused (Lee et al., 2015). Rest a little while you study.",
+        ko: "좋아요, 오늘은 Green Nook이에요. 초록 풍경을 40초만 봐도 집중에 도움이 됐다는 연구가 있어요 (Lee et al., 2015). 편하게 쉬면서 공부해요."
+      }
     },
-    // tired has no tip: rule B handles it (comfort + tired is rule A)
+    // rule E: a tip for the mood's space (every mood, tired included)
     moodTip: {
       focused: {
         en: "You're in a focused mood. When you need to lock in, the Focus Room is there too.",
@@ -624,6 +647,10 @@
       energetic: {
         en: "Full of energy? If you want to talk things through with friends, try the Team Studio.",
         ko: "에너지가 넘친다면, 친구들과 이야기 나누며 공부할 수 있는 Team Studio도 좋아요."
+      },
+      tired: {
+        en: "Feeling tired? Take a short break in the Green Nook first. Even 40 seconds of looking at greenery helped students stay focused (Lee et al., 2015).",
+        ko: "피곤하다면 먼저 Green Nook에서 잠깐 쉬어 가세요. 초록 풍경을 40초만 봐도 집중에 도움이 됐다는 연구가 있어요 (Lee et al., 2015)."
       }
     }
   };
