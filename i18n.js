@@ -42,8 +42,8 @@ window.I18N = (() => {
     // chatbot (chat.js)
     chatLog: { en: "Chat with the space finder", ko: "공간 찾기 대화" },
     chatHello: {
-      en: "Hi! I'll find the study space that fits you today. Just answer two quick questions.",
-      ko: "안녕하세요! 오늘 나에게 맞는 공부 공간을 찾아 드릴게요. 질문 두 개만 답해 주세요."
+      en: "Hi! I'll find the study space that fits you today. Just answer a few quick questions.",
+      ko: "안녕하세요! 오늘 나에게 맞는 공부 공간을 찾아 드릴게요. 질문 몇 개만 답해 주세요."
     },
     question: { en: "What am I studying today?", ko: "오늘은 어떤 공부를 하나요?" },
     chatMood: { en: "How are you feeling right now?", ko: "지금 기분은 어때요?" },
