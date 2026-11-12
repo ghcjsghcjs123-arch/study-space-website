@@ -22,7 +22,7 @@ A chatbot asks "What am I studying today?" and "How are you feeling right now?",
   - C. otherwise → main = study space, extra = mood space; lines = main + moodTip
 - The conversation is stored as data (`{ type, mood }`), not HTML, and redrawn from it. KO | EN mid-chat redraws the same conversation. Visiting other screens and coming back keeps it; only "Start over" (or a reload) clears it.
 - "Open …" buttons call app.js `openFromList(id)` (the router). Never draw a card from chat.js.
-- Bot messages appear after a 0.6 s "Typing…" (no delay with prefers-reduced-motion). The log is `role="log" aria-live="polite"`; all choices are `<button>`s. Colors use the style.css variables (--surface, --ink, --accent…).
+- Bot messages appear after a 0.6 s "Typing…" (no delay with prefers-reduced-motion). The log is `role="log" aria-live="polite"`; all choices are `<button>`s. Bot bubbles #F5F5F5, user bubbles #111 (12px corners — the one exception); choices are stacked full-width buttons (see Style).
 - Chat words (greeting, Q2, buttons, "Typing…") are in i18n.js `UI`.
 
 ## Screens and the back button
@@ -33,7 +33,7 @@ A chatbot asks "What am I studying today?" and "How are you feeling right now?",
 - app.js is the router. A route is `{ page, id, full }` (page = chat | compare | survey | research | card). `parse()` / `address()` convert hash ↔ route, `show()` draws it, `go(route)` uses `history.pushState`, `back()` uses `history.back()`, `popstate` redraws. Don't change screens any other way (no direct `openFullscreen`, no showing/hiding sections by hand).
 - Every in-page link `<a href="#/…">` (top bar, brand, "See all four designs", research "Used in" buttons) is caught by one click handler and goes through `go()`. Sections are `<section data-screen="…">`; only the current one is visible.
 - Top bar = screen tabs: Find your space (`#/`) · Compare · Survey · Research. The current one has `aria-current="page"`; the card and 3D screens count as "Find your space". On phones the tabs stay on one row (they scroll sideways on very narrow screens).
-- On every screen change: scroll to the top, stop the sound, lighting preview only on card / 3D (none elsewhere), focus the new screen's heading (for keyboard / screen readers).
+- On every screen change: scroll to the top, stop the sound, focus the new screen's heading (for keyboard / screen readers). The page itself never changes color.
 - Card "← Back" and full screen "← Back" (plus × and Esc) call `back()` → the screen you came from (chat, compare, research…).
 - A direct link (e.g. `#/teamwork/3d`, `#/research`) builds the steps behind it on load (`#/` first), so back ends on the chatbot. Unknown ids open the chatbot.
 - The chat conversation lives in chat.js memory, so it survives visits to other screens; only "Start over" (or a reload) clears it.
@@ -43,7 +43,6 @@ A chatbot asks "What am I studying today?" and "How are you feeling right now?",
 - `window.STUDIES` (data.js) = 11 studies in the order of the team's week-10 literature review:
   overall (1 Barrett) → focus (2 Meyers-Levy, 3 Mehta & Zhu 2009) → ideas (4 Mehta, Zhu & Cheema, 5 Steidle, 6 Oppezzo) → collaboration (7 Brooks) → rest (8 Kaplan, 9 Berman, 10 Lee, 11 Atchley).
 - Each study: `label` and `journal` (never translated), `url`, `group: { en, ko }`, `about: { en: [...], ko: [...] }` (5 sentences for 1, 2, 4, 5, 6; 4-sentence summaries of the week-10 notes for the rest). Only use what the team wrote — no new claims.
-- `key: true` → "Key evidence" badge (2, 4, 6: the same space feature works differently for different kinds of study).
 - "Used in" is found automatically: the spaces whose design card `cites` that study (hidden when none, e.g. Mehta & Zhu 2009, Atchley 2012). The card ends with "Read the original" (the `url`). The KEY_FACT line is the screen's intro; the "tendencies, not rules" note stays at the bottom.
 
 ## Languages (KO | EN)
@@ -51,7 +50,7 @@ A chatbot asks "What am I studying today?" and "How are you feeling right now?",
 - Every visible text exists in both languages. Content = `{ en: "...", ko: "..." }` in data.js (and in plans.js / space3d.js labels). Page words (buttons, headings, hints) = `UI` in i18n.js.
 - Use `tr({ en, ko })` for content and `t("uiWord")` for page words. Never write a visible English-only string.
 - Korean terms: Memorization = 암기, Idea generation = 아이디어 구상, Teamwork = 팀플, Comfort = 편안함. Space names stay in English in both languages. Study names (author, year) and links are never translated.
-- Korean style: natural 해요체 that university students read easily. Korean uses Noto Sans KR (Google Fonts; offline → system font).
+- Korean style: natural 해요체 that university students read easily. Both languages use Pretendard (see Style).
 - `<html lang>` follows the language. Changing language fires `lang:change`; app.js redraws the texts and keeps the open card.
 
 ## Files
@@ -61,7 +60,7 @@ A chatbot asks "What am I studying today?" and "How are you feeling right now?",
 - `plans.js`  — top-view floor plans drawn as SVG; each plan is a function that gets `L({ en, ko })` for its labels (shown by the "Floor plan" button, and for spaces without 3D yet).
 - `space3d.js`— 3D room viewer (`window.Space3D`). CSS 3D transforms only, no libraries. Must load before app.js.
 - `sound.js`  — "Hear this space" sounds, generated with Web Audio API (no audio files).
-- `style.css` — design + lighting preview colors per space (`[data-zone="..."]`).
+- `style.css` — the minimal design system (variables at the top) + 3D view styles. No per-space colors outside the 3D model.
 - `app.js`    — page logic. Card buttons are updated in place (`updateControls`), not by re-rendering the card, so the 3D view is not rebuilt.
 - `index.html`— page structure.
 - `images/ajou-logo.png` — Ajou University logo, used as the chatbot's avatar (128 px).
@@ -87,7 +86,19 @@ A chatbot asks "What am I studying today?" and "How are you feeling right now?",
 ## Style
 - Plain HTML/CSS/JS, no build tools, must work by opening index.html directly.
 - Simple English that university students can read quickly.
-- Must work on phones (no horizontal scroll).
+- Must work on phones (no horizontal scroll). Check new screens at 1440px and 390px.
+
+### Design rules (modern, minimal — follow these for every new screen)
+- **No template look**: no serif fonts, no wide-tracked UPPERCASE colored labels, no badges, no pill buttons/chips/tags, no glow layers, gradients, shadows or card borders. Areas are separated by white space and 1px lines (#E8E8E8).
+- **Type**: Pretendard only (jsDelivr npm static `pretendard.css`; offline → system-ui). Hierarchy by size + weight (400/500/600/700) only: page title `.page-title` 40px/700 (phone 30px), section title 24px/600, body 16px/400, secondary `.meta` 13px/500 gray. Small labels use normal case.
+- **Color** (`:root`): background #FFFFFF, text #111111, secondary #6B6B6B, lines #E8E8E8, light surface #F5F5F5, accent #111111. Links: black + underline. The page background and text color never change on any screen.
+- **Space colors** (blue/orange/green…) and lighting exist ONLY inside the 3D model (the 3D view's background follows the Light setting; the white bars around it don't). Floor plans are black 1.5px lines.
+- **Corners**: buttons / inputs 6px, 3D view / images 8px, everything else 0 (chat bubbles 12px are the one exception).
+- **Buttons — only two kinds**: `.btn.btn-primary` (black, white text, 44px high) and `.btn-link` (no background or border, text + underline, gray on hover). Toggles (3D view/Floor plan, Light, Ceiling) are `.seg` segmented controls: #F5F5F5 track, the selected side white. Close = `.icon-btn`.
+- **Top bar**: site name (600) left; text-only tabs right; current page = black + 2px underline, others gray (same for KO | EN); 1px line below.
+- **Spacing**: 8px steps (8, 16, 24, 32, 48, 64, 96 → `--s1`…`--s12`). Page max width 1080px; long text and the chat 720px, left aligned.
+- **Icons**: 1.5px line icons only (`Space3D.ICON`). No decorative animation (only the chat "Typing…" dots).
+- **Hover** styles go inside `@media (hover: hover)` so taps on phones don't stick.
 
 ## Still to do
 - Comfort > Seating reason: add our survey result (week 12).

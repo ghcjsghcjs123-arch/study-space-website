@@ -37,7 +37,6 @@ window.I18N = (() => {
     navCompare: { en: "Compare", ko: "비교" },
     navSurvey: { en: "Survey", ko: "설문" },
     navResearch: { en: "Research", ko: "연구" },
-    eyebrow: { en: "Group 6 · Ajou University", ko: "아주대학교 6조" },
     chatTitle: { en: "Which of our spaces fits you today?", ko: "오늘 나에게 맞는 공간은?" },
 
     // chatbot (chat.js)
@@ -77,7 +76,6 @@ window.I18N = (() => {
     designFor: { en: (type) => `Design for ${type}`, ko: (type) => `${type}${eulReul(type)} 위한 디자인` },
     hearSpace: { en: "Hear this space", ko: "이 공간 소리 듣기" },
     stopSound: { en: "Stop sound", ko: "소리 끄기" },
-    lightingPreview: { en: (on) => `Lighting preview ${on ? "on" : "off"}`, ko: (on) => `조명 미리보기 ${on ? "켜짐" : "꺼짐"}` },
     viewTabs: { en: "How to show the space", ko: "공간 보기 방식" },
     view3d: { en: "3D view", ko: "3D 보기" },
     viewPlan: { en: "Floor plan", ko: "평면도" },
@@ -110,7 +108,6 @@ window.I18N = (() => {
 
     // research screen
     usedIn: { en: "Used in", ko: "적용한 공간" },
-    keyEvidence: { en: "Key evidence", ko: "핵심 근거" },
     readOriginal: { en: "Read the original", ko: "원문 보기" }
   };
 

@@ -213,12 +213,6 @@
     ]
   };
 
-  // "Key evidence" badge: studies that show the same space feature works
-  // differently for different kinds of study (the core of our idea)
-  STUDY.meyers.key = true;
-  STUDY.mehta.key = true;
-  STUDY.oppezzo.key = true;
-
   // order and groups on the research screen (same order as the week-10 literature review)
   const GROUP = {
     overall: { en: "Overall evidence", ko: "전체 근거" },

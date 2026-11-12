@@ -582,6 +582,15 @@ window.Space3D = (() => {
   const supports = (d) => !!(d && BUILDERS[d.id] && d.view3d);
   const reduceMotion = () => window.matchMedia("(prefers-reduced-motion: reduce)").matches;
   const clamp = (v, a, b) => Math.min(b, Math.max(a, v));
+  // 1.5px line icons (the only icon style on the site)
+  const svg = (d) => `<svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${d}</svg>`;
+  const ICON = {
+    sound: svg('<path d="M4 9.5v5h3.5l4.5 4v-13l-4.5 4z"/><path d="M15.5 9.5a3.5 3.5 0 0 1 0 5M18 7a7 7 0 0 1 0 10"/>'),
+    soundOff: svg('<path d="M4 9.5v5h3.5l4.5 4v-13l-4.5 4z"/><path d="M16 10l4 4M20 10l-4 4"/>'),
+    expand: svg('<path d="M4 9V4h5M20 9V4h-5M4 15v5h5M20 15v5h-5"/>'),
+    close: svg('<path d="M6 6l12 12M18 6L6 18"/>')
+  };
+
   // language helpers from i18n.js: t("uiWord"), tr({ en, ko })
   const t = (...a) => window.I18N.t(...a);
   const tr = (v) => window.I18N.tr(v);
@@ -611,11 +620,19 @@ window.Space3D = (() => {
         <p class="s3d-hint" aria-hidden="true">${t("s3dHint")}</p>
       </div>
       <div class="s3d-bar">
-        <button class="s3d-btn" data-act="light" aria-pressed="false"><small>${t("light")}</small><b></b></button>
-        <button class="s3d-btn" data-act="ceiling" aria-pressed="false"><small>${t("ceiling")}</small><b></b></button>
-        ${fullscreen
-          ? `<button class="s3d-btn s3d-btn--plain" data-act="sound" aria-pressed="false"><span class="bars" aria-hidden="true"><i></i><i></i><i></i></span><b></b></button>`
-          : `<button class="s3d-btn s3d-btn--plain" data-act="full"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M4 9V4h5M20 9V4h-5M4 15v5h5M20 15v5h-5"/></svg><b>${t("fullScreen")}</b></button>`}
+        ${["light", "ceiling"].map((kind) => `
+        <div class="s3d-row">
+          <span class="s3d-row-label">${t(kind)}</span>
+          <div class="seg" role="group" aria-label="${t(kind)}">
+            <button class="seg-btn" data-kind="${kind}" data-mode="ours" aria-pressed="false"><span>${t("ours")}</span><small></small></button>
+            <button class="seg-btn" data-kind="${kind}" data-mode="compare" aria-pressed="false"><span>${t("compare")}</span><small></small></button>
+          </div>
+        </div>`).join("")}
+        <div class="s3d-actions">
+          ${fullscreen
+            ? `<button class="btn-link" data-act="sound" aria-pressed="false">${ICON.sound}<span></span></button>`
+            : `<button class="btn-link" data-act="full">${ICON.expand}<span>${t("fullScreen")}</span></button>`}
+        </div>
       </div>
       <p class="s3d-note" aria-live="polite">${t("s3dIntro")}</p>`;
     slot.appendChild(root);
@@ -764,17 +781,19 @@ window.Space3D = (() => {
     function applyModes() {
       const L = LIGHTS[cfg.light[m.light].preset];
       stage.style.filter = L.filter;
-      root.style.setProperty("--bg", L.bg);
+      root.style.setProperty("--room", L.bg); // background of the 3D view only
       root.style.setProperty("--glow", L.glow);
       root.style.setProperty("--pool", L.pool);
       root.style.setProperty("--core", L.core);
       root.style.setProperty("--ceil", px(cfg.ceiling[m.ceiling]));
 
-      const lb = $('[data-act="light"]'), cb = $('[data-act="ceiling"]');
-      lb.setAttribute("aria-pressed", String(m.light === "compare"));
-      lb.querySelector("b").textContent = `${t(m.light)}: ${tr(cfg.light[m.light].name)}`;
-      cb.setAttribute("aria-pressed", String(m.ceiling === "compare"));
-      cb.querySelector("b").textContent = `${t(m.ceiling)}: ${cfg.ceiling[m.ceiling].toFixed(1)} m`;
+      // segmented controls: the chosen side is pressed; small text = what that side means
+      root.querySelectorAll(".seg-btn").forEach((b) => {
+        const { kind, mode } = b.dataset;
+        b.setAttribute("aria-pressed", String(m[kind] === mode));
+        b.querySelector("small").textContent =
+          kind === "light" ? tr(cfg.light[mode].name) : `${cfg.ceiling[mode].toFixed(1)} m`;
+      });
       kick(1400);
     }
 
@@ -783,8 +802,8 @@ window.Space3D = (() => {
       $(".s3d-note").textContent = withSource(n);
     }
 
-    function toggle(kind) {
-      m[kind] = m[kind] === "ours" ? "compare" : "ours";
+    function setMode(kind, mode) {
+      m[kind] = mode;
       viewers.forEach((v) => v.id === design.id && v.sync());
       showNote(kind);
     }
@@ -794,15 +813,17 @@ window.Space3D = (() => {
       if (!b) return;
       const on = window.SpaceSound.isPlaying(design.sound);
       b.setAttribute("aria-pressed", String(on));
-      b.querySelector("b").textContent = on ? t("stopSound") : t("hearSpace");
+      b.querySelector("span").textContent = on ? t("stopSound") : t("hearSpace");
+      b.querySelector("svg").outerHTML = on ? ICON.soundOff : ICON.sound;
     }
 
     root.querySelector(".s3d-bar").addEventListener("click", (e) => {
+      const seg = e.target.closest(".seg-btn");
+      if (seg) { setMode(seg.dataset.kind, seg.dataset.mode); return; }
       const b = e.target.closest("[data-act]");
       if (!b) return;
       const act = b.dataset.act;
-      if (act === "light" || act === "ceiling") toggle(act);
-      else if (act === "full") (onFullscreen ? onFullscreen() : openFullscreen(design));
+      if (act === "full") (onFullscreen ? onFullscreen() : openFullscreen(design));
       else if (act === "sound") {
         if (window.SpaceSound.isPlaying(design.sound)) window.SpaceSound.stop();
         else window.SpaceSound.play(design.sound);
@@ -909,9 +930,9 @@ window.Space3D = (() => {
     overlay.setAttribute("aria-label", t("s3dDialog", design.name));
     overlay.innerHTML = `
       <div class="s3d-overlay-head">
-        <button class="s3d-back">${t("back")}</button>
-        <div class="s3d-overlay-title"><p class="card-type">${t("designFor", tr(design.type))}</p><h2>${design.name}</h2></div>
-        <button class="s3d-close" aria-label="${t("close3d")}">&times;</button>
+        <button class="btn-link s3d-back">${t("back")}</button>
+        <div class="s3d-overlay-title"><p class="meta">${t("designFor", tr(design.type))}</p><h2>${design.name}</h2></div>
+        <button class="icon-btn s3d-close" aria-label="${t("close3d")}">${ICON.close}</button>
       </div>
       <div class="s3d-overlay-body"></div>`;
     // keep keyboard focus inside the overlay
@@ -946,5 +967,5 @@ window.Space3D = (() => {
   const closeFullscreen = () => closeOverlay && closeOverlay();
   const isFullscreen = () => !!overlay;
 
-  return { M, supports, mount, openFullscreen, closeFullscreen, isFullscreen, BUILDERS, LIGHTS };
+  return { M, supports, mount, openFullscreen, closeFullscreen, isFullscreen, BUILDERS, LIGHTS, ICON };
 })();

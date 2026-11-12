@@ -14,13 +14,9 @@
   const tr = (v) => window.I18N.tr(v);
 
   let selected = null;
-  let lightsOn = true;
   let view = "3d"; // what the card shows: "3d" or "plan"
 
-  const icons = {
-    sound: `<span class="bars" aria-hidden="true"><i></i><i></i><i></i></span>`,
-    light: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M9 18h6M10 21h4M12 3a6 6 0 0 0-3.5 10.9c.6.4 1 1.1 1 1.9V16h5v-.2c0-.8.4-1.5 1-1.9A6 6 0 0 0 12 3z"/></svg>`
-  };
+  const ICON = window.Space3D.ICON; // 1.5px line icons
 
   // study names and links are never translated
   const citeLinks = (cites) =>
@@ -33,16 +29,6 @@
     return `<svg viewBox="0 0 320 230" role="img" aria-label="${t("planAria", d.name)}">${typeof plan === "function" ? plan(tr) : plan}</svg>`;
   };
 
-  // ---------- lighting preview ----------
-  function applyLighting() {
-    const zone = selected && lightsOn ? selected.id : "none";
-    if (document.body.dataset.zone === zone) return;
-    document.body.classList.remove("switching");
-    void document.body.offsetWidth; // restart the flicker animation
-    document.body.classList.add("switching");
-    document.body.dataset.zone = zone;
-  }
-
   // ---------- 1. chatbot (chat.js) ----------
   // Its "Open …" buttons go through the router like every other way to a card.
   window.Chat.mount($("chat"), { onOpen: (id) => openFromList(id) });
@@ -53,35 +39,30 @@
   function renderCard(d) {
     const has3d = window.Space3D && window.Space3D.supports(d);
     $("card").innerHTML = `
-      <button class="back-link" id="cardBack">${t("back")}</button>
-      <div class="card-head">
-        <div>
-          <p class="card-type">${t("designFor", tr(d.type))}</p>
-          <h2>${d.name}</h2>
-          <p class="card-tagline">${tr(d.tagline)}</p>
-        </div>
-        <div class="controls">
-          <button class="btn" id="soundBtn"></button>
-          <button class="btn" id="lightBtn"></button>
-        </div>
-      </div>
+      <button class="btn-link card-back" id="cardBack">${t("back")}</button>
+      <header class="card-head">
+        <p class="meta">${t("designFor", tr(d.type))}</p>
+        <h2 class="page-title">${d.name}</h2>
+        <p class="lede">${tr(d.tagline)}</p>
+        <button class="btn-link" id="soundBtn"></button>
+      </header>
       <div class="card-body">
         <figure class="plan-figure">
           ${has3d ? `
-          <div class="view-tabs" role="group" aria-label="${t("viewTabs")}">
-            <button class="view-tab" data-view="3d">${t("view3d")}</button>
-            <button class="view-tab" data-view="plan">${t("viewPlan")}</button>
+          <div class="seg view-tabs" role="group" aria-label="${t("viewTabs")}">
+            <button class="seg-btn view-tab" data-view="3d"><span>${t("view3d")}</span></button>
+            <button class="seg-btn view-tab" data-view="plan"><span>${t("viewPlan")}</span></button>
           </div>` : ""}
           <div class="view-slot" id="viewSlot"></div>
-          <figcaption class="plan-caption" id="planCaption"></figcaption>
+          <figcaption class="meta plan-caption" id="planCaption"></figcaption>
         </figure>
         <ul class="elements">
           ${d.elements.map((el) => `
             <li class="element">
-              <div class="element-key">${tr(el.key)}</div>
-              <div class="element-value">${tr(el.value)}</div>
+              <p class="meta element-key">${tr(el.key)}</p>
+              <p class="element-value">${tr(el.value)}</p>
               <p class="element-reason">${tr(el.reason)}</p>
-              <div class="element-cite">${citeLinks(el.cites)}</div>
+              <p class="element-cite">${citeLinks(el.cites)}</p>
             </li>`).join("")}
         </ul>
       </div>`;
@@ -90,11 +71,6 @@
     $("soundBtn").addEventListener("click", () => {
       if (window.SpaceSound.isPlaying(d.sound)) window.SpaceSound.stop();
       else window.SpaceSound.play(d.sound);
-    });
-    $("lightBtn").addEventListener("click", () => {
-      lightsOn = !lightsOn;
-      applyLighting();
-      updateControls(d);
     });
     if (has3d) {
       $("card").querySelector(".view-tabs").addEventListener("click", (e) => {
@@ -125,13 +101,11 @@
 
   // update the card buttons without rebuilding the card (keeps the 3D view as it is)
   function updateControls(d) {
-    const sb = $("soundBtn"), lb = $("lightBtn");
-    if (!sb || !lb) return;
+    const sb = $("soundBtn");
+    if (!sb) return;
     const playing = window.SpaceSound.isPlaying(d.sound);
     sb.setAttribute("aria-pressed", String(playing));
-    sb.innerHTML = `${icons.sound} ${playing ? t("stopSound") : t("hearSpace")}`;
-    lb.setAttribute("aria-pressed", String(lightsOn));
-    lb.innerHTML = `${icons.light} ${t("lightingPreview", lightsOn)}`;
+    sb.innerHTML = `${playing ? ICON.soundOff : ICON.sound}<span>${playing ? t("stopSound") : t("hearSpace")}</span>`;
   }
 
   document.addEventListener("spacesound:change", () => {
@@ -220,7 +194,6 @@
     if (r.full && !window.Space3D.isFullscreen()) {
       window.Space3D.openFullscreen(selected, { onBack: back });
     }
-    applyLighting(); // lighting preview only on the card / 3D screens
   }
 
   // top bar: the current screen gets aria-current="page" (card and 3D count as "Find your space")
@@ -285,8 +258,8 @@
   function renderCompare() {
     $("compareGrid").innerHTML = designs
       .map((d) => `
-        <button class="mini" data-zone="${d.id}" data-id="${d.id}">
-          <span class="card-type">${tr(d.type)}</span>
+        <button class="mini" data-id="${d.id}">
+          <span class="meta">${tr(d.type)}</span>
           <h3>${d.name}</h3>
           <div class="plan">${planSvg(d)}</div>
           <dl>
@@ -311,14 +284,13 @@
       group = st.group;
       const about = st.about ? tr(st.about) : null;
       return `${heading}
-        <article class="study${st.key ? " study--key" : ""}">
-          ${st.key ? `<p class="study-badge">${t("keyEvidence")}</p>` : ""}
+        <article class="study">
           <h4 class="study-name">${st.label}</h4>
-          ${st.journal ? `<p class="study-journal">${st.journal}</p>` : ""}
+          ${st.journal ? `<p class="meta study-journal">${st.journal}</p>` : ""}
           ${about ? `<ol class="study-about">${about.map((x) => `<li>${x}</li>`).join("")}</ol>` : ""}
           <div class="study-foot">
             ${usedIn.length ? `<div class="study-used"><span>${t("usedIn")}</span>
-              ${usedIn.map((d) => `<a class="study-space" href="#/${d.id}" data-zone="${d.id}">${d.name}</a>`).join("")}</div>` : ""}
+              ${usedIn.map((d) => `<a href="#/${d.id}">${d.name}</a>`).join("")}</div>` : ""}
             <a class="study-link" href="${st.url}" target="_blank" rel="noopener">${t("readOriginal")} ↗</a>
           </div>
         </article>`;

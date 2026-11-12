@@ -81,8 +81,8 @@ window.Chat = (() => {
       b.innerHTML =
         r.lines.map((l) => `<p>${tr(l)}</p>`).join("") +
         `<div class="chat-open">
-          <button class="chat-btn chat-btn--main" data-open="${r.main}">${t("openSpace", nameOf(r.main))}</button>
-          ${r.extra ? `<button class="chat-btn chat-btn--extra" data-open="${r.extra}">${t("openSpace", nameOf(r.extra))}</button>` : ""}
+          <button class="btn btn-primary chat-main" data-open="${r.main}">${t("openSpace", nameOf(r.main))}</button>
+          ${r.extra ? `<button class="btn-link chat-extra" data-open="${r.extra}">${t("openSpace", nameOf(r.extra))}</button>` : ""}
         </div>`;
     } else {
       b.textContent = msg.text;
@@ -113,7 +113,7 @@ window.Chat = (() => {
   function drawActions(done) {
     actions.hidden = !done;
     actions.innerHTML = done
-      ? `<button class="chat-restart" data-restart>${t("startOver")}</button>
+      ? `<button class="btn-link chat-restart" data-restart>${t("startOver")}</button>
          <a class="chat-all" href="#/compare">${t("seeAll")}</a>`
       : "";
   }
@@ -149,7 +149,7 @@ window.Chat = (() => {
     drawChoices(ask);
     drawActions(!ask);
     if (focus) {
-      const next = options.querySelector("button") || log.querySelector(".chat-btn--main");
+      const next = options.querySelector("button") || log.querySelector(".chat-main");
       if (next) next.focus({ preventScroll: false });
     }
   }
