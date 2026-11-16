@@ -617,8 +617,8 @@
       }
     },
     match: {
-      en: "Your mood fits this space too. Perfect timing!",
-      ko: "지금 기분과도 딱 맞아요. 타이밍이 완벽해요!"
+      en: "This space also suits how you feel right now.",
+      ko: "지금 상태에도 잘 맞는 공간이에요."
     },
     // rule P: the space picked in question 3
     picked: {
