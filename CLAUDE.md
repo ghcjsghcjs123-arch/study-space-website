@@ -7,7 +7,9 @@ A chatbot asks "What am I studying today?" and "How are you feeling right now?" 
 ## Word rules (professor's feedback: keep wording consistent)
 - Spaces are **designed** by our team. The website **shows** the designs.
 - Do NOT write "recommend existing spaces". We are not recommending real Ajou rooms.
-- Study types (always these four names): Memorization, Idea generation, Teamwork, Comfort
+- Study types (always these four names): Memorization, Idea generation, Teamwork, Light study (id `comfort`, space Green Nook)
+- Moods (always these four names): Distracted, Stuck, Energetic, Tired
+- A study type is the kind of study you do (an activity); a mood is how you are right now (a state). Don't mix them up in wording.
 - Design names: Focus Room, Idea Lounge, Team Studio, Green Nook
 - Every design card has exactly 3 elements: Lighting, Noise, Seating — each with a reason and a research source.
 - The chatbot result = "which of the four spaces OUR TEAM DESIGNED fits me now". Never write it as if it picks real Ajou rooms.
@@ -18,7 +20,8 @@ A chatbot asks "What am I studying today?" and "How are you feeling right now?" 
   - if the two point to the same space: result right away (rule A)
   - otherwise: bot note (`t("chatSplit")`) + Q3 (`t("chatPlace")`) with 3 choices: ① VIBES[study space] ② VIBES[mood space] ③ `t("chatBoth")`. Space names are NOT shown in Q3. → user answer → result
   → result bubble with "Open <space>" buttons → "Start over" + "See all four designs" (`#/compare`).
-- Data in data.js: `MOODS` = `[{ id, label: { en, ko }, space }]` (focused → memorization, stuck → idea, energetic → teamwork, tired → comfort). `VIBES[spaceId]` = one mood sentence per space (`{ en, ko }`). `CHAT` = `main[studyId]`, `match`, `picked[spaceId]`, `moodTip[moodId]` (all four moods) — all `{ en, ko }`. Write full sentences (no building sentences from pieces) so Korean particles stay right.
+- Q1 choices show the type name plus a small gray example line (`DESIGNS[].examples`, `{ en, ko }`); the answer bubble shows only the name.
+- Data in data.js: `MOODS` = `[{ id, label: { en, ko }, space }]` (distracted → memorization, stuck → idea, energetic → teamwork, tired → comfort). `VIBES[spaceId]` = one mood sentence per space (`{ en, ko }`). `CHAT` = `main[studyId]`, `match`, `picked[spaceId]`, `moodTip[moodId]` (all four moods) — all `{ en, ko }`. Write full sentences (no building sentences from pieces) so Korean particles stay right.
 - Rules (`Chat.decide(type, mood, pick)`, a pure function; `pick` = space id | "both" | null):
   - A. mood space = study space → main = that space, no extra; lines = main[type] + match (no Q3)
   - P. Q3 picked one space → main = picked space, no extra; line = picked[space]
@@ -53,7 +56,7 @@ A chatbot asks "What am I studying today?" and "How are you feeling right now?" 
 - Default language is English. The KO | EN switch is in the top bar; the choice is saved in localStorage (wrapped in try/catch, falls back to English).
 - Every visible text exists in both languages. Content = `{ en: "...", ko: "..." }` in data.js (and in plans.js / space3d.js labels). Page words (buttons, headings, hints) = `UI` in i18n.js.
 - Use `tr({ en, ko })` for content and `t("uiWord")` for page words. Never write a visible English-only string.
-- Korean terms: Memorization = 암기, Idea generation = 아이디어 구상, Teamwork = 팀플, Comfort = 편안함. Space names stay in English in both languages. Study names (author, year) and links are never translated.
+- Korean terms — study types: Memorization = 암기, Idea generation = 아이디어 구상, Teamwork = 팀플, Light study = 가벼운 공부. Moods: Distracted = 산만함, Stuck = 막막함, Energetic = 활기참, Tired = 피곤함. (Study type = activity, mood = current state.) Space names stay in English in both languages. Study names (author, year) and links are never translated.
 - Korean style: natural 해요체 that university students read easily. Both languages use Pretendard (see Style).
 - `<html lang>` follows the language. Changing language fires `lang:change`; app.js redraws the texts and keeps the open card.
 
@@ -105,5 +108,5 @@ A chatbot asks "What am I studying today?" and "How are you feeling right now?" 
 - **Hover** styles go inside `@media (hover: hover)` so taps on phones don't stick.
 
 ## Still to do
-- Comfort > Seating reason: add our survey result (week 12).
+- Light study (Green Nook) > Seating reason: add our survey result (week 12).
 - Survey section: add a chart of preferred spaces by study type.

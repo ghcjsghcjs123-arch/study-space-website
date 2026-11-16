@@ -7,7 +7,8 @@
 // Keep both languages when you edit. Do NOT translate:
 //   - space names (Focus Room, Idea Lounge, Team Studio, Green Nook)
 //   - study names (cites.label, source) and links (url)
-// Korean study types: 암기, 아이디어 구상, 팀플, 편안함.
+// Korean study types: 암기, 아이디어 구상, 팀플, 가벼운 공부.
+// Study type = the kind of study (an activity). Mood = how you feel right now.
 // =============================================================
 
 (() => {
@@ -233,6 +234,7 @@
     {
       id: "memorization",
       type: { en: "Memorization", ko: "암기" },
+      examples: { en: "Exam material, vocabulary", ko: "시험 범위, 단어 외우기" }, // shown under the name in chat question 1
       name: "Focus Room",
       tagline: {
         en: "A calm, bright room for remembering details.",
@@ -314,6 +316,7 @@
     {
       id: "idea",
       type: { en: "Idea generation", ko: "아이디어 구상" },
+      examples: { en: "Choosing a topic, planning a project", ko: "과제 주제 정하기, 기획하기" }, // shown under the name in chat question 1
       name: "Idea Lounge",
       tagline: {
         en: "An open, softly lit space where ideas can wander.",
@@ -395,6 +398,7 @@
     {
       id: "teamwork",
       type: { en: "Teamwork", ko: "팀플" },
+      examples: { en: "Group meetings, presentation prep", ko: "조별 회의, 발표 준비" }, // shown under the name in chat question 1
       name: "Team Studio",
       tagline: {
         en: "A lively room built for talking things through.",
@@ -477,11 +481,12 @@
     },
     {
       id: "comfort",
-      type: { en: "Comfort", ko: "편안함" },
+      type: { en: "Light study", ko: "가벼운 공부" },
+      examples: { en: "Review or skimming notes, without pressure", ko: "복습, 자료 훑어보기처럼 부담 없는 공부" }, // shown under the name in chat question 1
       name: "Green Nook",
       tagline: {
-        en: "A soft, green corner to rest and reset.",
-        ko: "쉬면서 다시 힘을 채우는 부드러운 초록 공간이에요."
+        en: "A bright, soft corner for low-pressure study.",
+        ko: "부담 없이 공부하기 좋은, 밝고 편안한 자리예요."
       },
       sound: "nature",
       soundLabel: { en: "Wind and birds", ko: "바람과 새소리" },
@@ -572,7 +577,7 @@
 
   // question 2: each mood belongs to one of our four designs
   window.MOODS = [
-    { id: "focused", label: { en: "Focused", ko: "집중" }, space: "memorization" },
+    { id: "distracted", label: { en: "Distracted", ko: "산만함" }, space: "memorization" },
     { id: "stuck", label: { en: "Stuck", ko: "막막함" }, space: "idea" },
     { id: "energetic", label: { en: "Energetic", ko: "활기참" }, space: "teamwork" },
     { id: "tired", label: { en: "Tired", ko: "피곤함" }, space: "comfort" }
@@ -607,8 +612,8 @@
         ko: "팀플에는 우리가 디자인한 Team Studio가 가장 잘 맞아요. 둥근 테이블이 있고, 편하게 대화할 수 있어요."
       },
       comfort: {
-        en: "To study comfortably, our Green Nook design fits best: daylight, green views, and soft seats.",
-        ko: "편안하게 공부하고 싶다면 우리가 디자인한 Green Nook이 가장 잘 맞아요. 자연광, 초록 풍경, 푹신한 자리가 있어요."
+        en: "For light, low-pressure study, our Green Nook design fits best: daylight, green views, and soft seats.",
+        ko: "가벼운 공부에는 우리가 디자인한 Green Nook이 가장 잘 맞아요. 자연광, 초록 풍경, 푹신한 자리가 있어요."
       }
     },
     match: {
@@ -636,9 +641,9 @@
     },
     // rule E: a tip for the mood's space (every mood, tired included)
     moodTip: {
-      focused: {
-        en: "You're in a focused mood. When you need to lock in, the Focus Room is there too.",
-        ko: "지금 집중이 잘 되는 상태네요. 몰입이 필요할 때는 Focus Room도 있어요."
+      distracted: {
+        en: "Having trouble focusing? The Focus Room's quiet, bright space and desk dividers can help you lock in.",
+        ko: "집중이 잘 안 된다면 Focus Room이 도움이 돼요. 조용하고 밝은 공간과 칸막이 책상이 흐트러진 집중을 붙잡아 줘요."
       },
       stuck: {
         en: "Feeling stuck? Take a lap in the Idea Lounge first. Walking can spark new ideas (Oppezzo & Schwartz, 2014).",

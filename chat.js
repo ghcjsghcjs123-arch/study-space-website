@@ -118,7 +118,8 @@ window.Chat = (() => {
     options.hidden = !ask;
     if (!ask) return;
     const lists = {
-      type: () => designs().map((d) => ({ attr: `data-type="${d.id}"`, label: tr(d.type) })),
+      // question 1: name + a small example line (the answer bubble shows only the name)
+      type: () => designs().map((d) => ({ attr: `data-type="${d.id}"`, label: tr(d.type), sub: d.examples && tr(d.examples) })),
       mood: () => window.MOODS.map((m) => ({ attr: `data-mood="${m.id}"`, label: tr(m.label) })),
       // ① study type's space ② mood's space ③ both — described by mood, no names
       pick: () => [
@@ -128,7 +129,9 @@ window.Chat = (() => {
     };
     const list = lists[ask]();
     options.setAttribute("aria-label", t({ type: "studyTypes", mood: "moods", pick: "places" }[ask]));
-    options.innerHTML = list.map((o) => `<button class="chat-choice" ${o.attr}>${o.label}</button>`).join("");
+    options.innerHTML = list.map((o) =>
+      `<button class="chat-choice" ${o.attr}><span class="chat-choice-name">${o.label}</span>${o.sub ? `<span class="chat-choice-ex">${o.sub}</span>` : ""}</button>`
+    ).join("");
   }
 
   function drawActions(done) {

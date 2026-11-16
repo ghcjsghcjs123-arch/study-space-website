@@ -5,7 +5,8 @@
 // - The choice is saved in localStorage; if that is blocked
 //   (private mode, file settings...), the page simply opens in English.
 // Word rules for Korean: Memorization = 암기, Idea generation = 아이디어 구상,
-// Teamwork = 팀플, Comfort = 편안함. Space names stay in English.
+// Teamwork = 팀플, Light study = 가벼운 공부. Moods: Distracted = 산만함,
+// Stuck = 막막함, Energetic = 활기참, Tired = 피곤함. Space names stay in English.
 // Study names (author, year) and links are never translated.
 // =============================================================
 
