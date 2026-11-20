@@ -34,7 +34,8 @@
   window.Chat.mount($("chat"), { onOpen: (id) => openFromList(id) });
 
   // ---------- 2. design card ----------
-  let viewer = null; // the 3D view inside the card (space3d.js)
+  let viewer = null;   // the 3D view inside the card (space3d.js)
+  let soundCtl = null; // sound controls on the card (sound.js)
 
   function renderCard(d) {
     const has3d = window.Space3D && window.Space3D.supports(d);
@@ -44,7 +45,7 @@
         <p class="meta">${t("designFor", tr(d.type))}</p>
         <h2 class="page-title">${d.name}</h2>
         <p class="lede">${tr(d.tagline)}</p>
-        <button class="btn-link" id="soundBtn"></button>
+        <div id="soundSlot"></div>
       </header>
       <div class="card-body">
         <figure class="plan-figure">
@@ -68,17 +69,16 @@
       </div>`;
 
     $("cardBack").addEventListener("click", back);
-    $("soundBtn").addEventListener("click", () => {
-      if (window.SpaceSound.isPlaying(d.sound)) window.SpaceSound.stop();
-      else window.SpaceSound.play(d.sound);
-    });
+    // play / stop · mute · volume (sound.js keeps them in sync everywhere)
+    if (soundCtl) soundCtl.destroy();
+    soundCtl = window.SpaceSound.controls(d.sound);
+    $("soundSlot").replaceWith(soundCtl.el);
     if (has3d) {
       $("card").querySelector(".view-tabs").addEventListener("click", (e) => {
         const b = e.target.closest(".view-tab");
         if (b) showView(d, b.dataset.view);
       });
     }
-    updateControls(d);
     showView(d, has3d ? view : "plan");
   }
 
@@ -98,19 +98,6 @@
       $("planCaption").textContent = t("captionPlan", tr(d.soundLabel));
     }
   }
-
-  // update the card buttons without rebuilding the card (keeps the 3D view as it is)
-  function updateControls(d) {
-    const sb = $("soundBtn");
-    if (!sb) return;
-    const playing = window.SpaceSound.isPlaying(d.sound);
-    sb.setAttribute("aria-pressed", String(playing));
-    sb.innerHTML = `${playing ? ICON.soundOff : ICON.sound}<span>${playing ? t("stopSound") : t("hearSpace")}</span>`;
-  }
-
-  document.addEventListener("spacesound:change", () => {
-    if (selected) updateControls(selected);
-  });
 
   // ---------- screens and addresses (the router) ----------
   // A route is { page, id, full }: page = chat | compare | survey | research | card.
@@ -217,6 +204,7 @@
 
   function closeCard() {
     if (viewer) { viewer.destroy(); viewer = null; }
+    if (soundCtl) { soundCtl.destroy(); soundCtl = null; }
     selected = null;
     view = "3d";
     $("card").innerHTML = "";

@@ -163,7 +163,7 @@ main { max-width: var(--max); margin: 0 auto; padding: 0 var(--s3); }
 .card-back { margin-bottom: var(--s3); }
 .card-head { display: grid; gap: var(--s1); max-width: var(--text); }
 .card-head .page-title { margin-top: 2px; }
-.card-head .btn-link { justify-self: start; margin-top: var(--s1); }
+.card-head .sound-ctl { margin-top: var(--s1); }
 .card-body {
   display: grid; grid-template-columns: minmax(0, 1.25fr) minmax(0, 1fr); gap: var(--s6);
   margin-top: var(--s6); align-items: start;
@@ -227,6 +227,32 @@ main { max-width: var(--max); margin: 0 auto; padding: 0 var(--s3); }
   max-width: var(--max); margin: 0 auto; padding: var(--s4) var(--s3) var(--s6);
   border-top: 1px solid var(--line); font-size: 13px; color: var(--muted);
 }
+
+/* ---------- sound controls (sound.js): play · mute · volume ---------- */
+.sound-ctl { display: flex; flex-wrap: wrap; align-items: center; gap: 0 var(--s3); min-width: 0; }
+.sound-vol { display: flex; align-items: center; gap: 4px; flex: 0 1 260px; min-width: 0; }
+.sound-mute { width: 40px; height: 40px; }
+.sound-val { flex: none; min-width: 4.5em; font-variant-numeric: tabular-nums; }
+.sound-tip { flex-basis: 100%; margin-top: 2px; }
+
+/* thin slider: 2px line, black up to the volume, gray after; small black knob */
+.sound-range {
+  -webkit-appearance: none; appearance: none;
+  flex: 1 1 auto; min-width: 72px; height: 32px; margin: 0;
+  background: transparent; cursor: pointer;
+}
+.sound-range::-webkit-slider-runnable-track {
+  height: 2px;
+  background: linear-gradient(to right, var(--ink) var(--fill, 30%), var(--line) var(--fill, 30%)); /* hard edge = two flat colors */
+}
+.sound-range::-webkit-slider-thumb {
+  -webkit-appearance: none; appearance: none;
+  width: 14px; height: 14px; margin-top: -6px; border: 0; border-radius: 50%; background: var(--ink);
+}
+.sound-range::-moz-range-track { height: 2px; background: var(--line); }
+.sound-range::-moz-range-progress { height: 2px; background: var(--ink); }
+.sound-range::-moz-range-thumb { width: 14px; height: 14px; border: 0; border-radius: 50%; background: var(--ink); }
+.sound-range:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
 
 /* =============================================================
    3D view (space3d.js). Lighting changes only INSIDE the 3D view.

@@ -32,6 +32,13 @@ A chatbot asks "What am I studying today?" and "How are you feeling right now?" 
 - Bot messages appear after a 0.6 s "Typing…" (no delay with prefers-reduced-motion). The log is `role="log" aria-live="polite"`; all choices are `<button>`s. Bot bubbles #F5F5F5, user bubbles #111 (12px corners — the one exception); choices are stacked full-width buttons (see Style).
 - Chat words (greeting, Q2, Q3 note + question, "Both feel about the same", buttons, "Typing…") are in i18n.js `UI`.
 
+## Sound (sound.js, sounds/)
+- Path: scene sources → master (scene level + 1.5 s fade-in) → user volume (slider 0–100, mute) → limiter (DynamicsCompressorNode, −10 dB, ratio 20) → speakers. Every sound goes through it.
+- Controls (card and full screen 3D, kept in sync): play/stop, mute, volume slider. Start at 30%; the volume is saved in localStorage (try/catch → 30%). The first time sound is turned on, show the earphone tip once (`t("earphoneTip")`).
+- Idea Lounge "cafe" = the recording `sounds/cafe.mp3` via Web Audio (fetch → decodeAudioData → AudioBufferSourceNode, `loop = true`, loop points skip silent edges → gapless). Loaded once, then reused. If it can't load (missing file, or index.html opened as a file so fetch is blocked) → the synthetic café (quiet noise layer). quiet / talk / nature are synthetic.
+- Rules for recordings: keep files in `sounds/`, write source + license in `sounds/CREDITS.md`, CC0 or public domain only. **No background music** (research suggests music can disturb focus and problem solving).
+- Changing screens stops the sound (router). `SpaceSound.debug()` / `loopPoints` exist only for automatic tests.
+
 ## Screens and the back button
 - One screen at a time. Each has its own URL hash:
   - `#/` chatbot (first screen, only the chat) · `#/compare` all four designs · `#/survey` survey · `#/research` one card per study
@@ -66,7 +73,8 @@ A chatbot asks "What am I studying today?" and "How are you feeling right now?" 
 - `chat.js`   — chatbot on the first screen (`window.Chat`: mount, decide, state). Loads before app.js.
 - `plans.js`  — top-view floor plans drawn as SVG; each plan is a function that gets `L({ en, ko })` for its labels (shown by the "Floor plan" button, and for spaces without 3D yet).
 - `space3d.js`— 3D room viewer (`window.Space3D`). CSS 3D transforms only, no libraries. Must load before app.js.
-- `sound.js`  — "Hear this space" sounds, generated with Web Audio API (no audio files).
+- `sound.js`  — "Hear this space": Web Audio engine + the shared sound controls (`SpaceSound.controls(scene)`: play/stop · mute · volume).
+- `sounds/`   — sound recordings (`cafe.mp3`) + `CREDITS.md` (source and license of every file).
 - `style.css` — the minimal design system (variables at the top) + 3D view styles. No per-space colors outside the 3D model.
 - `app.js`    — page logic. Card buttons are updated in place (`updateControls`), not by re-rendering the card, so the 3D view is not rebuilt.
 - `index.html`— page structure.

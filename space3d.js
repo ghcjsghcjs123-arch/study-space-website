@@ -630,7 +630,7 @@ window.Space3D = (() => {
         </div>`).join("")}
         <div class="s3d-actions">
           ${fullscreen
-            ? `<button class="btn-link" data-act="sound" aria-pressed="false">${ICON.sound}<span></span></button>`
+            ? `<div class="s3d-sound"></div>`
             : `<button class="btn-link" data-act="full">${ICON.expand}<span>${t("fullScreen")}</span></button>`}
         </div>
       </div>
@@ -808,14 +808,9 @@ window.Space3D = (() => {
       showNote(kind);
     }
 
-    function syncSound() {
-      const b = $('[data-act="sound"]');
-      if (!b) return;
-      const on = window.SpaceSound.isPlaying(design.sound);
-      b.setAttribute("aria-pressed", String(on));
-      b.querySelector("span").textContent = on ? t("stopSound") : t("hearSpace");
-      b.querySelector("svg").outerHTML = on ? ICON.soundOff : ICON.sound;
-    }
+    // full screen: play / stop · mute · volume (shared with the card, see sound.js)
+    const sound = fullscreen ? window.SpaceSound.controls(design.sound) : null;
+    if (sound) $(".s3d-sound").replaceWith(sound.el);
 
     root.querySelector(".s3d-bar").addEventListener("click", (e) => {
       const seg = e.target.closest(".seg-btn");
@@ -824,12 +819,7 @@ window.Space3D = (() => {
       if (!b) return;
       const act = b.dataset.act;
       if (act === "full") (onFullscreen ? onFullscreen() : openFullscreen(design));
-      else if (act === "sound") {
-        if (window.SpaceSound.isPlaying(design.sound)) window.SpaceSound.stop();
-        else window.SpaceSound.play(design.sound);
-      }
     });
-    document.addEventListener("spacesound:change", syncSound);
 
     // ---------- drag to turn, wheel / pinch to zoom ----------
     const pts = new Map();
@@ -902,7 +892,7 @@ window.Space3D = (() => {
       destroy() {
         cancelAnimationFrame(raf);
         ro.disconnect();
-        document.removeEventListener("spacesound:change", syncSound);
+        if (sound) sound.destroy();
         viewers.delete(viewer);
         root.remove();
       }
@@ -911,7 +901,6 @@ window.Space3D = (() => {
 
     fit();
     applyModes();
-    syncSound();
     kick();
     return viewer;
   }
