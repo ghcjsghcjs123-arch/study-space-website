@@ -56,9 +56,8 @@ A chatbot asks "What am I studying today?" and "How are you feeling right now?" 
 
 ## Our survey (`window.SURVEY`, data.js; files in `survey/`)
 - 49 Ajou students (46 first-year), Nov 2026. Raw answers: `survey/responses.xlsx`; the team's notes: `survey/results-notes.md`; recount with `python3 survey/aggregate.py survey/responses.xlsx out.json` (needs openpyxl). The first response (Nov 4, a test) is left out; question 1 choices renamed mid-survey are merged. **Never change a number by hand** — recount and compare.
-- `SURVEY = { respondents, date, who, source, sections, notes, short, spaces }`
+- `SURVEY = { respondents, date, who, source, sections, short, spaces }`
   - `sections: [{ id, kind, title: { en, ko }, note?, labels: { <itemId>: { en, ko } }, order? (multi), charts: [{ q: { en, ko }, items: [{ id, n }], space? (q3/q4), respondents? (multi) }] }]` — ids: `grade` (single), `q1` (single), `q2` (likert, 4 places; the "기타" place chart is left out on purpose), `q3` (multi, what matters per activity), `q4` (multi, facilities wanted per activity).
-  - `notes`: the 3 notes from the results file + "46 of 49 were first-year".
   - `short[spaceId][itemId]`: the short name on 3D tags. `spaces` is **computed** from `q4` in data.js: top 2 per space, `pct = round(n / respondents × 100)` → used by the design-card block and `k.surveyLabel`.
   - Activities ↔ spaces: 과제나 시험 준비하기 → memorization, 아이디어를 떠올리고 메모하기 → idea, 조원과 토론하거나 협업하기 → teamwork, 편안한 환경에서 회복하기 → comfort.
   - Q3/Q4 option wording matches the design cards and 3D tags (e.g. "Seats with outlets and USB charging").
@@ -68,7 +67,7 @@ A chatbot asks "What am I studying today?" and "How are you feeling right now?" 
 - As a source on a design card: `{ label: "Our survey (2026)", url: "#/survey" }` (in-site link, same tab). It is NOT one of the research-screen studies.
 
 ## Survey screen (`#/survey`, charts.js)
-- Title, "49 respondents · Nov 2026", intro; then each section: title + note + a grid of chart cards (PC 2–3 columns, phone 1); the notes at the bottom (small gray).
+- Title, "49 respondents · Nov 2026", intro; then each section: title + note + a grid of chart cards (PC 2–3 columns, phone 1). No notes block at the bottom (the team asked to leave it out).
 - Chart card: question (q3/q4: plus a small "→ <space>" link to its card) → "49 responses" or "49 respondents · N selections in total" (multi) → pie (SVG, no library) → legend "color · name · n (p%)". A section with one chart doesn't repeat the question already in its title.
 - %: inside a slice only when ≥ 7%. single / likert: share of people. multi: in the circle = share of all selections; in the legend brackets = share of the 49 respondents.
 - 0-person options: never a slice; gray in the legend (single questions: left out of the legend).

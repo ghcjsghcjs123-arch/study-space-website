@@ -247,7 +247,6 @@ button.legend-item { cursor: pointer; }
 .chart-card.is-focus .legend-item[data-i]:not(.is-on) { opacity: 0.4; }
 .legend-zero .legend-item { color: #9a9a9a; }
 .legend-zero .lg-num { color: #b0b0b0; }
-.survey-notes { list-style: none; margin: var(--s8) 0 0; padding: var(--s3) 0 0; border-top: 1px solid var(--line); max-width: var(--text); display: grid; gap: 4px; }
 
 /* ---------- research: one entry per study, 1px lines ---------- */
 .research { max-width: var(--text); }

@@ -645,22 +645,6 @@
         ]
       },
     ],
-    // notes under the charts (the first three come from the survey results file)
-    notes: [
-      {
-        en: "We left out the first response (Nov 4, 2026): the year was blank and the answers didn't match the questions, so it looked like a test.",
-        ko: "2026-11-04에 들어온 첫 번째 응답 1건은 학년이 비어 있고 답변이 질문과 맞지 않아(시범 응답으로 보임) 집계에서 뺐습니다."
-      },
-      {
-        en: "The choices in question 1 were renamed partway through the survey (e.g. \"Library, study café\" → \"Library, study café: a quiet place to focus\"), so we combined matching choices.",
-        ko: "질문 1의 보기 이름이 설문 중간에 바뀌어(예: “도서관, 스터디카페” → “도서관, 스터디카페: 공부에 집중할 수 있는 조용한 공간”) 같은 보기끼리 합쳤습니다."
-      },
-      {
-        en: "For multiple-choice questions, the % inside the circle is the share of all selections, and the % in brackets is the share of respondents who chose that option.",
-        ko: "복수 선택 문항은 원 안의 %가 전체 선택 수 중 비중이고, 오른쪽 괄호 안 %는 응답자 중 그 보기를 고른 비율입니다."
-      },
-      { en: "Most respondents (46 of 49) were first-year students.", ko: "응답자 49명 중 46명이 1학년이에요." }
-    ],
     // short names on the 3D tags ("short · pct%"), per space and facility id
     short: {
       memorization: { charging: { en: "Charging seats", ko: "충전 좌석" }, soundproof: { en: "Soundproof study rooms", ko: "방음 개인 학습실" } },

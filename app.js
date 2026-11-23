@@ -63,11 +63,10 @@
       </section>`;
   }
 
-  // survey screen: every question as a pie chart (charts.js) + the notes
+  // survey screen: every question as a pie chart (charts.js)
   function renderSurvey() {
     $("surveyMeta").textContent = t("surveyMeta", S().respondents, tr(S().date));
     window.SurveyCharts.render($("surveyCharts"));
-    $("surveyNotes").innerHTML = S().notes.map((n) => `<li>${tr(n)}</li>`).join("");
   }
 
   function renderCard(d) {
