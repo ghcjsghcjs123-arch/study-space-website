@@ -169,6 +169,7 @@ main { max-width: var(--max); margin: 0 auto; padding: 0 var(--s3); }
   margin-top: var(--s6); align-items: start;
 }
 .plan-figure { margin: 0; min-width: 0; }
+.card-side { min-width: 0; }
 .view-tabs { margin-bottom: var(--s2); }
 .plan-caption { margin-top: var(--s2); }
 .elements { list-style: none; margin: 0; padding: 0; border-top: 1px solid var(--line); }
@@ -198,11 +199,29 @@ main { max-width: var(--max); margin: 0 auto; padding: 0 var(--s3); }
 .mini dt { margin-top: var(--s1); font-size: 13px; font-weight: 500; color: var(--muted); }
 .mini dd { margin: 0; }
 
-/* ---------- survey ---------- */
-.survey-placeholder {
-  margin-top: var(--s6); max-width: var(--text); padding: var(--s6) var(--s3);
-  background: var(--soft); color: var(--muted); font-size: 15px;
-}
+/* ---------- survey facts: name · thin bar · % (card block + survey screen) ---------- */
+.facts { list-style: none; margin: 0; padding: 0; }
+.fact-row { display: grid; grid-template-columns: minmax(0, 1fr) auto; align-items: baseline; gap: 4px var(--s2); padding: 12px 0; }
+.fact-row + .fact-row { border-top: 1px solid var(--line); }
+.fact-name { font-size: 16px; }
+.fact-pct { font-size: 16px; font-weight: 600; font-variant-numeric: tabular-nums; }
+.fact-bar { grid-column: 1 / -1; height: 4px; background: var(--line); }
+.fact-bar > i { display: block; height: 100%; background: var(--ink); }
+
+.survey-block { margin-top: var(--s4); }
+.survey-block h3 { font-size: 18px; font-weight: 600; }
+.survey-block .meta { margin-top: 4px; }
+.survey-block .facts { margin-top: var(--s1); }
+.survey-block > a { display: inline-block; margin-top: var(--s2); font-size: 15px; font-weight: 500; }
+
+/* ---------- survey screen ---------- */
+.survey { max-width: var(--text); }
+.survey-list { margin-top: var(--s6); }
+.survey-space { padding: var(--s3) 0; border-top: 1px solid var(--line); }
+.survey-space:last-child { border-bottom: 1px solid var(--line); }
+.survey-space h3 { font-size: 18px; font-weight: 600; }
+.survey-space .facts { margin-top: var(--s1); }
+.survey .note { margin-top: var(--s3); }
 
 /* ---------- research: one entry per study, 1px lines ---------- */
 .research { max-width: var(--text); }
@@ -302,6 +321,9 @@ main { max-width: var(--max); margin: 0 auto; padding: 0 var(--s3); }
   white-space: normal; width: max-content; max-width: 190px;
   font-size: 12px; font-weight: 400; line-height: 1.4; color: var(--ink); background: #fff; padding: 6px 8px;
 }
+/* survey facility tags ("… · 76%"): outline only, so they read differently */
+.s3d-label--survey { background: #fff; color: var(--ink); box-shadow: inset 0 0 0 1px var(--ink); }
+.s3d-label--survey.s3d-label--above::after { border-top-color: var(--ink); }
 .s3d-label.is-hidden { opacity: 0; }
 .s3d-hint {
   position: absolute; left: var(--s2); bottom: var(--s2); margin: 0;
@@ -316,6 +338,7 @@ main { max-width: var(--max); margin: 0 auto; padding: 0 var(--s3); }
 .s3d-row-label { font-size: 13px; font-weight: 500; color: var(--muted); }
 .s3d-row .seg { width: 100%; }
 .s3d-actions { display: flex; gap: var(--s3); }
+.s3d-survey-hint { margin-top: 4px; }
 .s3d-note { margin-top: var(--s1); font-size: 15px; color: var(--muted); min-height: 3.2em; }
 
 /* full screen 3D: white bars, the model in the middle */

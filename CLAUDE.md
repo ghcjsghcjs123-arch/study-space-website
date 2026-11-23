@@ -49,9 +49,19 @@ A chatbot asks "What am I studying today?" and "How are you feeling right now?" 
 - Top bar = screen tabs: Find your space (`#/`) · Compare · Survey · Research. The current one has `aria-current="page"`; the card and 3D screens count as "Find your space". On phones the tabs stay on one row (they scroll sideways on very narrow screens).
 - On every screen change: scroll to the top, stop the sound, focus the new screen's heading (for keyboard / screen readers). The page itself never changes color.
 - Card "← Back" and full screen "← Back" (plus × and Esc) call `back()` → the screen you came from (chat, compare, research…).
+- Full screen closes when leaving it or when the card under it changes (`#/a/3d` → `#/b/3d`).
 - A direct link (e.g. `#/teamwork/3d`, `#/research`) builds the steps behind it on load (`#/` first), so back ends on the chatbot. Unknown ids open the chatbot.
 - The chat conversation lives in chat.js memory, so it survives visits to other screens; only "Start over" (or a reload) clears it.
 - `history.scrollRestoration` is manual; the router scrolls.
+
+## Our survey (`window.SURVEY`, data.js)
+- Question 4 ("Which spaces or facilities would you like for each activity?"), 49 Ajou students (mostly first-year), Nov 2026, multiple choice.
+- `SURVEY = { respondents, date, who, multipleChoice, source: { en, ko }, spaces: { <spaceId>: { activity: { en, ko }, top: [{ label: { en, ko }, short: { en, ko }, n, pct }, …] } } }` — top 2 per space; `pct = round(n / 49 × 100)`; `short` = the name on the 3D tag.
+- 3D: every facility from the survey gets a tag via `k.surveyLabel(rank, pos)` → "short · pct%" (e.g. "Charging seats · 76%"). **Survey tags always end with the %** and use the outlined style (`.s3d-label--survey`); normal tags stay black. The hint line under the 3D view explains the %.
+  - Focus Room: charging panel on every desk divider + 2 soundproof booths (right side; desk rows moved left). Idea Lounge: 3-seat sofa + thick-cushion chairs, whiteboard wall over most of the back wall. Team Studio: 1.2 m frosted-glass partitions → 3 group rooms, back-wall whiteboard. Green Nook: sofa tag, air purifier, thermostat, window vent.
+- Design card: "What students asked for" block under Lighting / Noise / Seating (separate from the 3 elements): name · thin bar · %, the source line, and a "See the survey" link (`#/survey`).
+- Survey screen (`#/survey`): top 2 per space in the same bar format; the space name opens its card.
+- As a source on a design card: `{ label: "Our survey (2026)", url: "#/survey" }` (in-site link, same tab). It is NOT one of the research-screen studies.
 
 ## Research screen (`#/research`)
 - `window.STUDIES` (data.js) = 11 studies in the order of the team's week-10 literature review:
@@ -69,7 +79,7 @@ A chatbot asks "What am I studying today?" and "How are you feeling right now?" 
 
 ## Files
 - `i18n.js`   — language switch, UI words (en/ko), saved language. Loads first.
-- `data.js`   — all text content (design cards, reasons, sources, chatbot MOODS + VIBES + CHAT, research STUDIES) in en + ko. Edit content here.
+- `data.js`   — all text content (design cards, reasons, sources, chatbot MOODS + VIBES + CHAT, research STUDIES, our SURVEY) in en + ko. Edit content here.
 - `chat.js`   — chatbot on the first screen (`window.Chat`: mount, decide, state). Loads before app.js.
 - `plans.js`  — top-view floor plans drawn as SVG; each plan is a function that gets `L({ en, ko })` for its labels (shown by the "Floor plan" button, and for spaces without 3D yet).
 - `space3d.js`— 3D room viewer (`window.Space3D`). CSS 3D transforms only, no libraries. Must load before app.js.
@@ -90,8 +100,8 @@ A chatbot asks "What am I studying today?" and "How are you feeling right now?" 
   - `notes.light.ours / .compare` and `notes.ceiling.ours / .compare` = `{ text: { en, ko }, source? }`. `source` shows as "(Author, year)" before the final period. Leave `source` out when the sentence has no study. Only use studies already cited in data.js — never invent one.
   - `callout` (optional, Team Studio) = a `{ text: { en, ko }, source }` note shown inside the room (hidden when the 3D view is small, e.g. the phone card).
 - Units: meters, 1 m = 46 px (`M`). Axes: x = right, y = back wall → front, z = up. x/y = center of the footprint, z = bottom. Back wall at y = 0, left wall at x = 0; front and right stay open (dollhouse).
-- Helpers: `box` (`faces` = different look per side), `plane` (face: up/front/right/back/left/down), `crossed`, `group` (rz rotation), `label` (text = `{ en, ko }`, or a function returning one, e.g. depends on `k.modes`). Builders also get `k.cfg` (the view3d block) and `k.modes` (current ours/compare).
-- Furniture: `loungeChair`, `chair`, `roundTable`, `desk`, `deskLamp`, `panelLight`, `pendant`, `floorLamp`, `bookshelf`, `clock`, `sofa`, `beanbag`, `mobileWhiteboard`, `plant`, `pool`. Use `faceTo: [x, y]` to turn chairs toward a table.
+- Helpers: `box` (`faces` = different look per side), `plane` (face: up/front/right/back/left/down), `crossed`, `group` (rz rotation; optional rx / ry tilt), `label`, `surveyLabel` (text = `{ en, ko }`, or a function returning one, e.g. depends on `k.modes`). Builders also get `k.cfg` (the view3d block) and `k.modes` (current ours/compare).
+- Furniture: `loungeChair` (`comfy: true` = thick cushions), `chair`, `roundTable`, `desk`, `deskLamp`, `panelLight`, `pendant`, `floorLamp`, `bookshelf`, `clock`, `sofa`, `beanbag`, `mobileWhiteboard`, `plant`, `pool`. Use `faceTo: [x, y]` to turn chairs toward a table.
 - Keep the number of 3D parts low (about 400 max per room) so phones stay smooth: thin things (dividers, chair backs, desk legs) are single `plane`s, not `box`es.
 - Ceiling height = CSS variable `--ceil` (animated via `@property`). Anything that must follow the ceiling (walls, hanging lamps, height marker) uses `z: "var(--ceil)"`; things on walls (whiteboard, windows) use fixed heights.
 - Light presets live in `LIGHTS`: dimWarm, brightOffice, brightWarm, dim, daylightGreen, coldWhite (filter + bg/glow/pool/core colors). Keep the same 5 filter functions in the same order so they animate. Keep `bg` darker than the walls so walls stay visible.
@@ -116,5 +126,4 @@ A chatbot asks "What am I studying today?" and "How are you feeling right now?" 
 - **Hover** styles go inside `@media (hover: hover)` so taps on phones don't stick.
 
 ## Still to do
-- Light study (Green Nook) > Seating reason: add our survey result (week 12).
-- Survey section: add a chart of preferred spaces by study type.
+- (nothing open right now)

@@ -230,6 +230,10 @@
     [STUDY.kaplan, GROUP.rest], [STUDY.berman, GROUP.rest], [STUDY.lee, GROUP.rest], [STUDY.atchley, GROUP.rest]
   ].map(([study, group]) => Object.assign(study, { group }));
 
+  // our own survey as a source on a design card (links to the survey screen,
+  // NOT listed on the research screen)
+  const OUR_SURVEY = { label: "Our survey (2026)", url: "#/survey" };
+
   window.DESIGNS = [
     {
       id: "memorization",
@@ -513,10 +517,10 @@
           key: KEY.seating,
           value: { en: "Sofas and beanbags", ko: "소파와 빈백" },
           reason: {
-            en: "TODO: add our survey result about what makes students feel comfortable.",
-            ko: "TODO: 학생들이 무엇에서 편안함을 느끼는지에 대한 우리 설문 결과를 넣을 예정이에요."
+            en: "In our survey, 76% of students chose comfortable chairs and sofas as what they want for resting.",
+            ko: "우리 설문에서 학생의 76%가 회복하기 좋은 공간에 원하는 것으로 편안한 의자·소파 좌석을 골랐어요."
           },
-          cites: []
+          cites: [OUR_SURVEY]
         }
       ],
       view3d: {
@@ -567,6 +571,62 @@
       ko: "빛, 온도, 배치 같은 교실 특징이 학생들 사이 학습 향상 차이의 약 16%를 설명했어요."
     },
     cite: STUDY.barrett
+  };
+
+  // =============================================================
+  // Our survey — question 4: "Which spaces or facilities would you like
+  // for each activity?" (multiple choice). Top 2 per space.
+  //   n = students who chose it, pct = n / 49 respondents (rounded)
+  //   short = the name on the 3D label, shown as "short · pct%"
+  // Survey labels in the 3D view always end with the %.
+  // =============================================================
+  const FAC = {
+    charging: { en: "Seats with outlets and USB charging", ko: "콘센트·USB 충전이 가능한 좌석" },
+    soundproof: { en: "Soundproof private study rooms", ko: "방음이 된 개인 학습실" },
+    comfy: { en: "Comfortable chairs and sofas", ko: "편안한 의자·소파 좌석" },
+    whiteboard: { en: "Whiteboard walls and memo space", ko: "화이트보드 벽이나 메모 공간" },
+    groupRooms: { en: "Group study rooms for discussion", ko: "여럿이 토론할 수 있는 그룹 스터디룸" },
+    air: { en: "Good ventilation and temperature control", ko: "환기와 온도 조절이 잘 되는 공간" }
+  };
+  window.SURVEY = {
+    respondents: 49,
+    date: { en: "Nov 2026", ko: "2026년 11월" },
+    who: { en: "Ajou students, mostly first-year", ko: "아주대 학생, 대부분 1학년" },
+    multipleChoice: true,
+    source: {
+      en: "Our survey of 49 Ajou students (Nov 2026, mostly first-year, multiple choice).",
+      ko: "아주대 학생 49명 대상 우리 설문 (2026년 11월, 대부분 1학년, 복수 선택)."
+    },
+    spaces: {
+      memorization: {
+        activity: { en: "Preparing assignments or exams", ko: "과제나 시험 준비하기" },
+        top: [
+          { label: FAC.charging, short: { en: "Charging seats", ko: "충전 좌석" }, n: 37, pct: 76 },
+          { label: FAC.soundproof, short: { en: "Soundproof study rooms", ko: "방음 개인 학습실" }, n: 28, pct: 57 }
+        ]
+      },
+      idea: {
+        activity: { en: "Coming up with ideas and taking notes", ko: "아이디어를 떠올리고 메모하기" },
+        top: [
+          { label: FAC.comfy, short: { en: "Comfy sofa seats", ko: "편한 소파 좌석" }, n: 33, pct: 67 },
+          { label: FAC.whiteboard, short: { en: "Whiteboard wall", ko: "화이트보드 벽" }, n: 24, pct: 49 }
+        ]
+      },
+      teamwork: {
+        activity: { en: "Discussing or working with teammates", ko: "조원과 토론하거나 협업하기" },
+        top: [
+          { label: FAC.groupRooms, short: { en: "Group study rooms", ko: "그룹 스터디룸" }, n: 33, pct: 67 },
+          { label: FAC.whiteboard, short: { en: "Whiteboard wall", ko: "화이트보드 벽" }, n: 24, pct: 49 }
+        ]
+      },
+      comfort: {
+        activity: { en: "Recovering in a comfortable place", ko: "편안한 환경에서 회복하기" },
+        top: [
+          { label: FAC.comfy, short: { en: "Comfy sofas", ko: "편한 소파" }, n: 37, pct: 76 },
+          { label: FAC.air, short: { en: "Fresh air & temperature control", ko: "환기·온도 조절" }, n: 29, pct: 59 }
+        ]
+      }
+    }
   };
 
   // =============================================================

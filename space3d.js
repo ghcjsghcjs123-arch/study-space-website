@@ -79,9 +79,11 @@ window.Space3D = (() => {
    *   rz: turn around the vertical axis (degrees).
    *   z may also be a CSS string, e.g. "var(--ceil)" to hang from the ceiling.
    */
-  function group({ x = 0, y = 0, z = 0, rz = 0, children = [] } = {}) {
+  // rx / ry (optional) tilt the group, e.g. a window pane opened on its hinge
+  function group({ x = 0, y = 0, z = 0, rz = 0, rx = 0, ry = 0, children = [] } = {}) {
     const g = div("s3d-n");
-    g.style.transform = `translate3d(${px(x)}, ${px(y)}, ${px(z)})` + (rz ? ` rotateZ(${rz}deg)` : "");
+    g.style.transform = `translate3d(${px(x)}, ${px(y)}, ${px(z)})` + (rz ? ` rotateZ(${rz}deg)` : "") +
+      (rx ? ` rotateX(${rx}deg)` : "") + (ry ? ` rotateY(${ry}deg)` : "");
     children.flat().forEach((c) => c && g.appendChild(c));
     return g;
   }
@@ -175,16 +177,21 @@ window.Space3D = (() => {
   const faceAngle = (x, y, to) => (to ? (Math.atan2(-(to[0] - x), to[1] - y) * 180) / Math.PI : 0);
 
   // lounge chair with arms and a backrest; turns to face (tx, ty)
-  const loungeChair = ({ x, y, color, faceTo }) =>
+  // comfy: thick seat cushion + back cushion (survey: students want comfortable chairs)
+  const loungeChair = ({ x, y, color, faceTo, comfy = false }) =>
     group({
       x, y, rz: faceAngle(x, y, faceTo),
       children: [
-        box({ y: 0.08, w: 0.58, d: 0.66, h: 0.42, look: color }),                // seat
+        box({ y: 0.08, w: 0.58, d: 0.66, h: comfy ? 0.3 : 0.42, look: color }),  // seat
+        comfy && box({ y: 0.1, z: 0.3, w: 0.56, d: 0.62, h: 0.16, look: CUSHION(color) }), // seat cushion
         box({ y: -0.33, w: 0.86, d: 0.16, h: 0.86, look: color }),               // backrest
+        comfy && plane({ face: "front", y: -0.24, z: 0.46, w: 0.54, h: 0.36, look: CUSHION(color), shade: 0.06 }), // back cushion
         box({ x: -0.36, y: 0.08, w: 0.14, d: 0.66, h: 0.6, look: color }),       // arm
         box({ x: 0.36, y: 0.08, w: 0.14, d: 0.66, h: 0.6, look: color })         // arm
       ]
     });
+  // a lighter, soft-looking version of a color for cushions (part of the 3D model)
+  const CUSHION = (c) => `radial-gradient(ellipse at 50% 40%, rgba(255,255,255,.28), rgba(255,255,255,0) 70%), ${c}`;
 
   // simple desk / meeting chair: seat on one post, low backrest
   const chair = ({ x, y, color = "#3d5a80", faceTo, rz }) =>
@@ -396,20 +403,25 @@ window.Space3D = (() => {
         look: { border: `${px(0.08)} dashed #ff8a2a` }
       }));
 
-      // back wall: whiteboard ("Idea wall") with 16 sticky notes
+      // back wall: whiteboard wall over most of the wall (survey: 49%), sticky notes, pen tray
+      const BX = 4.6, BW = 7.2;   // center and width → x 1.0 … 8.2
       k.add(k.plane({
-        face: "front", x: 5, y: 0.02, z: 0.85, w: 4, h: 1.4, cls: "s3d-wall",
+        face: "front", x: BX, y: 0.02, z: 0.8, w: BW, h: 1.45, cls: "s3d-wall",
         look: { background: "#fbfbf8", border: `${px(0.06)} solid #9aa3ad` }
       }));
       const notes = ["#ffe066", "#ff8fab", "#7fd1ff", "#9be38a"];
-      for (let i = 0; i < 16; i++) {
-        const col = i % 4, row = Math.floor(i / 4);
-        const jx = Math.sin(i * 12.9) * 0.12, jz = Math.cos(i * 7.3) * 0.05;
+      for (let i = 0; i < 28; i++) {
+        const col = i % 7, row = Math.floor(i / 7);
+        const jx = Math.sin(i * 12.9) * 0.14, jz = Math.cos(i * 7.3) * 0.05;
         k.add(k.plane({
-          face: "front", x: 3.55 + col * 0.95 + jx, y: 0.04, z: 1.0 + row * 0.29 + jz,
+          face: "front", x: 1.55 + col * 1.0 + jx, y: 0.04, z: 0.98 + row * 0.29 + jz,
           w: 0.26, h: 0.26, look: notes[(i + row) % 4], shade: 0.04, spin: Math.sin(i * 3.1) * 8, cls: "s3d-wall"
         }));
       }
+      // pen tray along the bottom of the board + 3 markers
+      k.add(k.box({ x: BX, y: 0.07, z: 0.74, w: BW - 0.4, d: 0.08, h: 0.04, look: "#9aa3ad" }));
+      [["#d62828", 2.2], ["#1d3557", 2.45], ["#2a9d8f", 6.9]].forEach(([c, x]) =>
+        k.add(k.plane({ x, y: 0.07, z: 0.785, w: 0.14, h: 0.025, look: c, shade: 0 })));
 
       // left wall: window
       k.add(k.plane({
@@ -422,16 +434,15 @@ window.Space3D = (() => {
         }
       }));
 
-      // coffee table + 3 lounge chairs facing it, each with a pendant lamp
+      // coffee table; a 3-seat sofa + 2 thick-cushion lounge chairs around it (survey: 67%),
+      // each with a pendant lamp
       k.add(k.roundTable({ x: C[0], y: C[1] }));
-      const chairs = [
-        { x: 5, y: 2.65, color: "#2a9d8f" },
-        { x: 3.66, y: 4.98, color: "#e9c46a" },
-        { x: 6.34, y: 4.98, color: "#e76f51" }
-      ];
-      chairs.forEach((c) => {
+      k.add(k.pool({ x: 5, y: 2.6, r: 1.3 }));
+      k.add(k.sofa({ x: 5, y: 2.6, w: 2.3, color: "#2a9d8f" }));   // faces the table (+y)
+      k.add(k.pendant({ x: 5, y: 2.6 }));
+      [{ x: 3.66, y: 4.98, color: "#e9c46a" }, { x: 6.34, y: 4.98, color: "#e76f51" }].forEach((c) => {
         k.add(k.pool({ x: c.x, y: c.y, r: 1.1 }));
-        k.add(k.loungeChair({ ...c, faceTo: C }));
+        k.add(k.loungeChair({ ...c, faceTo: C, comfy: true }));
         k.add(k.pendant({ x: c.x, y: c.y }));
       });
 
@@ -441,32 +452,54 @@ window.Space3D = (() => {
       [[0.6, 0.6], [9.4, 0.6], [0.6, 7.4], [9.4, 7.4]].forEach(([x, y]) => k.add(k.plant({ x, y })));
 
       // labels (always face the viewer)
-      k.add(k.label({ en: "Idea wall", ko: "아이디어 벽" }, { x: 5, y: 0.05, z: 2.3, facing: [0, 1] }));
       k.add(k.label({ en: "Walking loop", ko: "걷는 동선" }, { x: C[0], y: C[1] + 2.8, z: 0.05, place: "center" }));
-      k.add(k.label({ en: "Lounge chairs", ko: "라운지 의자" }, { x: 5, y: 2.65, z: 1.0 }));
+      k.add(k.surveyLabel(0, { x: 5, y: 2.6, z: 0.95 }));                        // Comfy sofa seats · 67%
+      k.add(k.surveyLabel(1, { x: 2.4, y: 0.05, z: 2.3, facing: [0, 1] }));     // Whiteboard wall · 49%
     },
 
     memorization(k) {
       k.room({ w: 10, d: 8, floor: LOOKS.carpet, wall: "#e9edf1" });
 
-      // ceiling light panels: bright, even light over both rows
-      [[3.1, 2.8], [6.9, 2.8], [3.1, 5.3], [6.9, 5.3]].forEach(([x, y]) => {
+      // ceiling light panels: bright, even light over both rows of desks
+      [[2.25, 2.8], [5.65, 2.8], [2.25, 5.3], [5.65, 5.3]].forEach(([x, y]) => {
         k.add(k.pool({ x, y, r: 2 }));
         k.add(k.panelLight({ x, y }));
       });
 
-      // 8 single desks (2 rows x 4) with dividers, a chair and a desk lamp
-      const rows = [2.4, 4.9], cols = [2.0, 3.9, 5.8, 7.7];
+      // 8 single desks (2 rows x 4) with dividers, a chair and a desk lamp.
+      // The right side of the room is kept free for the soundproof rooms.
+      const rows = [2.4, 4.9], cols = [1.4, 3.1, 4.8, 6.5];
       const W = 1.1, D = 0.6, H = 0.74, divider = "#7f9bb3";
+      // survey: charging panel (outlet + USB) on each divider — one flat plane, dots drawn in it
+      const SOCKET = {
+        background:
+          "radial-gradient(circle at 30% 50%, #2b2d31 0 14%, transparent 16%)," +
+          "radial-gradient(circle at 70% 50%, #2b2d31 0 14%, transparent 16%), #f4f6f8",
+        border: "1px solid #8a929c"
+      };
       rows.forEach((y) => cols.forEach((x) => {
         k.add(k.desk({ x, y, w: W, d: D, h: H }));
         // dividers: thin panels at the back and both sides of the desk
         k.add(k.plane({ face: "front", x, y: y - D / 2 + 0.02, z: H, w: W, h: 0.5, look: divider }));
         k.add(k.plane({ face: "right", x: x - W / 2 + 0.02, y: y + 0.01, z: H, w: D - 0.02, h: 0.5, look: divider }));
         k.add(k.plane({ face: "right", x: x + W / 2 - 0.02, y: y + 0.01, z: H, w: D - 0.02, h: 0.5, look: divider }));
+        k.add(k.plane({ face: "front", x: x + 0.3, y: y - D / 2 + 0.03, z: H + 0.08, w: 0.2, h: 0.1, look: SOCKET, shade: 0 }));
         k.add(k.deskLamp({ x: x - 0.32, y: y - 0.12, z: H }));
         k.add(k.chair({ x, y: y + 0.62, color: "#4a6d8c" }));
       }));
+
+      // survey: 2 soundproof single study rooms (booths) on the right
+      const FELT = "repeating-linear-gradient(90deg, #4a4f57 0 9px, #3d4148 9px 18px)"; // sound-absorbing panels
+      const DOOR = {
+        background:
+          // small glass window in the door, door handle, door, felt wall around it
+          "linear-gradient(#bfd9ea, #bfd9ea) 50% 22% / 18% 22% no-repeat," +
+          "linear-gradient(#c9ced6, #c9ced6) 60% 55% / 4% 3% no-repeat," +
+          "linear-gradient(#6b7280, #6b7280) 50% 100% / 42% 92% no-repeat," + FELT
+      };
+      [2.6, 4.9].forEach((y) => {
+        k.add(k.box({ x: 8.95, y, w: 1.5, d: 1.6, h: 2.2, look: FELT, top: "#2f3237", faces: { front: DOOR } }));
+      });
 
       // back wall clock, small window on the left wall, bookshelf in the corner
       k.add(k.clock({ x: 5, z: 1.9 }));
@@ -482,11 +515,13 @@ window.Space3D = (() => {
       k.add(k.bookshelf({ x: 9.2, y: 0.22 }));
       k.add(k.plant({ x: 0.6, y: 7.4, s: 0.9 }));
 
-      k.add(k.label({ en: "Single desks", ko: "1인 책상" }, { x: 3.9, y: 4.9, z: 1.35 }));
-      k.add(k.label({ en: "Dividers", ko: "칸막이" }, { x: 7.7, y: 2.1, z: 1.24 }));
+      k.add(k.label({ en: "Single desks", ko: "1인 책상" }, { x: 3.1, y: 4.9, z: 1.35 }));
+      k.add(k.label({ en: "Dividers", ko: "칸막이" }, { x: 1.4, y: 2.1, z: 1.24 }));
       k.add(k.label(() => (k.modes.ceiling === "ours" ? { en: "Lower ceiling", ko: "낮은 천장" } : { en: "Higher ceiling", ko: "높은 천장" }), {
-        x: 6.5, y: 0.05, z: "calc(var(--ceil) - 12px)", facing: [0, 1]
+        x: 5.4, y: 0.05, z: "calc(var(--ceil) - 12px)", facing: [0, 1]
       }));
+      k.add(k.surveyLabel(0, { x: 6.8, y: 4.6, z: 1.32 }));    // Charging seats · 76%
+      k.add(k.surveyLabel(1, { x: 8.95, y: 2.6, z: 2.25 }));   // Soundproof study rooms · 57%
     },
 
     teamwork(k) {
@@ -506,9 +541,29 @@ window.Space3D = (() => {
         k.add(k.pendant({ x: tx, y: ty, drop: 0.7 }));
       });
 
-      // big shared screen on the left wall
+      // survey: low (1.2 m) frosted-glass partitions → 3 group study rooms, one table each.
+      // Low enough to see the whole room over them. Openings let people walk between rooms.
+      const GLASS = {
+        background:
+          `repeating-linear-gradient(90deg, rgba(120,140,155,.55) 0 2px, transparent 2px ${px(1)}),` +
+          "rgba(200,225,238,.32)",
+        borderTop: `${px(0.05)} solid rgba(110,125,135,.9)`
+      };
+      const GH = 1.2;
+      k.add(k.plane({ face: "right", x: 5, y: 1.95, z: 0, w: 3.9, h: GH, look: GLASS, shade: 0 }));      // between the back rooms
+      k.add(k.plane({ face: "front", x: 2.05, y: 4.15, z: 0, w: 3.7, h: GH, look: GLASS, shade: 0 }));   // back-left | front
+      k.add(k.plane({ face: "front", x: 7.95, y: 4.15, z: 0, w: 3.7, h: GH, look: GLASS, shade: 0 }));   // back-right | front
+
+      // survey: whiteboard wall on the back wall of the right room (49%)
       k.add(k.plane({
-        face: "right", x: 0.03, y: 4.4, z: 0.75, w: 2.8, h: 1.5, cls: "s3d-wall", shade: 0,
+        face: "front", x: 7.35, y: 0.02, z: 0.85, w: 3.6, h: 1.25, cls: "s3d-wall",
+        look: { background: "#fbfbf8", border: `${px(0.06)} solid #9aa3ad` }
+      }));
+      k.add(k.box({ x: 7.35, y: 0.07, z: 0.79, w: 3.2, d: 0.08, h: 0.04, look: "#9aa3ad" }));
+
+      // big shared screen on the left wall (in the front room)
+      k.add(k.plane({
+        face: "right", x: 0.03, y: 6.05, z: 0.75, w: 2.8, h: 1.5, cls: "s3d-wall", shade: 0,
         look: {
           border: `${px(0.06)} solid #1d1f24`,
           background:
@@ -527,9 +582,11 @@ window.Space3D = (() => {
       [[0.6, 7.4], [9.4, 0.6]].forEach(([x, y]) => k.add(k.plant({ x, y })));
 
       k.add(k.label({ en: "Round tables", ko: "둥근 테이블" }, { x: 2.7, y: 2.6, z: 1.15 }));
-      k.add(k.label({ en: "Shared screen", ko: "공유 화면" }, { x: 0.05, y: 4.4, z: 2.3, facing: [1, 0] }));
+      k.add(k.label({ en: "Shared screen", ko: "공유 화면" }, { x: 0.05, y: 6.05, z: 2.3, facing: [1, 0] }));
       k.add(k.label({ en: "Movable whiteboard", ko: "이동식 화이트보드" }, { x: 8.9, y: 5.4, z: 1.9 }));
       if (k.cfg.callout) k.add(k.label(k.cfg.callout, { x: 2.6, y: 6.2, z: 0.05, place: "note" }));
+      k.add(k.surveyLabel(0, { x: 5, y: 1.4, z: 1.25 }));                       // Group study rooms · 67%
+      k.add(k.surveyLabel(1, { x: 7.35, y: 0.05, z: 2.15, facing: [0, 1] }));   // Whiteboard wall · 49%
     },
 
     comfort(k) {
@@ -567,9 +624,27 @@ window.Space3D = (() => {
       [[9.3, 0.7, 1.5], [9.3, 7.3, 1.5], [3.2, 0.6, 1.2], [8.6, 4, 1.1]].forEach(([x, y, s]) => k.add(k.plant({ x, y, s })));
       [[0.7, 0.6], [0.7, 7.4], [8.8, 2.1], [2.0, 7.4], [6.6, 7.4]].forEach(([x, y]) => k.add(k.plant({ x, y, s: 0.65 })));
 
-      k.add(k.label({ en: "Green view", ko: "초록 풍경" }, { x: 0.05, y: 4, z: 2.0, facing: [1, 0] }));
-      k.add(k.label({ en: "Sofa", ko: "소파" }, { x: 5.2, y: 0.65, z: 1.05 }));
+      // survey (59%): fresh air & temperature control
+      // air purifier on the floor (front grille drawn in the face)
+      k.add(k.box({
+        x: 9.2, y: 5.5, w: 0.36, d: 0.3, h: 0.9, look: "#eef0f1", top: "#d9dde1",
+        faces: { front: { background: "repeating-linear-gradient(0deg, #c4cad1 0 2px, transparent 2px 6px) 50% 35% / 70% 55% no-repeat, #eef0f1" } }
+      }));
+      // thermostat panel on the back wall
+      k.add(k.plane({
+        face: "front", x: 1.9, y: 0.03, z: 1.3, w: 0.18, h: 0.22, cls: "s3d-wall", shade: 0,
+        look: { background: "linear-gradient(#2b2d31, #2b2d31) 50% 35% / 70% 35% no-repeat, #f4f6f8", border: "1px solid #8a929c" }
+      }));
+      // vent: the top pane of the window, tipped open into the room
+      k.add(k.group({
+        x: 0.04, y: 4, z: 1.86, ry: 35,   // hinged at the bottom, top tipped into the room
+        children: [k.plane({ face: "right", w: 2.4, h: 0.42, shade: 0, look: { background: "rgba(225,240,248,.8)", border: `${px(0.05)} solid #b9b2a3` } })]
+      }));
+
+      k.add(k.label({ en: "Green view", ko: "초록 풍경" }, { x: 0.05, y: 5.6, z: 1.2, facing: [1, 0] }));
+      k.add(k.surveyLabel(0, { x: 5.2, y: 0.65, z: 1.05 }));     // Comfy sofas · 76%
       k.add(k.label({ en: "Beanbags", ko: "빈백" }, { x: 5.4, y: 5.1, z: 0.75 }));
+      k.add(k.surveyLabel(1, { x: 9.2, y: 5.5, z: 1.0 }));       // Fresh air & temperature control · 59%
     }
   };
 
@@ -634,7 +709,8 @@ window.Space3D = (() => {
             : `<button class="btn-link" data-act="full">${ICON.expand}<span>${t("fullScreen")}</span></button>`}
         </div>
       </div>
-      <p class="s3d-note" aria-live="polite">${t("s3dIntro")}</p>`;
+      <p class="s3d-note" aria-live="polite">${t("s3dIntro")}</p>
+      <p class="meta s3d-survey-hint">${t("surveyHint")}</p>`;
     slot.appendChild(root);
 
     const $ = (s) => root.querySelector(s);
@@ -658,6 +734,13 @@ window.Space3D = (() => {
         el.className = `s3d-label s3d-label--${place}`;
         labelLayer.appendChild(el);
         labels.push({ a, el, text, facing, place, last: "", w: 0, h: 0 });
+        return a;
+      },
+      // survey facility tag: "short name · 76%", outlined (rank 0 or 1 in SURVEY.spaces[id].top)
+      surveyLabel(rank, pos) {
+        const item = window.SURVEY.spaces[design.id].top[rank];
+        const a = kit.label(() => ({ en: `${item.short.en} · ${item.pct}%`, ko: `${item.short.ko} · ${item.pct}%` }), pos);
+        labels[labels.length - 1].el.classList.add("s3d-label--survey");
         return a;
       },
       // floor slab + back wall + left wall + ceiling height marker

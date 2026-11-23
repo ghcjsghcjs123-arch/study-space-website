@@ -68,11 +68,13 @@ window.I18N = (() => {
       ko: "네 가지 디자인을 나란히 비교해 보세요. 누르면 자세히 볼 수 있어요."
     },
     surveyTitle: { en: "What Ajou students told us", ko: "아주대 학생들이 들려준 이야기" },
-    surveyLede: { en: "Survey results will appear here after week 12.", ko: "설문 결과는 12주차 이후에 여기에 올라와요." },
-    surveyTodo: {
-      en: "TODO: add survey chart (preferred space by study type)",
-      ko: "TODO: 설문 차트 추가 (공부 유형별 선호 공간)"
+    surveyLede: {
+      en: "We asked 49 Ajou students what they want in a study space. Here is what they chose most for each activity.",
+      ko: "아주대 학생 49명에게 학습 공간에 원하는 것을 물었어요. 활동별로 가장 많이 고른 시설이에요."
     },
+    askedFor: { en: "What students asked for", ko: "학생들이 원한 시설" },
+    seeSurvey: { en: "See the survey", ko: "설문 보기" },
+    surveyCount: { en: (n, total) => `${n} of ${total} students`, ko: (n, total) => `${total}명 중 ${n}명` },
     researchTitle: { en: "Research behind the designs", ko: "디자인의 근거가 된 연구" },
     researchNote: {
       en: "Some effects (for example, color and light) were small or mixed in later studies, so we describe them as tendencies, not rules.",
@@ -100,6 +102,10 @@ window.I18N = (() => {
     s3dAria: {
       en: (name) => `3D model of the ${name}. Drag to turn, scroll or pinch to zoom, or use the arrow keys.`,
       ko: (name) => `${name} 3D 모델. 끌어서 돌리고, 스크롤하거나 두 손가락으로 확대·축소해요. 화살표 키도 쓸 수 있어요.`
+    },
+    surveyHint: {
+      en: "Labels with % show what students asked for in our survey.",
+      ko: "%가 붙은 라벨은 우리 설문에서 학생들이 원한 시설이에요."
     },
     s3dHint: { en: "Drag to turn · scroll or pinch to zoom", ko: "끌어서 돌리기 · 스크롤이나 두 손가락으로 확대" },
     light: { en: "Light", ko: "조명" },

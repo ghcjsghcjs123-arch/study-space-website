@@ -19,9 +19,12 @@
   const ICON = window.Space3D.ICON; // 1.5px line icons
 
   // study names and links are never translated
+  // in-site links (e.g. our survey → #/survey) open in the same tab via the router
   const citeLinks = (cites) =>
     cites.length
-      ? cites.map((c) => `<a href="${c.url}" target="_blank" rel="noopener">${c.label}</a>`).join(" · ")
+      ? cites.map((c) => c.url.startsWith("#")
+          ? `<a href="${c.url}">${c.label}</a>`
+          : `<a href="${c.url}" target="_blank" rel="noopener">${c.label}</a>`).join(" · ")
       : `<span class="todo">${t("surveySoon")}</span>`;
 
   const planSvg = (d) => {
@@ -36,6 +39,43 @@
   // ---------- 2. design card ----------
   let viewer = null;   // the 3D view inside the card (space3d.js)
   let soundCtl = null; // sound controls on the card (sound.js)
+
+  // survey: name · thin bar · % (used on the card and on the survey screen)
+  const S = () => window.SURVEY;
+  const factRows = (top) => `<ul class="facts">${top.map((f) => `
+      <li class="fact-row" aria-label="${tr(f.label)}: ${f.pct}% (${t("surveyCount", f.n, S().respondents)})">
+        <span class="fact-name" aria-hidden="true">${tr(f.label)}</span>
+        <span class="fact-pct" aria-hidden="true">${f.pct}%</span>
+        <span class="fact-bar" aria-hidden="true"><i style="width:${f.pct}%"></i></span>
+      </li>`).join("")}</ul>`;
+
+  // design card: "What students asked for" (a separate block under the 3 elements)
+  function surveyBlock(d) {
+    const sp = S() && S().spaces[d.id];
+    if (!sp) return "";
+    return `
+      <section class="survey-block" aria-label="${t("askedFor")}">
+        <h3>${t("askedFor")}</h3>
+        <p class="meta">${tr(sp.activity)}</p>
+        ${factRows(sp.top)}
+        <p class="meta">${tr(S().source)}</p>
+        <a href="#/survey">${t("seeSurvey")}</a>
+      </section>`;
+  }
+
+  // survey screen: top 2 per space; the space name opens its card
+  function renderSurvey() {
+    $("surveyList").innerHTML = designs.map((d) => {
+      const sp = S().spaces[d.id];
+      return `
+        <section class="survey-space">
+          <h3><a href="#/${d.id}">${d.name}</a></h3>
+          <p class="meta">${tr(sp.activity)}</p>
+          ${factRows(sp.top)}
+        </section>`;
+    }).join("");
+    $("surveySource").textContent = tr(S().source);
+  }
 
   function renderCard(d) {
     const has3d = window.Space3D && window.Space3D.supports(d);
@@ -57,6 +97,7 @@
           <div class="view-slot" id="viewSlot"></div>
           <figcaption class="meta plan-caption" id="planCaption"></figcaption>
         </figure>
+        <div class="card-side">
         <ul class="elements">
           ${d.elements.map((el) => `
             <li class="element">
@@ -66,6 +107,8 @@
               <p class="element-cite">${citeLinks(el.cites)}</p>
             </li>`).join("")}
         </ul>
+        ${surveyBlock(d)}
+        </div>
       </div>`;
 
     $("cardBack").addEventListener("click", back);
@@ -158,7 +201,8 @@
     current = r;
     window.SpaceSound.stop(); // a new screen starts quiet
 
-    if (!r.full && window.Space3D.isFullscreen()) window.Space3D.closeFullscreen();
+    // close full screen when leaving it, or when the card under it changes (#/a/3d → #/b/3d)
+    if (window.Space3D.isFullscreen() && (!r.full || screenOf(r) !== screenOf(prev))) window.Space3D.closeFullscreen();
 
     if (screenOf(r) !== screenOf(prev)) {
       if (r.page === "card") openCard(r.id);
@@ -300,11 +344,13 @@
     renderFact();
     renderCompare();
     renderStudies();
+    renderSurvey();
     if (selected) renderCard(selected);
   });
 
   renderFact();
   renderCompare();
   renderStudies();
+  renderSurvey();
   start();
 })();
