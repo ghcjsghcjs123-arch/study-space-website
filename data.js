@@ -28,10 +28,7 @@
     brooks: { label: "Brooks (2011)", url: "https://doi.org/10.1111/j.1467-8535.2010.01098.x" },
     lee: { label: "Lee et al. (2015)", url: "https://findanexpert.unimelb.edu.au/scholarlywork/977781-40-second-green-roof-views-sustain-attention--the-role-of-micro-breaks-in-attention-restoration" },
     kaplan: { label: "Kaplan (1995)", url: "https://doi.org/10.1016/0272-4944(95)90001-2" },
-    berman: { label: "Berman, Jonides & Kaplan (2008)", url: "https://doi.org/10.1111/j.1467-9280.2008.02225.x" },
-    // on the research screen only (not used as a source on a design card yet)
-    mehtaColor: { label: "Mehta & Zhu (2009)", url: "https://doi.org/10.1126/science.1169144" },
-    atchley: { label: "Atchley, Strayer & Atchley (2012)", url: "https://doi.org/10.1371/journal.pone.0051474" }
+    berman: { label: "Berman, Jonides & Kaplan (2008)", url: "https://doi.org/10.1111/j.1467-9280.2008.02225.x" }
   };
 
   // ---------- research screen: one card per study ----------
@@ -183,36 +180,6 @@
       "대학생 대상이라 활용하기 좋아서, Green Nook의 초록 풍경의 근거로 썼어요."
     ]
   };
-  STUDY.mehtaColor.journal = "Science";
-  STUDY.mehtaColor.about = {
-    en: [
-      "This study tested whether a red or a blue background changes how well people do tasks.",
-      "With red, people did better on detail tasks such as remembering and proofreading.",
-      "With blue, people did better on creative tasks.",
-      "We use it when choosing colors for each space, but later studies had mixed results, so we only call it a tendency."
-    ],
-    ko: [
-      "빨간색과 파란색 배경에서 과제 수행이 달라지는지 실험했어요.",
-      "빨간색에서는 기억하기, 교정 보기 같은 세부 과제를 더 잘했어요.",
-      "파란색에서는 창의 과제를 더 잘했어요.",
-      "공간별 색을 고를 때 참고하지만, 후속 연구에서 결과가 엇갈려서 '~한 경향이 있다' 정도로만 표현해요."
-    ]
-  };
-  STUDY.atchley.journal = "PLoS ONE";
-  STUDY.atchley.about = {
-    en: [
-      "This study compared the creative task scores of people who spent four days in nature without digital devices.",
-      "After their time in nature, their scores were about 50% higher.",
-      "However, we can't tell whether the effect came from nature or from not using devices.",
-      "We use it as a reason to design rest spaces where people put their devices down."
-    ],
-    ko: [
-      "4일 동안 디지털 기기 없이 자연에서 지낸 사람들의 창의 과제 점수를 비교했어요.",
-      "자연에서 지낸 뒤 점수가 약 50% 높아졌어요.",
-      "다만 자연의 효과인지, 기기를 쓰지 않은 효과인지는 구분되지 않아요.",
-      "휴식 공간에서 디지털 기기를 내려놓도록 공간을 구성하는 근거로 써요."
-    ]
-  };
 
   // order and groups on the research screen (same order as the week-10 literature review)
   const GROUP = {
@@ -224,10 +191,10 @@
   };
   window.STUDIES = [
     [STUDY.barrett, GROUP.overall],
-    [STUDY.meyers, GROUP.focus], [STUDY.mehtaColor, GROUP.focus],
+    [STUDY.meyers, GROUP.focus],
     [STUDY.mehta, GROUP.ideas], [STUDY.steidle, GROUP.ideas], [STUDY.oppezzo, GROUP.ideas],
     [STUDY.brooks, GROUP.together],
-    [STUDY.kaplan, GROUP.rest], [STUDY.berman, GROUP.rest], [STUDY.lee, GROUP.rest], [STUDY.atchley, GROUP.rest]
+    [STUDY.kaplan, GROUP.rest], [STUDY.berman, GROUP.rest], [STUDY.lee, GROUP.rest]
   ].map(([study, group]) => Object.assign(study, { group }));
 
   // our own survey as a source on a design card (links to the survey screen,
@@ -267,7 +234,7 @@
         },
         {
           key: KEY.seating,
-          value: { en: "Single desks under a lower ceiling", ko: "낮은 천장 아래 1인 책상" },
+          value: { en: "Single desks with dividers under a lower ceiling, plus soundproof rooms", ko: "낮은 천장 아래 칸막이 1인 책상과 방음 학습실" },
           reason: {
             en: "A lower ceiling tends to make people focus on details one by one.",
             ko: "낮은 천장은 세부 내용에 하나씩 집중하게 만드는 경향이 있어요."
@@ -349,7 +316,7 @@
         },
         {
           key: KEY.seating,
-          value: { en: "High ceiling, lounge chairs, and a walking loop", ko: "높은 천장, 라운지 의자, 걷는 동선" },
+          value: { en: "High ceiling, a sofa and lounge chairs, a walking loop, and a whiteboard wall", ko: "높은 천장, 소파와 라운지 의자, 걷는 동선, 화이트보드 벽" },
           reason: {
             en: "High ceilings encourage broad thinking, and walking can greatly increase new ideas.",
             ko: "높은 천장은 생각을 넓게 펼치게 하고, 걷기는 새로운 아이디어를 크게 늘려 줄 수 있어요."
@@ -431,7 +398,7 @@
         },
         {
           key: KEY.seating,
-          value: { en: "Round tables and movable furniture", ko: "둥근 테이블과 옮길 수 있는 가구" },
+          value: { en: "Round tables in group rooms with low glass walls, plus whiteboards", ko: "낮은 유리벽으로 나뉜 그룹 룸의 둥근 테이블과 화이트보드" },
           reason: {
             en: "University students in collaborative classrooms did better than their grades predicted.",
             ko: "협업형 강의실에서 공부한 대학생들은 기존 성적으로 예상한 것보다 더 좋은 결과를 냈어요."
@@ -621,6 +588,11 @@
       {
         id: "q3", kind: "multi",
         title: { en: "3. What matters most in a space for each activity?", ko: "3. 활동별로 중요하게 생각하는 공간 요소" },
+        // closing line (the % must match the charts — checked by the tests)
+        outro: {
+          en: "Noise mattered most for exam prep (84%), and openness for teamwork (65%). That's why our Focus Room is the quietest space and our Team Studio is the most open.",
+          ko: "시험 준비에는 소음(84%), 팀플에는 개방감(65%)이 가장 중요했어요. 그래서 Focus Room은 가장 조용하게, Team Studio는 가장 탁 트이게 디자인했어요."
+        },
         note: { en: "Multiple choice", ko: "복수 선택" },
         order: ["light", "noise", "color", "plants", "seat", "open", "air"],  // fixes the colors
         labels: { light: { en: "How bright the lighting is", ko: "조명의 밝기 여부" }, noise: { en: "Noise level", ko: "소음 수준" }, color: { en: "Interior colors", ko: "실내 색상" }, plants: { en: "Plants and nature", ko: "식물과 자연요소" }, seat: { en: "Seat comfort", ko: "좌석의 편안함" }, open: { en: "Sense of openness", ko: "공간의 개방감" }, air: { en: "Temperature and air quality", ko: "온도와 공기 청정 정도" } },
@@ -634,6 +606,10 @@
       {
         id: "q4", kind: "multi",
         title: { en: "4. Which spaces or facilities would you like for each activity?", ko: "4. 활동별로 있었으면 하는 공간·시설" },
+        outro: {
+          en: "We added the top two facilities for each activity to our 3D designs. Look for labels with %.",
+          ko: "활동별로 가장 많이 고른 시설 두 가지를 3D 디자인에 넣었어요. %가 붙은 라벨을 찾아보세요."
+        },
         note: { en: "Multiple choice", ko: "복수 선택" },
         order: ["charging", "dimmable", "soundproof", "groupRooms", "whiteboard", "plantsRest", "comfy", "air"],  // fixes the colors
         labels: { charging: { en: "Seats with outlets and USB charging", ko: "콘센트·USB 충전이 가능한 좌석" }, dimmable: { en: "Seats with adjustable lighting", ko: "조명 밝기를 조절할 수 있는 좌석" }, soundproof: { en: "Soundproof private study rooms", ko: "방음이 된 개인 학습실" }, groupRooms: { en: "Group study rooms for discussion", ko: "여럿이 토론할 수 있는 그룹 스터디룸" }, whiteboard: { en: "Whiteboard walls and memo space", ko: "화이트보드 벽이나 메모 공간" }, plantsRest: { en: "Rest areas with plants", ko: "식물이 있는 휴게 공간" }, comfy: { en: "Comfortable chairs and sofas", ko: "편안한 의자·소파 좌석" }, air: { en: "Good ventilation and temperature control", ko: "환기와 온도 조절이 잘 되는 공간" } },

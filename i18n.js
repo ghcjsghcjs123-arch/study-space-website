@@ -28,16 +28,17 @@ window.I18N = (() => {
   const UI = {
     // page
     title: { en: "Study-Type Space Design", ko: "공부 유형별 공간 디자인" },
-    description: {
-      en: "Four study spaces designed for four study types, with 3D views, lighting and sound previews.",
-      ko: "네 가지 공부 유형을 위해 디자인한 네 가지 공간. 3D 보기와 조명, 소리 미리보기를 함께 볼 수 있어요."
-    },
     langGroup: { en: "Language", ko: "언어" },
     navLabel: { en: "Screens", ko: "화면" },
     navPick: { en: "Find your space", ko: "내 공간 찾기" },
     navCompare: { en: "Compare", ko: "비교" },
     navSurvey: { en: "Survey", ko: "설문" },
     navResearch: { en: "Research", ko: "연구" },
+    intro: {
+      en: "Most campus study spaces look the same, no matter what you study. Using research on space and thinking, plus a survey of 49 Ajou students, Group 6 designed four study spaces, one for each type of studying.",
+      ko: "캠퍼스의 학습 공간은 어떤 공부를 하든 대부분 똑같아요. 아주대 6조는 공간과 사고에 관한 연구, 그리고 아주대 학생 49명의 설문을 바탕으로 공부 유형마다 하나씩 네 가지 학습 공간을 디자인했어요."
+    },
+    seeResearch: { en: "See the research", ko: "연구 보기" },
     chatTitle: { en: "Which of our spaces fits you today?", ko: "오늘 나에게 맞는 공간은?" },
 
     // chatbot (chat.js)
@@ -46,7 +47,7 @@ window.I18N = (() => {
       en: "Hi! I'll find the study space that fits you today. Just answer a few quick questions.",
       ko: "안녕하세요! 오늘 나에게 맞는 공부 공간을 찾아 드릴게요. 질문 몇 개만 답해 주세요."
     },
-    question: { en: "What am I studying today?", ko: "오늘은 어떤 공부를 하나요?" },
+    question: { en: "What are you studying today?", ko: "오늘은 어떤 공부를 하나요?" },
     chatMood: { en: "How are you feeling right now?", ko: "지금 기분은 어때요?" },
     chatSplit: {
       en: "Your study type and your mood point to different spaces.",
@@ -76,6 +77,11 @@ window.I18N = (() => {
     // survey charts (charts.js)
     respCount: { en: (n) => `${n} responses`, ko: (n) => `응답 ${n}명` },
     multiCount: { en: (r, s) => `${r} respondents · ${s} selections in total`, ko: (r, s) => `응답자 ${r}명 · 총 ${s}건 선택` },
+    sumTop: {
+      en: (labels, p, tie) => `Most chosen: ${labels} (${p}%${tie ? " each" : ""})`,
+      ko: (labels, p, tie) => `가장 많이 고른 것: ${labels} (${tie ? "각 " : ""}${p}%)`
+    },
+    sumLikert: { en: (p) => `Rated 4 or 5: ${p}%`, ko: (p) => `4점 이상: ${p}%` },
     legendNums: { en: (n, p) => `${n} (${p}%)`, ko: (n, p) => `${n}명 (${p}%)` },
     tipSingle: { en: (n, p) => `${n} ${n === 1 ? "person" : "people"} · ${p}%`, ko: (n, p) => `${n}명 · ${p}%` },
     tipMulti: {
@@ -154,7 +160,7 @@ window.I18N = (() => {
     document.documentElement.lang = lang;
     document.title = t("title");
     const meta = document.querySelector('meta[name="description"]');
-    if (meta) meta.setAttribute("content", t("description"));
+    if (meta) meta.setAttribute("content", t("intro"));
     document.querySelectorAll("[data-i18n]").forEach((el) => { el.textContent = t(el.dataset.i18n); });
     document.querySelectorAll("[data-i18n-aria]").forEach((el) => el.setAttribute("aria-label", t(el.dataset.i18nAria)));
     document.querySelectorAll("[data-lang]").forEach((b) => b.setAttribute("aria-pressed", String(b.dataset.lang === lang)));

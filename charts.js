@@ -6,6 +6,8 @@
 // - single / likert: % = share of the people who answered.
 // - multi: % in the circle = share of all selections;
 //          % in the legend (brackets) = share of respondents who chose it.
+// - Legend: most chosen first (likert keeps 1 → 5); 0-person options last.
+// - A one-line summary under every chart title (computed, never typed).
 // - Options with 0 people: not in the pie; gray in the legend
 //   (single questions: left out of the legend too).
 // - Colors live only inside the charts. The same option has the same
@@ -48,7 +50,11 @@ window.SurveyCharts = (() => {
     const total = all.reduce((s, it) => s + it.n, 0);                 // pie: answers (single) / selections (multi)
     const people = multi ? chart.respondents : total;                  // legend brackets: share of people
     const inPie = all.filter((it) => it.n > 0);
-    const inLegend = sec.kind === "single" ? inPie : all;
+    // legend: most chosen first (0 people last); colors stay fixed per option.
+    // Likert stays in scale order (1 → 5) so the scale reads naturally.
+    const rank = (list) => (sec.kind === "likert" ? list
+      : [...list].sort((x, y) => y.n - x.n || all.indexOf(x) - all.indexOf(y)));
+    const inLegend = rank(sec.kind === "single" ? inPie : all);
 
     // slices
     const CX = 100, CY = 100, R = 92;
@@ -74,6 +80,7 @@ window.SurveyCharts = (() => {
     // a section with one chart whose question is already in the section title: don't repeat it
     const repeat = sec.charts.length === 1 && tr(sec.title).includes(tr(chart.q));
     const countLine = multi ? t("multiCount", chart.respondents, total) : t("respCount", total);
+    const sumLine = summary1(sec, all, people);
     const space = chart.space && window.DESIGNS.find((d) => d.id === chart.space);
     const legend = inLegend.map((it) => {
       const i = slices.findIndex((s) => s.id === it.id);
@@ -91,11 +98,25 @@ window.SurveyCharts = (() => {
     el.className = "chart-card";
     el.innerHTML = `
       ${repeat ? "" : `<h4 class="chart-q">${tr(chart.q)}${space ? ` <a class="chart-space" href="#/${space.id}">→ ${space.name}</a>` : ""}</h4>`}
+      <p class="chart-sum">${sumLine}</p>
       <p class="meta">${countLine}</p>
       <div class="chart-pie">${svg}<div class="chart-tip" role="status" hidden></div></div>
       <ul class="chart-legend">${legend}</ul>`;
     wire(el, slices, multi, people);
     return el;
+  }
+
+  // one-line summary under the title
+  //   single / multi: the most chosen option(s) with % of people (multi: of respondents)
+  //   likert: share who rated 4 or 5
+  function summary1(sec, all, people) {
+    if (sec.kind === "likert") {
+      const hi = all.filter((it) => it.id === "s4" || it.id === "s5").reduce((s, it) => s + it.n, 0);
+      return t("sumLikert", pct(hi, people));
+    }
+    const max = Math.max(...all.map((it) => it.n));
+    const top = all.filter((it) => it.n === max);
+    return t("sumTop", top.map((it) => it.label).join(", "), pct(max, people), top.length > 1);
   }
 
   // tooltip text: name · people · %
@@ -153,7 +174,8 @@ window.SurveyCharts = (() => {
       block.innerHTML = `
         <h3 class="section-title">${tr(sec.title)}</h3>
         ${sec.note ? `<p class="meta">${tr(sec.note)}</p>` : ""}
-        <div class="chart-grid"></div>`;
+        <div class="chart-grid"></div>
+        ${sec.outro ? `<p class="section-outro">${tr(sec.outro)}</p>` : ""}`;
       const grid = block.querySelector(".chart-grid");
       sec.charts.forEach((c) => grid.appendChild(card(sec, c)));
       root.appendChild(block);

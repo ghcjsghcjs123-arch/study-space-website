@@ -122,6 +122,8 @@ main { max-width: var(--max); margin: 0 auto; padding: 0 var(--s3); }
 
 /* ---------- chatbot ---------- */
 .hero { max-width: var(--text); }
+.intro { margin-top: var(--s2); font-size: 16px; }
+.intro-links { display: flex; flex-wrap: wrap; gap: 4px var(--s3); margin-top: var(--s2); font-size: 15px; font-weight: 500; }
 .chat { margin-top: var(--s6); }
 .chat-log { display: flex; flex-direction: column; gap: var(--s1); }
 .chat-row { display: flex; align-items: flex-end; gap: var(--s1); min-width: 0; animation: chat-in 0.2s ease-out; }
@@ -223,7 +225,9 @@ main { max-width: var(--max); margin: 0 auto; padding: 0 var(--s3); }
 .chart-card { min-width: 0; }
 .chart-q { font-size: 16px; font-weight: 600; line-height: 1.4; }
 .chart-space { margin-left: 4px; font-size: 13px; font-weight: 500; white-space: nowrap; }
+.chart-sum { margin-top: 4px; font-size: 15px; font-weight: 500; }
 .chart-card > .meta { margin-top: 2px; }
+.section-outro { margin-top: var(--s4); max-width: var(--text); color: var(--muted); }
 .chart-pie { position: relative; width: 100%; max-width: 220px; margin: var(--s2) 0; }
 .chart-pie svg { display: block; width: 100%; height: auto; }
 .pie-slice { stroke: #fff; stroke-width: 1.5; cursor: pointer; transition: opacity 0.15s ease; }

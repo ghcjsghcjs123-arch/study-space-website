@@ -2,7 +2,7 @@
 
 ## What this project is
 A website that shows four study spaces our team DESIGNED for four study types.
-A chatbot asks "What am I studying today?" and "How are you feeling right now?" (and, if those point to different spaces, "Which place feels better right now?"), then shows which of our four designs fits, and opens its design card.
+A chatbot asks "What are you studying today?" and "How are you feeling right now?" (and, if those point to different spaces, "Which place feels better right now?"), then shows which of our four designs fits, and opens its design card.
 
 ## Word rules (professor's feedback: keep wording consistent)
 - Spaces are **designed** by our team. The website **shows** the designs.
@@ -16,6 +16,8 @@ A chatbot asks "What am I studying today?" and "How are you feeling right now?" 
 - English: use "fits" (e.g. "our Focus Room design fits best"), not "recommend".
 
 ## Chatbot (chat.js, first screen `#/`)
+- Above the chat: page title, then a two-line intro (`t("intro")`, `.lede.intro`: gray, 16px) and two links "See the research" (`#/research`) · "See the survey" (`#/survey`). The meta description follows `t("intro")` too.
+- Q1 text: EN "What are you studying today?" / KO "오늘은 어떤 공부를 하나요?".
 - Flow: bot greeting → Q1 study type (`t("question")`, choices = `DESIGNS[].type`) → user answer → Q2 mood (choices = `MOODS`) → user answer →
   - if the two point to the same space: result right away (rule A)
   - otherwise: bot note (`t("chatSplit")`) + Q3 (`t("chatPlace")`) with 3 choices: ① VIBES[study space] ② VIBES[mood space] ③ `t("chatBoth")`. Space names are NOT shown in Q3. → user answer → result
@@ -41,7 +43,7 @@ A chatbot asks "What am I studying today?" and "How are you feeling right now?" 
 
 ## Screens and the back button
 - One screen at a time. Each has its own URL hash:
-  - `#/` chatbot (first screen, only the chat) · `#/compare` all four designs · `#/survey` survey · `#/research` one card per study
+  - `#/` chatbot (first screen: title + intro + links, then the chat) · `#/compare` all four designs · `#/survey` survey · `#/research` one card per study
   - `#/<id>` design card (alone) · `#/<id>/3d` full screen 3D on top of the card (ids: memorization, idea, teamwork, comfort)
 - `compare`, `survey`, `research` are reserved words — never use them as a space id. Old in-page links (`#compare`, `#research`, `#pick`) open the matching screen.
 - app.js is the router. A route is `{ page, id, full }` (page = chat | compare | survey | research | card). `parse()` / `address()` convert hash ↔ route, `show()` draws it, `go(route)` uses `history.pushState`, `back()` uses `history.back()`, `popstate` redraws. Don't change screens any other way (no direct `openFullscreen`, no showing/hiding sections by hand).
@@ -70,15 +72,19 @@ A chatbot asks "What am I studying today?" and "How are you feeling right now?" 
 - Title, "49 respondents · Nov 2026", intro; then each section: title + note + a grid of chart cards (PC 2–3 columns, phone 1). No notes block at the bottom (the team asked to leave it out).
 - Chart card: question (q3/q4: plus a small "→ <space>" link to its card) → "49 responses" or "49 respondents · N selections in total" (multi) → pie (SVG, no library) → legend "color · name · n (p%)". A section with one chart doesn't repeat the question already in its title.
 - %: inside a slice only when ≥ 7%. single / likert: share of people. multi: in the circle = share of all selections; in the legend brackets = share of the 49 respondents.
+- Under every chart title: a one-line summary computed from the data (never typed): single / multi = "Most chosen: {item} ({%})" (multi: % of respondents; ties list every top item + "each"), likert = "Rated 4 or 5: {%}" (`t("sumTop")`, `t("sumLikert")`).
+- Legend order: most chosen first, 0-person options last; colors stay fixed per option. Likert keeps the scale order 1 → 5.
+- A section may have an `outro` ({ en, ko }) shown under its charts (q3: noise 84% for exam prep, openness 65% for teamwork; q4: the top two facilities went into the 3D designs). Check any % in an outro against SURVEY.
 - 0-person options: never a slice; gray in the legend (single questions: left out of the legend).
 - Colors only inside charts (8 calm colors, `SurveyCharts.PALETTE`); the same option has the same color in every chart (multi: by `order`). Likert = one blue, light (1) → dark (5); "No answer" gray.
 - Hover / tap / keyboard focus on a slice or legend item highlights it and shows a tooltip (name · people · %), kept inside the screen. Every SVG has `role="img"` + an `aria-label` with the question and all results.
 
 ## Research screen (`#/research`)
-- `window.STUDIES` (data.js) = 11 studies in the order of the team's week-10 literature review:
-  overall (1 Barrett) → focus (2 Meyers-Levy, 3 Mehta & Zhu 2009) → ideas (4 Mehta, Zhu & Cheema, 5 Steidle, 6 Oppezzo) → collaboration (7 Brooks) → rest (8 Kaplan, 9 Berman, 10 Lee, 11 Atchley).
-- Each study: `label` and `journal` (never translated), `url`, `group: { en, ko }`, `about: { en: [...], ko: [...] }` (5 sentences for 1, 2, 4, 5, 6; 4-sentence summaries of the week-10 notes for the rest). Only use what the team wrote — no new claims.
-- "Used in" is found automatically: the spaces whose design card `cites` that study (hidden when none, e.g. Mehta & Zhu 2009, Atchley 2012). The card ends with "Read the original" (the `url`). The KEY_FACT line is the screen's intro; the "tendencies, not rules" note stays at the bottom.
+- `window.STUDIES` (data.js) = 9 studies (only ones a design card cites), in the order of the team's week-10 literature review:
+  overall (Barrett) → focus (Meyers-Levy) → ideas (Mehta, Zhu & Cheema, Steidle, Oppezzo) → collaboration (Brooks) → rest (Kaplan, Berman, Lee).
+  Mehta & Zhu 2009 and Atchley 2012 were removed (no space cited them).
+- Each study: `label` and `journal` (never translated), `url`, `group: { en, ko }`, `about: { en: [...], ko: [...] }` (5 sentences for Barrett, Meyers-Levy, Mehta Zhu & Cheema, Steidle, Oppezzo; 4-sentence summaries of the week-10 notes for the rest). Only use what the team wrote — no new claims.
+- "Used in" is found automatically: the spaces whose design card `cites` that study A study with an empty "Used in" is not shown at all (app.js filters it), so add a study only when a card cites it. The card ends with "Read the original" (the `url`). The KEY_FACT line is the screen's intro; the "tendencies, not rules" note stays at the bottom.
 
 ## Languages (KO | EN)
 - Default language is English. The KO | EN switch is in the top bar; the choice is saved in localStorage (wrapped in try/catch, falls back to English).
@@ -94,7 +100,7 @@ A chatbot asks "What am I studying today?" and "How are you feeling right now?" 
 - `chat.js`   — chatbot on the first screen (`window.Chat`: mount, decide, state). Loads before app.js.
 - `charts.js` — SVG pie charts for the survey screen (`window.SurveyCharts.render`). Loads before app.js.
 - `survey/`   — survey source files: `responses.xlsx` (raw answers), `results-notes.md`, `aggregate.py` (recount).
-- `plans.js`  — top-view floor plans drawn as SVG; each plan is a function that gets `L({ en, ko })` for its labels (shown by the "Floor plan" button, and for spaces without 3D yet).
+- `plans.js`  — top-view floor plans drawn as SVG; each plan is a function that gets `L({ en, ko })` for its labels (shown by the "Floor plan" button). Plans use the same meter coordinates as the 3D builders (`X(x) = 10 + 30x`, `Y(y) = 10 + 23.75y`): every 3D item, survey facilities included, is drawn at the same place in minimal black lines. When you move something in 3D, copy the numbers here.
 - `space3d.js`— 3D room viewer (`window.Space3D`). CSS 3D transforms only, no libraries. Must load before app.js.
 - `sound.js`  — "Hear this space": Web Audio engine + the shared sound controls (`SpaceSound.controls(scene)`: play/stop · mute · volume).
 - `sounds/`   — sound recordings (`cafe.mp3`) + `CREDITS.md` (source and license of every file).
@@ -102,6 +108,8 @@ A chatbot asks "What am I studying today?" and "How are you feeling right now?" 
 - `app.js`    — page logic. Card buttons are updated in place (`updateControls`), not by re-rendering the card, so the 3D view is not rebuilt.
 - `index.html`— page structure.
 - `images/ajou-logo.png` — Ajou University logo, used as the chatbot's avatar (128 px).
+- `images/favicon.svg` — favicon: a simple room (cube edges), black lines on white.
+- `images/og.png` — link preview image (1200 × 630): the Idea Lounge 3D view without controls. index.html has og:title / og:description (EN intro) / og:image / og:type / og:url (https://ghcjsghcjs123-arch.github.io/study-space-website/) and twitter:card = summary_large_image. Re-capture og.png if the Idea Lounge 3D changes a lot.
 
 ## 3D view (space3d.js)
 - Flow: chatbot / compare / research → design card (3D view first, "Floor plan" tab for 2D) → "Full screen" overlay ("← Back", × or Esc goes back to the card and stops the sound). `mount(slot, design, { onFullscreen })` and `openFullscreen(design, { onBack })` let app.js control the URL; `closeFullscreen()` closes it.

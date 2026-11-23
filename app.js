@@ -301,9 +301,10 @@
   // Study names, journals and links are never translated.
   function renderStudies() {
     let group = null;
-    $("studies").innerHTML = window.STUDIES.map((st) => {
-      // spaces whose design card cites this study (found automatically)
-      const usedIn = designs.filter((d) => d.elements.some((el) => el.cites.includes(st)));
+    // only studies that a design card actually cites ("Used in" never empty)
+    const usedBy = (st) => designs.filter((d) => d.elements.some((el) => el.cites.includes(st)));
+    $("studies").innerHTML = window.STUDIES.filter((st) => usedBy(st).length).map((st) => {
+      const usedIn = usedBy(st);
       const heading = st.group !== group ? `<h3 class="study-group">${tr(st.group)}</h3>` : "";
       group = st.group;
       const about = st.about ? tr(st.about) : null;
