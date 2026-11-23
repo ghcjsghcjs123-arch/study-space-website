@@ -214,14 +214,40 @@ main { max-width: var(--max); margin: 0 auto; padding: 0 var(--s3); }
 .survey-block .facts { margin-top: var(--s1); }
 .survey-block > a { display: inline-block; margin-top: var(--s2); font-size: 15px; font-weight: 500; }
 
-/* ---------- survey screen ---------- */
-.survey { max-width: var(--text); }
-.survey-list { margin-top: var(--s6); }
-.survey-space { padding: var(--s3) 0; border-top: 1px solid var(--line); }
-.survey-space:last-child { border-bottom: 1px solid var(--line); }
-.survey-space h3 { font-size: 18px; font-weight: 600; }
-.survey-space .facts { margin-top: var(--s1); }
-.survey .note { margin-top: var(--s3); }
+/* ---------- survey screen: pie charts (charts.js) ---------- */
+.survey .lede, .survey-meta { max-width: var(--text); }
+.survey-meta { margin-top: var(--s1); }
+.chart-section { margin-top: var(--s8); }
+.chart-section > .meta { margin-top: 4px; }
+.chart-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: var(--s6) var(--s4); margin-top: var(--s3); }
+.chart-card { min-width: 0; }
+.chart-q { font-size: 16px; font-weight: 600; line-height: 1.4; }
+.chart-space { margin-left: 4px; font-size: 13px; font-weight: 500; white-space: nowrap; }
+.chart-card > .meta { margin-top: 2px; }
+.chart-pie { position: relative; width: 100%; max-width: 220px; margin: var(--s2) 0; }
+.chart-pie svg { display: block; width: 100%; height: auto; }
+.pie-slice { stroke: #fff; stroke-width: 1.5; cursor: pointer; transition: opacity 0.15s ease; }
+.pie-pct { font: 600 11px var(--font); text-anchor: middle; dominant-baseline: central; pointer-events: none; }
+.chart-card.is-focus .pie-slice:not(.is-on) { opacity: 0.3; }
+.chart-tip {
+  position: absolute; transform: translate(-50%, -110%); z-index: 2; pointer-events: none;
+  display: grid; gap: 2px; width: max-content; max-width: 220px; padding: 6px 8px;
+  background: var(--ink); color: #fff; font-size: 12px; line-height: 1.35;
+}
+.chart-tip b { font-weight: 600; }
+.chart-legend { list-style: none; margin: 0; padding: 0; display: grid; gap: 2px; }
+.legend-item {
+  display: grid; grid-template-columns: 10px minmax(0, 1fr) auto; align-items: baseline; gap: var(--s1);
+  width: 100%; padding: 4px 0; border: 0; background: none; text-align: left; font-size: 14px; color: var(--ink);
+}
+button.legend-item { cursor: pointer; }
+.legend-item .sw { width: 10px; height: 10px; align-self: center; }
+.lg-name { min-width: 0; overflow-wrap: anywhere; }
+.lg-num { font-size: 13px; font-weight: 500; color: var(--muted); font-variant-numeric: tabular-nums; white-space: nowrap; }
+.chart-card.is-focus .legend-item[data-i]:not(.is-on) { opacity: 0.4; }
+.legend-zero .legend-item { color: #9a9a9a; }
+.legend-zero .lg-num { color: #b0b0b0; }
+.survey-notes { list-style: none; margin: var(--s8) 0 0; padding: var(--s3) 0 0; border-top: 1px solid var(--line); max-width: var(--text); display: grid; gap: 4px; }
 
 /* ---------- research: one entry per study, 1px lines ---------- */
 .research { max-width: var(--text); }

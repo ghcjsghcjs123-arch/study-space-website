@@ -69,8 +69,18 @@ window.I18N = (() => {
     },
     surveyTitle: { en: "What Ajou students told us", ko: "아주대 학생들이 들려준 이야기" },
     surveyLede: {
-      en: "We asked 49 Ajou students what they want in a study space. Here is what they chose most for each activity.",
-      ko: "아주대 학생 49명에게 학습 공간에 원하는 것을 물었어요. 활동별로 가장 많이 고른 시설이에요."
+      en: "We asked 49 Ajou students how they study and what they want in a study space. Tap a slice or a legend item to see the numbers.",
+      ko: "아주대 학생 49명에게 어떻게 공부하는지, 학습 공간에 무엇을 원하는지 물었어요. 조각이나 범례를 누르면 숫자를 볼 수 있어요."
+    },
+    surveyMeta: { en: (n, d) => `${n} respondents · ${d}`, ko: (n, d) => `응답자 ${n}명 · ${d}` },
+    // survey charts (charts.js)
+    respCount: { en: (n) => `${n} responses`, ko: (n) => `응답 ${n}명` },
+    multiCount: { en: (r, s) => `${r} respondents · ${s} selections in total`, ko: (r, s) => `응답자 ${r}명 · 총 ${s}건 선택` },
+    legendNums: { en: (n, p) => `${n} (${p}%)`, ko: (n, p) => `${n}명 (${p}%)` },
+    tipSingle: { en: (n, p) => `${n} ${n === 1 ? "person" : "people"} · ${p}%`, ko: (n, p) => `${n}명 · ${p}%` },
+    tipMulti: {
+      en: (n, p, s) => `${n} ${n === 1 ? "person" : "people"} · ${p}% of respondents · ${s}% of all selections`,
+      ko: (n, p, s) => `${n}명 · 응답자의 ${p}% · 전체 선택의 ${s}%`
     },
     askedFor: { en: "What students asked for", ko: "학생들이 원한 시설" },
     seeSurvey: { en: "See the survey", ko: "설문 보기" },

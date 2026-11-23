@@ -54,14 +54,26 @@ A chatbot asks "What am I studying today?" and "How are you feeling right now?" 
 - The chat conversation lives in chat.js memory, so it survives visits to other screens; only "Start over" (or a reload) clears it.
 - `history.scrollRestoration` is manual; the router scrolls.
 
-## Our survey (`window.SURVEY`, data.js)
-- Question 4 ("Which spaces or facilities would you like for each activity?"), 49 Ajou students (mostly first-year), Nov 2026, multiple choice.
-- `SURVEY = { respondents, date, who, multipleChoice, source: { en, ko }, spaces: { <spaceId>: { activity: { en, ko }, top: [{ label: { en, ko }, short: { en, ko }, n, pct }, …] } } }` — top 2 per space; `pct = round(n / 49 × 100)`; `short` = the name on the 3D tag.
+## Our survey (`window.SURVEY`, data.js; files in `survey/`)
+- 49 Ajou students (46 first-year), Nov 2026. Raw answers: `survey/responses.xlsx`; the team's notes: `survey/results-notes.md`; recount with `python3 survey/aggregate.py survey/responses.xlsx out.json` (needs openpyxl). The first response (Nov 4, a test) is left out; question 1 choices renamed mid-survey are merged. **Never change a number by hand** — recount and compare.
+- `SURVEY = { respondents, date, who, source, sections, notes, short, spaces }`
+  - `sections: [{ id, kind, title: { en, ko }, note?, labels: { <itemId>: { en, ko } }, order? (multi), charts: [{ q: { en, ko }, items: [{ id, n }], space? (q3/q4), respondents? (multi) }] }]` — ids: `grade` (single), `q1` (single), `q2` (likert, 4 places; the "기타" place chart is left out on purpose), `q3` (multi, what matters per activity), `q4` (multi, facilities wanted per activity).
+  - `notes`: the 3 notes from the results file + "46 of 49 were first-year".
+  - `short[spaceId][itemId]`: the short name on 3D tags. `spaces` is **computed** from `q4` in data.js: top 2 per space, `pct = round(n / respondents × 100)` → used by the design-card block and `k.surveyLabel`.
+  - Activities ↔ spaces: 과제나 시험 준비하기 → memorization, 아이디어를 떠올리고 메모하기 → idea, 조원과 토론하거나 협업하기 → teamwork, 편안한 환경에서 회복하기 → comfort.
+  - Q3/Q4 option wording matches the design cards and 3D tags (e.g. "Seats with outlets and USB charging").
 - 3D: every facility from the survey gets a tag via `k.surveyLabel(rank, pos)` → "short · pct%" (e.g. "Charging seats · 76%"). **Survey tags always end with the %** and use the outlined style (`.s3d-label--survey`); normal tags stay black. The hint line under the 3D view explains the %.
   - Focus Room: charging panel on every desk divider + 2 soundproof booths (right side; desk rows moved left). Idea Lounge: 3-seat sofa + thick-cushion chairs, whiteboard wall over most of the back wall. Team Studio: 1.2 m frosted-glass partitions → 3 group rooms, back-wall whiteboard. Green Nook: sofa tag, air purifier, thermostat, window vent.
 - Design card: "What students asked for" block under Lighting / Noise / Seating (separate from the 3 elements): name · thin bar · %, the source line, and a "See the survey" link (`#/survey`).
-- Survey screen (`#/survey`): top 2 per space in the same bar format; the space name opens its card.
 - As a source on a design card: `{ label: "Our survey (2026)", url: "#/survey" }` (in-site link, same tab). It is NOT one of the research-screen studies.
+
+## Survey screen (`#/survey`, charts.js)
+- Title, "49 respondents · Nov 2026", intro; then each section: title + note + a grid of chart cards (PC 2–3 columns, phone 1); the notes at the bottom (small gray).
+- Chart card: question (q3/q4: plus a small "→ <space>" link to its card) → "49 responses" or "49 respondents · N selections in total" (multi) → pie (SVG, no library) → legend "color · name · n (p%)". A section with one chart doesn't repeat the question already in its title.
+- %: inside a slice only when ≥ 7%. single / likert: share of people. multi: in the circle = share of all selections; in the legend brackets = share of the 49 respondents.
+- 0-person options: never a slice; gray in the legend (single questions: left out of the legend).
+- Colors only inside charts (8 calm colors, `SurveyCharts.PALETTE`); the same option has the same color in every chart (multi: by `order`). Likert = one blue, light (1) → dark (5); "No answer" gray.
+- Hover / tap / keyboard focus on a slice or legend item highlights it and shows a tooltip (name · people · %), kept inside the screen. Every SVG has `role="img"` + an `aria-label` with the question and all results.
 
 ## Research screen (`#/research`)
 - `window.STUDIES` (data.js) = 11 studies in the order of the team's week-10 literature review:
@@ -81,6 +93,8 @@ A chatbot asks "What am I studying today?" and "How are you feeling right now?" 
 - `i18n.js`   — language switch, UI words (en/ko), saved language. Loads first.
 - `data.js`   — all text content (design cards, reasons, sources, chatbot MOODS + VIBES + CHAT, research STUDIES, our SURVEY) in en + ko. Edit content here.
 - `chat.js`   — chatbot on the first screen (`window.Chat`: mount, decide, state). Loads before app.js.
+- `charts.js` — SVG pie charts for the survey screen (`window.SurveyCharts.render`). Loads before app.js.
+- `survey/`   — survey source files: `responses.xlsx` (raw answers), `results-notes.md`, `aggregate.py` (recount).
 - `plans.js`  — top-view floor plans drawn as SVG; each plan is a function that gets `L({ en, ko })` for its labels (shown by the "Floor plan" button, and for spaces without 3D yet).
 - `space3d.js`— 3D room viewer (`window.Space3D`). CSS 3D transforms only, no libraries. Must load before app.js.
 - `sound.js`  — "Hear this space": Web Audio engine + the shared sound controls (`SpaceSound.controls(scene)`: play/stop · mute · volume).

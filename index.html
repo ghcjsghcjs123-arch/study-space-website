@@ -49,9 +49,10 @@
     <!-- Screen #/survey : to be filled after week 12 -->
     <section class="screen survey" id="survey" data-screen="survey" hidden>
       <h2 class="page-title" data-i18n="surveyTitle" tabindex="-1">What Ajou students told us</h2>
-      <p class="lede" data-i18n="surveyLede">Survey results will appear here after week 12.</p>
-      <div class="survey-list" id="surveyList"></div>
-      <p class="meta note" id="surveySource"></p>
+      <p class="meta survey-meta" id="surveyMeta"></p>
+      <p class="lede" data-i18n="surveyLede">We asked 49 Ajou students what they want in a study space.</p>
+      <div class="survey-charts" id="surveyCharts"></div>
+      <ul class="meta survey-notes" id="surveyNotes"></ul>
     </section>
 
     <!-- Screen #/research : one card per study -->
@@ -73,6 +74,7 @@
   <script src="sound.js"></script>
   <script src="space3d.js"></script>
   <script src="chat.js"></script>
+  <script src="charts.js"></script>
   <script src="app.js"></script>
 </body>
 </html>

@@ -574,60 +574,122 @@
   };
 
   // =============================================================
-  // Our survey — question 4: "Which spaces or facilities would you like
-  // for each activity?" (multiple choice). Top 2 per space.
-  //   n = students who chose it, pct = n / 49 respondents (rounded)
-  //   short = the name on the 3D label, shown as "short · pct%"
-  // Survey labels in the 3D view always end with the %.
+  // Our survey (49 Ajou students, Nov 2026). Every question is in SURVEY.sections
+  // and drawn as pie charts on the survey screen (#/survey).
+  // SURVEY.spaces (top 2 facilities per space from question 4) is computed below
+  // and used on the design cards and the 3D tags ("short · pct%").
   // =============================================================
-  const FAC = {
-    charging: { en: "Seats with outlets and USB charging", ko: "콘센트·USB 충전이 가능한 좌석" },
-    soundproof: { en: "Soundproof private study rooms", ko: "방음이 된 개인 학습실" },
-    comfy: { en: "Comfortable chairs and sofas", ko: "편안한 의자·소파 좌석" },
-    whiteboard: { en: "Whiteboard walls and memo space", ko: "화이트보드 벽이나 메모 공간" },
-    groupRooms: { en: "Group study rooms for discussion", ko: "여럿이 토론할 수 있는 그룹 스터디룸" },
-    air: { en: "Good ventilation and temperature control", ko: "환기와 온도 조절이 잘 되는 공간" }
-  };
   window.SURVEY = {
     respondents: 49,
     date: { en: "Nov 2026", ko: "2026년 11월" },
     who: { en: "Ajou students, mostly first-year", ko: "아주대 학생, 대부분 1학년" },
-    multipleChoice: true,
     source: {
       en: "Our survey of 49 Ajou students (Nov 2026, mostly first-year, multiple choice).",
       ko: "아주대 학생 49명 대상 우리 설문 (2026년 11월, 대부분 1학년, 복수 선택)."
     },
-    spaces: {
-      memorization: {
-        activity: { en: "Preparing assignments or exams", ko: "과제나 시험 준비하기" },
-        top: [
-          { label: FAC.charging, short: { en: "Charging seats", ko: "충전 좌석" }, n: 37, pct: 76 },
-          { label: FAC.soundproof, short: { en: "Soundproof study rooms", ko: "방음 개인 학습실" }, n: 28, pct: 57 }
+    // kind: "single" (one answer), "likert" (1–5), "multi" (multiple choice).
+    // items: [{ id, n }] — n = number of people (multi: people who chose it);
+    // the words for each id are in the section's labels. Never change a number by hand:
+    // recount with survey/aggregate.py from survey/responses.xlsx.
+    // ---- every question (counted from the raw sheet: survey/responses.xlsx) ----
+    sections: [
+      {
+        id: "grade", kind: "single",
+        title: { en: "Respondents", ko: "응답자" },
+        labels: { first: { en: "First-year", ko: "1학년" }, second: { en: "Second-year", ko: "2학년" }, third: { en: "Third-year", ko: "3학년" }, fourth: { en: "Fourth-year", ko: "4학년" } },
+        charts: [{ q: { en: "What year are you in?", ko: "현재 학년을 선택해주세요" }, items: [{ id: "first", n: 46 }, { id: "second", n: 2 }, { id: "fourth", n: 1 }] }]
+      },
+      {
+        id: "q1", kind: "single",
+        title: { en: "1. Where do you usually study?", ko: "1. 주로 어떤 환경에서 공부하나요?" },
+        labels: { library: { en: "Library or study café: a quiet place to focus", ko: "도서관, 스터디카페: 공부에 집중할 수 있는 조용한 공간" }, home: { en: "Home: familiar and comfortable, but with household noise", ko: "주거공간: 익숙하고 편하지만 생활 소음이 있는 공간" }, cafe: { en: "Café: a relaxed place with background music", ko: "카페: 배경음악이 있는 자유로운 공간" }, clubRoom: { en: "Club room (written in as \"other\")", ko: "동방" } },
+        charts: [{ q: { en: "Where do you usually study?", ko: "주로 어떤 환경에서 공부하나요?" }, items: [{ id: "library", n: 32 }, { id: "home", n: 10 }, { id: "cafe", n: 6 }, { id: "clubRoom", n: 1 }] }]
+      },
+      {
+        id: "q2", kind: "likert",
+        title: { en: "2. How much does each place help you think freely and creatively?", ko: "2. 자유롭고 창의적인 생각을 하는 데 각 장소가 얼마나 도움이 되나요?" },
+        note: { en: "1 = not very helpful … 5 = very helpful", ko: "1 크게 도움이 되지 않음 ~ 5 매우 도움이 됨" },
+        labels: { s1: { en: "1 (not very helpful)", ko: "1 (크게 도움이 되지 않음)" }, s2: { en: "2", ko: "2" }, s3: { en: "3", ko: "3" }, s4: { en: "4", ko: "4" }, s5: { en: "5 (very helpful)", ko: "5 (매우 도움이 됨)" }, none: { en: "No answer", ko: "무응답" } },
+        charts: [
+          { q: { en: "Library or study café: a quiet place to focus", ko: "도서관, 스터디카페: 공부에 집중할 수 있는 조용한 공간" }, items: [{ id: "s1", n: 2 }, { id: "s2", n: 9 }, { id: "s3", n: 14 }, { id: "s4", n: 16 }, { id: "s5", n: 8 }, { id: "none", n: 0 }] },
+          { q: { en: "Café: a relaxed place with background music", ko: "카페: 배경음악이 있는 자유로운 공간" }, items: [{ id: "s1", n: 2 }, { id: "s2", n: 9 }, { id: "s3", n: 13 }, { id: "s4", n: 19 }, { id: "s5", n: 6 }, { id: "none", n: 0 }] },
+          { q: { en: "Empty classroom: quiet, but people come and go", ko: "빈 강의실: 조용하지만 사람들의 출입이 자유로운공간" }, items: [{ id: "s1", n: 2 }, { id: "s2", n: 13 }, { id: "s3", n: 19 }, { id: "s4", n: 12 }, { id: "s5", n: 3 }, { id: "none", n: 0 }] },
+          { q: { en: "Home: familiar and comfortable, but with household noise", ko: "주거공간: 익숙하고 편하지만 생활 소음이 있는 공간" }, items: [{ id: "s1", n: 11 }, { id: "s2", n: 9 }, { id: "s3", n: 7 }, { id: "s4", n: 13 }, { id: "s5", n: 3 }, { id: "none", n: 6 }] },
+        ]
+        // left out on purpose: "기타(질문 1 기타 항목에 답했던 공간)" — only 1 person chose "other" in question 1, but it has 49 answers
+      },
+      {
+        id: "q3", kind: "multi",
+        title: { en: "3. What matters most in a space for each activity?", ko: "3. 활동별로 중요하게 생각하는 공간 요소" },
+        note: { en: "Multiple choice", ko: "복수 선택" },
+        order: ["light", "noise", "color", "plants", "seat", "open", "air"],  // fixes the colors
+        labels: { light: { en: "How bright the lighting is", ko: "조명의 밝기 여부" }, noise: { en: "Noise level", ko: "소음 수준" }, color: { en: "Interior colors", ko: "실내 색상" }, plants: { en: "Plants and nature", ko: "식물과 자연요소" }, seat: { en: "Seat comfort", ko: "좌석의 편안함" }, open: { en: "Sense of openness", ko: "공간의 개방감" }, air: { en: "Temperature and air quality", ko: "온도와 공기 청정 정도" } },
+        charts: [
+          { space: "memorization", q: { en: "Preparing assignments or exams", ko: "과제나 시험 준비하기" }, respondents: 49, items: [{ id: "light", n: 24 }, { id: "noise", n: 41 }, { id: "color", n: 5 }, { id: "plants", n: 0 }, { id: "seat", n: 36 }, { id: "open", n: 15 }, { id: "air", n: 21 }] },
+          { space: "idea", q: { en: "Coming up with ideas and taking notes", ko: "아이디어를 떠올리고 메모하기" }, respondents: 49, items: [{ id: "light", n: 18 }, { id: "noise", n: 24 }, { id: "color", n: 10 }, { id: "plants", n: 7 }, { id: "seat", n: 24 }, { id: "open", n: 24 }, { id: "air", n: 15 }] },
+          { space: "teamwork", q: { en: "Discussing or working with teammates", ko: "조원과 토론하거나 협업하기" }, respondents: 49, items: [{ id: "light", n: 9 }, { id: "noise", n: 28 }, { id: "color", n: 5 }, { id: "plants", n: 2 }, { id: "seat", n: 29 }, { id: "open", n: 32 }, { id: "air", n: 16 }] },
+          { space: "comfort", q: { en: "Recovering in a comfortable place", ko: "편안한 환경에서 회복하기" }, respondents: 49, items: [{ id: "light", n: 21 }, { id: "noise", n: 23 }, { id: "color", n: 11 }, { id: "plants", n: 11 }, { id: "seat", n: 37 }, { id: "open", n: 16 }, { id: "air", n: 29 }] },
         ]
       },
-      idea: {
-        activity: { en: "Coming up with ideas and taking notes", ko: "아이디어를 떠올리고 메모하기" },
-        top: [
-          { label: FAC.comfy, short: { en: "Comfy sofa seats", ko: "편한 소파 좌석" }, n: 33, pct: 67 },
-          { label: FAC.whiteboard, short: { en: "Whiteboard wall", ko: "화이트보드 벽" }, n: 24, pct: 49 }
+      {
+        id: "q4", kind: "multi",
+        title: { en: "4. Which spaces or facilities would you like for each activity?", ko: "4. 활동별로 있었으면 하는 공간·시설" },
+        note: { en: "Multiple choice", ko: "복수 선택" },
+        order: ["charging", "dimmable", "soundproof", "groupRooms", "whiteboard", "plantsRest", "comfy", "air"],  // fixes the colors
+        labels: { charging: { en: "Seats with outlets and USB charging", ko: "콘센트·USB 충전이 가능한 좌석" }, dimmable: { en: "Seats with adjustable lighting", ko: "조명 밝기를 조절할 수 있는 좌석" }, soundproof: { en: "Soundproof private study rooms", ko: "방음이 된 개인 학습실" }, groupRooms: { en: "Group study rooms for discussion", ko: "여럿이 토론할 수 있는 그룹 스터디룸" }, whiteboard: { en: "Whiteboard walls and memo space", ko: "화이트보드 벽이나 메모 공간" }, plantsRest: { en: "Rest areas with plants", ko: "식물이 있는 휴게 공간" }, comfy: { en: "Comfortable chairs and sofas", ko: "편안한 의자·소파 좌석" }, air: { en: "Good ventilation and temperature control", ko: "환기와 온도 조절이 잘 되는 공간" } },
+        charts: [
+          { space: "memorization", q: { en: "Preparing assignments or exams", ko: "과제나 시험 준비하기" }, respondents: 49, items: [{ id: "charging", n: 37 }, { id: "dimmable", n: 18 }, { id: "soundproof", n: 28 }, { id: "groupRooms", n: 5 }, { id: "whiteboard", n: 6 }, { id: "plantsRest", n: 4 }, { id: "comfy", n: 26 }, { id: "air", n: 15 }] },
+          { space: "idea", q: { en: "Coming up with ideas and taking notes", ko: "아이디어를 떠올리고 메모하기" }, respondents: 49, items: [{ id: "charging", n: 21 }, { id: "dimmable", n: 11 }, { id: "soundproof", n: 9 }, { id: "groupRooms", n: 18 }, { id: "whiteboard", n: 24 }, { id: "plantsRest", n: 6 }, { id: "comfy", n: 33 }, { id: "air", n: 16 }] },
+          { space: "teamwork", q: { en: "Discussing or working with teammates", ko: "조원과 토론하거나 협업하기" }, respondents: 49, items: [{ id: "charging", n: 22 }, { id: "dimmable", n: 8 }, { id: "soundproof", n: 5 }, { id: "groupRooms", n: 33 }, { id: "whiteboard", n: 24 }, { id: "plantsRest", n: 7 }, { id: "comfy", n: 22 }, { id: "air", n: 14 }] },
+          { space: "comfort", q: { en: "Recovering in a comfortable place", ko: "편안한 환경에서 회복하기" }, respondents: 49, items: [{ id: "charging", n: 14 }, { id: "dimmable", n: 13 }, { id: "soundproof", n: 13 }, { id: "groupRooms", n: 0 }, { id: "whiteboard", n: 4 }, { id: "plantsRest", n: 23 }, { id: "comfy", n: 37 }, { id: "air", n: 29 }] },
         ]
       },
-      teamwork: {
-        activity: { en: "Discussing or working with teammates", ko: "조원과 토론하거나 협업하기" },
-        top: [
-          { label: FAC.groupRooms, short: { en: "Group study rooms", ko: "그룹 스터디룸" }, n: 33, pct: 67 },
-          { label: FAC.whiteboard, short: { en: "Whiteboard wall", ko: "화이트보드 벽" }, n: 24, pct: 49 }
-        ]
+    ],
+    // notes under the charts (the first three come from the survey results file)
+    notes: [
+      {
+        en: "We left out the first response (Nov 4, 2026): the year was blank and the answers didn't match the questions, so it looked like a test.",
+        ko: "2026-11-04에 들어온 첫 번째 응답 1건은 학년이 비어 있고 답변이 질문과 맞지 않아(시범 응답으로 보임) 집계에서 뺐습니다."
       },
-      comfort: {
-        activity: { en: "Recovering in a comfortable place", ko: "편안한 환경에서 회복하기" },
-        top: [
-          { label: FAC.comfy, short: { en: "Comfy sofas", ko: "편한 소파" }, n: 37, pct: 76 },
-          { label: FAC.air, short: { en: "Fresh air & temperature control", ko: "환기·온도 조절" }, n: 29, pct: 59 }
-        ]
-      }
+      {
+        en: "The choices in question 1 were renamed partway through the survey (e.g. \"Library, study café\" → \"Library, study café: a quiet place to focus\"), so we combined matching choices.",
+        ko: "질문 1의 보기 이름이 설문 중간에 바뀌어(예: “도서관, 스터디카페” → “도서관, 스터디카페: 공부에 집중할 수 있는 조용한 공간”) 같은 보기끼리 합쳤습니다."
+      },
+      {
+        en: "For multiple-choice questions, the % inside the circle is the share of all selections, and the % in brackets is the share of respondents who chose that option.",
+        ko: "복수 선택 문항은 원 안의 %가 전체 선택 수 중 비중이고, 오른쪽 괄호 안 %는 응답자 중 그 보기를 고른 비율입니다."
+      },
+      { en: "Most respondents (46 of 49) were first-year students.", ko: "응답자 49명 중 46명이 1학년이에요." }
+    ],
+    // short names on the 3D tags ("short · pct%"), per space and facility id
+    short: {
+      memorization: { charging: { en: "Charging seats", ko: "충전 좌석" }, soundproof: { en: "Soundproof study rooms", ko: "방음 개인 학습실" } },
+      idea: { comfy: { en: "Comfy sofa seats", ko: "편한 소파 좌석" }, whiteboard: { en: "Whiteboard wall", ko: "화이트보드 벽" } },
+      teamwork: { groupRooms: { en: "Group study rooms", ko: "그룹 스터디룸" }, whiteboard: { en: "Whiteboard wall", ko: "화이트보드 벽" } },
+      comfort: { comfy: { en: "Comfy sofas", ko: "편한 소파" }, air: { en: "Fresh air & temperature control", ko: "환기·온도 조절" } }
     }
   };
+
+  // Top 2 facilities per space (design card block + 3D tags), computed from question 4:
+  //   spaces[id] = { activity, top: [{ id, label, short, n, pct }, …] }, pct = round(n / respondents × 100)
+  (() => {
+    const S = window.SURVEY;
+    const q4 = S.sections.find((s) => s.id === "q4");
+    S.spaces = {};
+    q4.charts.forEach((c) => {
+      const top = [...c.items]
+        .sort((a, b) => b.n - a.n || q4.order.indexOf(a.id) - q4.order.indexOf(b.id))
+        .slice(0, 2)
+        .map((it) => ({
+          id: it.id,
+          label: q4.labels[it.id],
+          short: (S.short[c.space] || {})[it.id] || q4.labels[it.id],
+          n: it.n,
+          pct: Math.round((it.n / c.respondents) * 100)
+        }));
+      S.spaces[c.space] = { activity: c.q, top };
+    });
+  })();
 
   // =============================================================
   // Chatbot (chat.js) — "Which of the four spaces our team designed fits me now?"

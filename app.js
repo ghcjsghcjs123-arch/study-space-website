@@ -63,18 +63,11 @@
       </section>`;
   }
 
-  // survey screen: top 2 per space; the space name opens its card
+  // survey screen: every question as a pie chart (charts.js) + the notes
   function renderSurvey() {
-    $("surveyList").innerHTML = designs.map((d) => {
-      const sp = S().spaces[d.id];
-      return `
-        <section class="survey-space">
-          <h3><a href="#/${d.id}">${d.name}</a></h3>
-          <p class="meta">${tr(sp.activity)}</p>
-          ${factRows(sp.top)}
-        </section>`;
-    }).join("");
-    $("surveySource").textContent = tr(S().source);
+    $("surveyMeta").textContent = t("surveyMeta", S().respondents, tr(S().date));
+    window.SurveyCharts.render($("surveyCharts"));
+    $("surveyNotes").innerHTML = S().notes.map((n) => `<li>${tr(n)}</li>`).join("");
   }
 
   function renderCard(d) {
