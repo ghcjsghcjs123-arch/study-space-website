@@ -72,7 +72,7 @@ A chatbot asks "What are you studying today?" and "How are you feeling right now
 - Title, "49 respondents · Nov 2026", intro; then each section: title + note + a grid of chart cards (PC 2–3 columns, phone 1). No notes block at the bottom (the team asked to leave it out).
 - Chart card: question (q3/q4: plus a small "→ <space>" link to its card) → "49 responses" or "49 respondents · N selections in total" (multi) → pie (SVG, no library) → legend "color · name · n (p%)". A section with one chart doesn't repeat the question already in its title.
 - %: inside a slice only when ≥ 7%. single / likert: share of people. multi: in the circle = share of all selections; in the legend brackets = share of the 49 respondents.
-- Under every chart title: a one-line summary computed from the data (never typed): single / multi = "Most chosen: {item} ({%})" (multi: % of respondents; ties list every top item + "each"), likert = "Rated 4 or 5: {%}" (`t("sumTop")`, `t("sumLikert")`).
+- Under every chart title: a one-line summary computed from the data (never typed): single / multi = "Most chosen: {item} ({percent}%)" (multi: % of respondents; ties list every top item + "each"), likert = "Rated 4 or 5: {percent}%" (`t("sumTop")`, `t("sumLikert")`).
 - Legend order: most chosen first, 0-person options last; colors stay fixed per option. Likert keeps the scale order 1 → 5.
 - A section may have an `outro` ({ en, ko }) shown under its charts (q3: noise 84% for exam prep, openness 65% for teamwork; q4: the top two facilities went into the 3D designs). Check any % in an outro against SURVEY.
 - 0-person options: never a slice; gray in the legend (single questions: left out of the legend).
@@ -133,6 +133,8 @@ A chatbot asks "What are you studying today?" and "How are you feeling right now
 - Plain HTML/CSS/JS, no build tools, must work by opening index.html directly.
 - Simple English that university students can read quickly.
 - Must work on phones (no horizontal scroll). Check new screens at 1440px and 390px.
+- GitHub Pages: the repo root has an empty `.nojekyll` file so Pages serves the files as they are (no Jekyll build). Never delete `.nojekyll`.
+- Never write a curly brace followed by `%`, or two curly braces in a row, in any Markdown file (CLAUDE.md, README.md, sounds/CREDITS.md, survey/*.md): Jekyll reads them as Liquid tags and the Pages build fails. Write placeholders like `{percent}` or `{item}` instead.
 
 ### Design rules (modern, minimal — follow these for every new screen)
 - **No template look**: no serif fonts, no wide-tracked UPPERCASE colored labels, no badges, no pill buttons/chips/tags, no glow layers, gradients, shadows or card borders. Areas are separated by white space and 1px lines (#E8E8E8).
